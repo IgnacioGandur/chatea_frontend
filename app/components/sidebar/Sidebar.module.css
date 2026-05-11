@@ -1,0 +1,18 @@
+.showSidebarButton {
+    background-color: red;
+    position: absolute;
+    bottom: calc(var(--size-4) * 2.5);
+    left: calc(var(--size-4) * 2);
+    border-radius: var(--radius-total);
+    padding: var(--size-2);
+    aspect-ratio: 1/1;
+}
+
+.sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 275px;
+    height: 100%;
+    background-color: lime;
+}
