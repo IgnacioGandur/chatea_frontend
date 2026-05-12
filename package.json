@@ -9,13 +9,19 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.2.10",
+    "@mui/material": "^9.0.1",
     "@react-router/node": "7.15.0",
     "@react-router/serve": "7.15.0",
     "isbot": "^5.1.36",
+    "material-symbols": "^0.44.6",
     "motion": "^12.38.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router": "7.15.0"
+    "react-router": "7.15.0",
+    "react-spinners": "^0.17.0"
   },
   "devDependencies": {
     "@netlify/vite-plugin-react-router": "^3.1.1",
@@ -24,6 +30,7 @@
     "@types/node": "^22",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "material-design-icons-literal-types": "^1.0.45",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "vite": "^8.0.3"

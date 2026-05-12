@@ -1,5 +1,15 @@
+// General styles and variables
 import "./css/app.css";
 import "./css/variables.css";
+
+// Roboto fonts
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+
+// Google material symbols (icons)
+import "material-symbols/rounded.css";
 
 import {
     isRouteErrorResponse,

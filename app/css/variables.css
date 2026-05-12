@@ -8,6 +8,12 @@
     --color-secondary-light: #c77dff;
     --color-secondary-dark: #240046;
 
+    --color-background: #e0e1dd;
+    --color-text: #062726;
+    --color-text-dimmed: #343a40;
+
+    --color-line: rgba(0, 0, 0, 0.2);
+
     /* Sizes */
     --size-1: 0.25rem;
     --size-2: 0.5rem;
@@ -31,4 +37,31 @@
     --radius-3xl: 1.5rem;
     --radius-full: 9999px;
     --radius-total: 50%;
+
+    /* Fonts */
+    --font-main: "Roboto";
+
+    /* Font Sizes */
+    --font-size-1: 0.8rem;
+    --font-size-2: 1rem;
+    --font-size-3: 1.25rem;
+    --font-size-4: 1.5rem;
+    --font-size-5: 1.8rem;
+    --font-size-6: 2.25rem;
+
+    /* Shadows */
+    --shadow-1: 0px 0px 3px rgba(0, 0, 0, 0.2);
+    --shadow-2: 0px 0px 3px rgba(0, 0, 0, 0.4);
+    --shadow-3: 0px 0px 3px rgba(0, 0, 0, 0.6);
+    --shadow-4: 0px 0px 3px rgba(0, 0, 0, 0.8);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-background: #0b090a;
+        --color-text: #f6f7f8;
+        --color-text-dimmed: #b4bcc7;
+
+        --color-line: #343a40;
+    }
 }

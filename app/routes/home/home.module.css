@@ -1,2 +1,10 @@
 .home {
+    .title {
+        font-family: var(--font-main);
+        color: var(--color-text);
+    }
+
+    .para {
+        color: var(--color-text-dimmed);
+    }
 }

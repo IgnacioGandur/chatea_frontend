@@ -1,6 +1,27 @@
 import { useState } from "react";
 import styles from "./Sidebar.module.css";
 import { AnimatePresence, motion } from "motion/react";
+import { NavLink } from "react-router";
+import type { MaterialSymbols } from "material-design-icons-literal-types";
+
+interface Link {
+    text: string;
+    icon: MaterialSymbols;
+    to: string;
+}
+
+const links: Link[] = [
+    {
+        text: "Home",
+        icon: "home",
+        to: "/",
+    },
+    {
+        text: "Register",
+        icon: "signature",
+        to: "/register",
+    },
+];
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +47,24 @@ export default function Sidebar() {
                     className={styles.sidebar}
                 >
                     <p>sidebar</p>
+                    <div className={styles.links}>
+                        {links.map((link) => {
+                            return (
+                                <NavLink
+                                    className={({ isActive, isPending }) =>
+                                        isActive
+                                            ? `${styles.link} ${styles.active}`
+                                            : isPending
+                                              ? `${styles.link} ${styles.pending}`
+                                              : styles.link
+                                    }
+                                    to={link.to}
+                                >
+                                    {link.text}
+                                </NavLink>
+                            );
+                        })}
+                    </div>
                     <button onClick={toggleSidebar}>Close</button>
                 </motion.aside>
             ) : (
@@ -43,7 +82,7 @@ export default function Sidebar() {
                     className={styles.showSidebarButton}
                     onClick={toggleSidebar}
                 >
-                    show
+                    <span className="material-symbols-rounded">menu</span>
                 </motion.button>
             )}
         </AnimatePresence>
