@@ -5,7 +5,6 @@ import { redirect, useFetcher, type ActionFunctionArgs } from "react-router";
 import { MoonLoader } from "react-spinners";
 import type { RegisterResponse } from "~/types/RegisterResponse";
 import InputErrors from "~/components/input-errors/InputErrors";
-import { useEffect } from "react";
 
 export function meta({}: Route.MetaArgs) {
     return [
