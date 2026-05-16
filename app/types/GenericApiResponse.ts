@@ -1,4 +1,5 @@
 export interface GenericApiResponse {
-    success: boolean;
+    error?: boolean;
+    success?: boolean;
     message: string;
 }

@@ -2,12 +2,6 @@
 import "./css/app.css";
 import "./css/variables.css";
 
-// Roboto fonts
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-
 // Google material symbols (icons)
 import "material-symbols/rounded.css";
 
@@ -18,27 +12,36 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
+    useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 import Sidebar from "./components/sidebar/Sidebar";
+import ServerError from "./components/server-error/ServerError";
 
-export const links: Route.LinksFunction = () => [
-    { rel: "preconnect", href: "https://fonts.googleapis.com" },
-    {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-    },
-    {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-    },
-];
+import type { GenericApiResponse } from "./types/GenericApiResponse";
+
+export async function loader(): Promise<GenericApiResponse> {
+    const endpoint = import.meta.env.VITE_API_URL + "/auth/me";
+    const options: RequestInit = {
+        method: "get",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    };
+
+    const response = await fetch(endpoint, options);
+    const result = await response.json();
+    console.log("The content of result is: ", result);
+    return result;
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
+    const loaderData = useRouteLoaderData<GenericApiResponse>("root");
+
     return (
         <html lang="en">
             <head>
@@ -52,6 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </head>
             <body>
                 <Navbar />
+                {loaderData?.error ? <ServerError /> : null}
                 {children}
                 <Sidebar />
                 <Footer />

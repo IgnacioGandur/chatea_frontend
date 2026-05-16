@@ -25,6 +25,7 @@ export async function action({ request }: ActionFunctionArgs) {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify(fields),
         },
     );

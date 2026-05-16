@@ -1,18 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
 :root {
     /* Colors */
-    --color-main: #0077b6;
-    --color-main-light: #90e0ef;
-    --color-main-dark: #03045e;
+    --color-main: #00b4d8;
+    --color-main-light: #48cae4;
+    --color-main-dark: #0077b6;
 
-    --color-secondary: #5a189a;
-    --color-secondary-light: #c77dff;
-    --color-secondary-dark: #240046;
+    --color-secondary: #9d4edd;
+    --color-secondary-light: #e0aaff;
+    --color-secondary-dark: #5a189a;
 
     --color-background: #e0e1dd;
     --color-text: #062726;
     --color-text-dimmed: #343a40;
 
     --color-line: rgba(0, 0, 0, 0.2);
+
+    --color-error: #800e13;
+    --color-error-dimmed: #38040e;
 
     /* Sizes */
     --size-1: 0.25rem;
@@ -39,9 +44,12 @@
     --radius-total: 50%;
 
     /* Fonts */
-    --font-main: "Roboto";
+    --font-main: "Google Sans", sans-serif;
+    --font-secondary: "Raleway", sans-serif;
+    --font-special: "Dancing Script", cursive;
 
     /* Font Sizes */
+    --font-size-mini: 0.68rem;
     --font-size-1: 0.8rem;
     --font-size-2: 1rem;
     --font-size-3: 1.25rem;

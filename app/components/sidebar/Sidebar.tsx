@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./Sidebar.module.css";
 import { AnimatePresence, motion } from "motion/react";
 import { NavLink } from "react-router";
@@ -17,6 +17,11 @@ const links: Link[] = [
         to: "/",
     },
     {
+        text: "Login",
+        icon: "login",
+        to: "/login",
+    },
+    {
         text: "Register",
         icon: "signature",
         to: "/register",
@@ -25,16 +30,32 @@ const links: Link[] = [
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
+    const sidebarRef = useRef<HTMLElement | null>(null);
 
     function toggleSidebar() {
         setIsOpen((prevState) => !prevState);
     }
+
+    useEffect(() => {
+        function handleClick(e: PointerEvent) {
+            if (sidebarRef && sidebarRef.current && isOpen) {
+                if (!sidebarRef.current.contains(e.target as Node)) {
+                    setIsOpen(false);
+                }
+            }
+        }
+
+        document.addEventListener("click", handleClick);
+
+        return () => document.removeEventListener("click", handleClick);
+    }, [isOpen]);
 
     return (
         <AnimatePresence>
             {isOpen ? (
                 <motion.aside
                     key="sidebar"
+                    ref={sidebarRef}
                     initial={{
                         left: "-100%",
                     }}
@@ -51,6 +72,8 @@ export default function Sidebar() {
                         {links.map((link) => {
                             return (
                                 <NavLink
+                                    key={link.to}
+                                    onClick={toggleSidebar}
                                     className={({ isActive, isPending }) =>
                                         isActive
                                             ? `${styles.link} ${styles.active}`
@@ -74,7 +97,7 @@ export default function Sidebar() {
                         left: "-100%",
                     }}
                     animate={{
-                        left: "calc(var(--size-4) * 2)",
+                        left: "calc(var(--size-4) * 1)",
                     }}
                     exit={{
                         left: "-100%",

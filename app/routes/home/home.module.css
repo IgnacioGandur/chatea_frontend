@@ -1,10 +1,21 @@
 .home {
     .title {
-        font-family: var(--font-main);
-        color: var(--color-text);
+        width: fit-content;
+        padding: var(--size-2);
+        font-family: var(--font-special);
+        font-size: 7rem;
+        font-weight: 100;
+        background-image: linear-gradient(
+            65deg,
+            var(--color-main),
+            var(--color-secondary)
+        );
+        background-clip: text;
+        color: transparent;
     }
 
     .para {
         color: var(--color-text-dimmed);
+        font-family: var(--font-secondary);
     }
 }

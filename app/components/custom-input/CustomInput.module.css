@@ -1,0 +1,21 @@
+.customInput {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+    border: 1px solid var(--color-line);
+
+    .label::first-letter {
+        text-transform: capitalize;
+    }
+
+    .wrapper {
+        display: flex;
+        gap: var(--size-1);
+        padding: calc(var(--size-2) / 2);
+        align-items: center;
+    }
+
+    .clarification {
+        font-size: var(--font-size-mini);
+    }
+}

@@ -17,9 +17,16 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    font-family: var(--font-main);
 
     main {
         flex: 1;
+        border-right: 1px solid var(--color-line);
+        border-left: 1px solid var(--color-line);
+        padding: var(--size-4);
+        max-width: 1720px;
+        align-self: center;
+        width: 100%;
     }
 }
 
@@ -30,8 +37,23 @@ h2,
 h3,
 h4,
 h5,
-li {
+li,
+label {
     color: var(--color-text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+li {
+    font-family: var(--font-main);
+}
+
+p,
+span {
+    font-size: var(--font-secondary);
 }
 
 button {
@@ -46,6 +68,7 @@ button:hover {
 }
 
 .material-symbols-rounded {
+    color: var(--color-text-dimmed);
     font-variation-settings:
         "FILL" 0,
         "wght" 100,
