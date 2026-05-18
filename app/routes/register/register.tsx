@@ -5,7 +5,13 @@ import styles from "./register.module.css";
 import type { Route } from "./+types/register";
 
 // Packages
-import { redirect, useFetcher, type ActionFunctionArgs } from "react-router";
+import {
+    redirect,
+    useFetcher,
+    type ActionFunctionArgs,
+    data,
+    createSession,
+} from "react-router";
 import { MoonLoader } from "react-spinners";
 import bcrypt from "bcryptjs";
 
@@ -16,6 +22,7 @@ import CustomInput from "~/components/custom-input/CustomInput";
 import userModel from "~/db/user";
 import { useState, type ChangeEvent } from "react";
 import type { $ZodIssue } from "zod/v4/core";
+import { getSession, commitSession } from "~/session.server";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -30,14 +37,34 @@ interface RegisterActionResponse {
     errors: $ZodIssue[];
 }
 
+export async function loader({ request }: Route.LoaderArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
+
+    if (session.has("userId")) {
+        throw redirect("/dashboard");
+    }
+
+    return data(
+        { error: session.get("error") },
+        {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        },
+    );
+}
+
 export async function action({ request }: ActionFunctionArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
     const formData = await request.formData();
     const values = Object.fromEntries(formData) as {
+        firstName: string;
+        lastName: string;
         username: string;
         password: string;
         confirm: string;
     };
-    console.log("The content of values is: ", values);
+    const { firstName, lastName, username, password } = values;
     const result = await validateUserRegister.safeParseAsync(values);
 
     if (!result.success) {
@@ -49,21 +76,32 @@ export async function action({ request }: ActionFunctionArgs) {
         };
     }
 
-    const hashedPassword = await bcrypt.hash(values.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await userModel.create(values.username, hashedPassword);
+    const user = await userModel.create(
+        firstName,
+        lastName,
+        username,
+        hashedPassword,
+    );
+
+    session.set("userId", String(user.id));
 
     return redirect(
-        "/login?welcome=" +
-            encodeURIComponent(
-                `Welcome aboard ${user.username}! You can sign in now!`,
-            ),
+        `/dashboard?welcome=${encodeURIComponent("Welcome aboard " + user.username + "!")}`,
+        {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        },
     );
 }
 
 export default function Register() {
     const fetcher = useFetcher<RegisterActionResponse>();
     const [inputs, setInputs] = useState({
+        firstName: "",
+        lastName: "",
         username: "",
         password: "",
         confirm: "",
@@ -109,6 +147,30 @@ export default function Register() {
                     className={styles.form}
                     method="post"
                 >
+                    <CustomInput
+                        type="text"
+                        labelText="first name"
+                        id="first-name"
+                        icon="badge"
+                        placeholder="John"
+                        clarification="First name must only contain letters and be 30 characters max."
+                        required={false}
+                        name="firstName"
+                        value={inputs.firstName}
+                        onChange={handleInputs}
+                    />
+                    <CustomInput
+                        type="text"
+                        labelText="last name"
+                        id="last-name"
+                        icon="signature"
+                        placeholder="Doe"
+                        clarification="Last name must only contain letters and be 30 characters max."
+                        required={false}
+                        name="lastName"
+                        value={inputs.lastName}
+                        onChange={handleInputs}
+                    />
                     <CustomInput
                         type="text"
                         labelText="username"

@@ -15,9 +15,19 @@ class User {
         return await this.prisma.user.findMany();
     }
 
-    async create(username: string, password: string): Promise<UserType> {
+    async create(
+        firstName: string,
+        lastName: string,
+        username: string,
+        password: string,
+    ): Promise<UserType> {
+        const profilePictureUrl = `https://ui-avatars.com/api/?background=random&name=${firstName}+${lastName}`;
+
         return await this.prisma.user.create({
             data: {
+                profilePictureUrl,
+                firstName,
+                lastName,
                 username,
                 password,
             },

@@ -2,9 +2,11 @@ import styles from "./Navbar.module.css";
 import { useFetcher } from "react-router";
 import { MoonLoader } from "react-spinners";
 import { useRouteLoaderData } from "react-router";
+import type { User } from "../../../generated/prisma/client";
+import LoggedUser from "./logged-user/LoggedUser";
 
 export default function Navbar() {
-    const data = useRouteLoaderData("root");
+    const data = useRouteLoaderData("root") as User;
     const fetcher = useFetcher();
     const isNotIdle = fetcher.state !== "idle";
 
@@ -32,6 +34,14 @@ export default function Navbar() {
                         </button>
                     </fetcher.Form>
                 )
+            ) : null}
+            {data ? (
+                <LoggedUser
+                    firstName={data.firstName}
+                    lastName={data.lastName}
+                    username={data.username}
+                    profilePictureUrl={data.profilePictureUrl}
+                />
             ) : null}
         </nav>
     );
