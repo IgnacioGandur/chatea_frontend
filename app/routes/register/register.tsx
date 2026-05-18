@@ -1,10 +1,21 @@
-import type { Route } from "./+types/register";
+// CSS
 import styles from "./register.module.css";
 
+// Types
+import type { Route } from "./+types/register";
+
+// Packages
 import { redirect, useFetcher, type ActionFunctionArgs } from "react-router";
 import { MoonLoader } from "react-spinners";
-import type { RegisterResponse } from "~/types/RegisterResponse";
-import InputErrors from "~/components/input-errors/InputErrors";
+import bcrypt from "bcryptjs";
+
+// Components
+import validateUserRegister from "~/validators/validateUserRegister";
+import ValidationErrors from "~/components/validation-errors/ValidationErrors";
+import CustomInput from "~/components/custom-input/CustomInput";
+import userModel from "~/db/user";
+import { useState, type ChangeEvent } from "react";
+import type { $ZodIssue } from "zod/v4/core";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -13,45 +24,76 @@ export function meta({}: Route.MetaArgs) {
     ];
 }
 
+interface RegisterActionResponse {
+    success: boolean;
+    message?: string;
+    errors: $ZodIssue[];
+}
+
 export async function action({ request }: ActionFunctionArgs) {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
     const formData = await request.formData();
-    const fields = Object.fromEntries(formData);
+    const values = Object.fromEntries(formData) as {
+        username: string;
+        password: string;
+        confirm: string;
+    };
+    console.log("The content of values is: ", values);
+    const result = await validateUserRegister.safeParseAsync(values);
 
-    const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/register`,
-        {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(fields),
-        },
-    );
-
-    const result: RegisterResponse = await response.json();
-
-    if (result.success) {
-        return redirect("/dashboard");
+    if (!result.success) {
+        return {
+            success: false,
+            message:
+                "There's something wrong with the inputs you provided, please correct them:",
+            errors: result.error.issues,
+        };
     }
 
-    return result;
+    const hashedPassword = await bcrypt.hash(values.password, 10);
+
+    const user = await userModel.create(values.username, hashedPassword);
+
+    return redirect(
+        "/login?welcome=" +
+            encodeURIComponent(
+                `Welcome aboard ${user.username}! You can sign in now!`,
+            ),
+    );
 }
 
 export default function Register() {
-    const fetcher = useFetcher<RegisterResponse>();
-    const hasInputError = !fetcher.data?.success;
-    const message = fetcher.data?.message;
-    const errors = fetcher.data?.errors;
+    const fetcher = useFetcher<RegisterActionResponse>();
+    const [inputs, setInputs] = useState({
+        username: "",
+        password: "",
+        confirm: "",
+    });
+
+    function handleInputs(e: ChangeEvent<HTMLInputElement>) {
+        setInputs((prevInputs) => ({
+            ...prevInputs,
+            [e.target.name]: e.target.value,
+        }));
+    }
+
+    // Validation errors
+    const hasValidationErrors = fetcher.data?.success === false;
+    const validationErrors = fetcher.data?.errors;
+    const validationErrorsMessage = fetcher.data?.message;
+    const showErrors =
+        hasValidationErrors && validationErrors && validationErrorsMessage;
+
+    // Passwords
+    const passwordsAreEmpty = inputs.password === "" && inputs.confirm === "";
+    const passwordsMatch = inputs.password === inputs.confirm;
 
     return (
         <main className={styles.register}>
             <h1>Register page</h1>
-            {hasInputError && message && errors ? (
-                <InputErrors
-                    message={message}
-                    errors={errors}
+            {showErrors ? (
+                <ValidationErrors
+                    title={validationErrorsMessage}
+                    errors={validationErrors}
                 />
             ) : null}
             {fetcher.state === "submitting" ? (
@@ -67,16 +109,51 @@ export default function Register() {
                     className={styles.form}
                     method="post"
                 >
-                    <input
+                    <CustomInput
                         type="text"
+                        labelText="username"
+                        id="username"
+                        icon="face"
+                        placeholder="john_doe"
+                        clarification="Username must be between 3 and 30 characters, can only contain alphanumeric characters, dots and hyphens."
+                        required={false}
                         name="username"
-                        placeholder="username"
+                        value={inputs.username}
+                        onChange={handleInputs}
                     />
-                    <input
+                    <CustomInput
                         type="password"
+                        labelText="password"
+                        id="password"
+                        icon="lock"
+                        placeholder=""
+                        clarification=""
+                        required={false}
                         name="password"
-                        placeholder="***"
+                        value={inputs.password}
+                        onChange={handleInputs}
                     />
+                    <CustomInput
+                        type="password"
+                        labelText="confirm password"
+                        id="confirm"
+                        icon="lock_reset"
+                        placeholder=""
+                        clarification="Repeat your password"
+                        required={false}
+                        name="confirm"
+                        value={inputs.confirm}
+                        onChange={handleInputs}
+                    />
+                    {!passwordsAreEmpty ? (
+                        <p
+                            className={`${styles.password} ${passwordsMatch ? styles.match : styles.dontMatch}`}
+                        >
+                            {passwordsMatch
+                                ? "The passwords match!"
+                                : "The passwords don't match."}
+                        </p>
+                    ) : null}
                     <button
                         type="submit"
                         className={styles.registerButton}

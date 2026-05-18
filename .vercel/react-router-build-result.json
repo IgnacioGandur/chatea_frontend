@@ -1,0 +1,242 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "routes/home/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/protected/Protected": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/users/Users": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/register/register": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/login/Login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dashboard/outlets/dashboard-index/dashboardIndex": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dashboard/outlets/settings/settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "app/root.tsx",
+        "path": "",
+        "config": {}
+      },
+      "routes/home/home": {
+        "id": "routes/home/home",
+        "parentId": "root",
+        "file": "app/routes/home/home.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "layouts/only-logged-users": {
+        "id": "layouts/only-logged-users",
+        "parentId": "root",
+        "file": "app/layouts/only-logged-users.tsx",
+        "config": {}
+      },
+      "routes/protected/Protected": {
+        "id": "routes/protected/Protected",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/routes/protected/Protected.tsx",
+        "path": "protected",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/users/Users": {
+        "id": "routes/users/Users",
+        "parentId": "root",
+        "file": "app/routes/users/Users.tsx",
+        "path": "users",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/register/register": {
+        "id": "routes/register/register",
+        "parentId": "root",
+        "file": "app/routes/register/register.tsx",
+        "path": "register",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/login/Login": {
+        "id": "routes/login/Login",
+        "parentId": "root",
+        "file": "app/routes/login/Login.tsx",
+        "path": "login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard/dashboard": {
+        "id": "routes/dashboard/dashboard",
+        "parentId": "root",
+        "file": "app/routes/dashboard/dashboard.tsx",
+        "path": "dashboard",
+        "config": {}
+      },
+      "routes/dashboard/outlets/dashboard-index/dashboardIndex": {
+        "id": "routes/dashboard/outlets/dashboard-index/dashboardIndex",
+        "parentId": "routes/dashboard/dashboard",
+        "file": "app/routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard/outlets/settings/settings": {
+        "id": "routes/dashboard/outlets/settings/settings",
+        "parentId": "routes/dashboard/dashboard",
+        "file": "app/routes/dashboard/outlets/settings/settings.tsx",
+        "path": "settings",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "/home/ignacio/Documents/Github/chatea/frontend/app",
+    "basename": "/",
+    "buildDirectory": "/home/ignacio/Documents/Github/chatea/frontend/build",
+    "future": {
+      "unstable_optimizeDeps": false,
+      "v8_passThroughRequests": false,
+      "unstable_trailingSlashAwareDataRequests": false,
+      "unstable_previewServerPrerendering": false,
+      "v8_middleware": false,
+      "v8_splitRouteModules": false,
+      "v8_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "root.tsx",
+        "path": ""
+      },
+      "routes/home/home": {
+        "id": "routes/home/home",
+        "parentId": "root",
+        "file": "routes/home/home.tsx",
+        "index": true
+      },
+      "layouts/only-logged-users": {
+        "id": "layouts/only-logged-users",
+        "parentId": "root",
+        "file": "./layouts/only-logged-users.tsx"
+      },
+      "routes/protected/Protected": {
+        "id": "routes/protected/Protected",
+        "parentId": "layouts/only-logged-users",
+        "file": "./routes/protected/Protected.tsx",
+        "path": "protected"
+      },
+      "routes/users/Users": {
+        "id": "routes/users/Users",
+        "parentId": "root",
+        "file": "./routes/users/Users.tsx",
+        "path": "users"
+      },
+      "routes/register/register": {
+        "id": "routes/register/register",
+        "parentId": "root",
+        "file": "./routes/register/register.tsx",
+        "path": "register"
+      },
+      "routes/login/Login": {
+        "id": "routes/login/Login",
+        "parentId": "root",
+        "file": "./routes/login/Login.tsx",
+        "path": "login"
+      },
+      "routes/dashboard/dashboard": {
+        "id": "routes/dashboard/dashboard",
+        "parentId": "root",
+        "file": "./routes/dashboard/dashboard.tsx",
+        "path": "dashboard"
+      },
+      "routes/dashboard/outlets/dashboard-index/dashboardIndex": {
+        "id": "routes/dashboard/outlets/dashboard-index/dashboardIndex",
+        "parentId": "routes/dashboard/dashboard",
+        "file": "./routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
+        "index": true
+      },
+      "routes/dashboard/outlets/settings/settings": {
+        "id": "routes/dashboard/outlets/settings/settings",
+        "parentId": "routes/dashboard/dashboard",
+        "file": "./routes/dashboard/outlets/settings/settings.tsx",
+        "path": "settings"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true,
+    "subResourceIntegrity": false,
+    "allowedActionOrigins": false,
+    "unstable_routeConfig": [
+      {
+        "id": "root",
+        "path": "",
+        "file": "root.tsx",
+        "children": [
+          {
+            "file": "routes/home/home.tsx",
+            "index": true
+          },
+          {
+            "file": "./layouts/only-logged-users.tsx",
+            "children": [
+              {
+                "file": "./routes/protected/Protected.tsx",
+                "path": "protected"
+              }
+            ]
+          },
+          {
+            "file": "./routes/users/Users.tsx",
+            "path": "users"
+          },
+          {
+            "file": "./routes/register/register.tsx",
+            "path": "register"
+          },
+          {
+            "file": "./routes/login/Login.tsx",
+            "path": "login"
+          },
+          {
+            "file": "./routes/dashboard/dashboard.tsx",
+            "children": [
+              {
+                "file": "./routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
+                "index": true
+              },
+              {
+                "file": "./routes/dashboard/outlets/settings/settings.tsx",
+                "path": "settings"
+              }
+            ],
+            "path": "dashboard"
+          }
+        ]
+      }
+    ]
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}

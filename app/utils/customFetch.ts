@@ -19,8 +19,6 @@ export default async function customFetch(
 
         const result = await response.json();
 
-        console.log("The content of result is: ", result);
-
         return result;
     } catch (error) {
         return {

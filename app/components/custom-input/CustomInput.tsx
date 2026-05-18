@@ -1,6 +1,6 @@
 import type { MaterialIcons } from "material-design-icons-literal-types";
 import styles from "./CustomInput.module.css";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 
 interface CustomInput {
     type: "text" | "password";
@@ -11,6 +11,8 @@ interface CustomInput {
     clarification?: string;
     required: boolean;
     name: string;
+    value: string;
+    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CustomInput({
@@ -22,8 +24,10 @@ export default function CustomInput({
     clarification,
     required,
     name,
+    value,
+    onChange,
 }: CustomInput) {
-    const [showPassword, setShowPassword] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
 
     function togglePasswordVisibility() {
         setShowPassword((prevState) => !prevState);
@@ -43,15 +47,15 @@ export default function CustomInput({
                     required={required}
                     className={styles.input}
                     type={
-                        showPassword
-                            ? "text"
-                            : type === "password"
-                              ? "password"
-                              : "text"
+                        type === "password" && !showPassword
+                            ? "password"
+                            : "text"
                     }
                     id={id}
                     name={name}
                     placeholder={placeholder}
+                    value={value}
+                    onChange={onChange}
                 />
                 {type === "password" ? (
                     <button

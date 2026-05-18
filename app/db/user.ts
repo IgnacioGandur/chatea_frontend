@@ -1,0 +1,50 @@
+import prisma from "./prisma";
+import {
+    PrismaClient,
+    type User as UserType,
+} from "../../generated/prisma/client";
+
+class User {
+    prisma: PrismaClient;
+
+    constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
+    }
+
+    async getAll(): Promise<UserType[]> {
+        return await this.prisma.user.findMany();
+    }
+
+    async create(username: string, password: string): Promise<UserType> {
+        return await this.prisma.user.create({
+            data: {
+                username,
+                password,
+            },
+        });
+    }
+
+    async get(username: string): Promise<UserType | null> {
+        return await this.prisma.user.findUnique({
+            where: {
+                username,
+            },
+        });
+    }
+
+    async getById(
+        id: number | string,
+        omitPassword: boolean,
+    ): Promise<UserType | null> {
+        return await this.prisma.user.findUnique({
+            where: {
+                id: Number(id),
+            },
+            omit: {
+                password: omitPassword,
+            },
+        });
+    }
+}
+
+export default new User(prisma);

@@ -5,6 +5,7 @@ import "./css/variables.css";
 // Google material symbols (icons)
 import "material-symbols/rounded.css";
 
+// Packages
 import {
     isRouteErrorResponse,
     Links,
@@ -12,36 +13,34 @@ import {
     Outlet,
     Scripts,
     ScrollRestoration,
-    useRouteLoaderData,
 } from "react-router";
 
-import type { Route } from "./+types/root";
+// Components
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 import Sidebar from "./components/sidebar/Sidebar";
-import ServerError from "./components/server-error/ServerError";
 
-import type { GenericApiResponse } from "./types/GenericApiResponse";
+// Session
+import { getSession } from "./session.server";
 
-export async function loader(): Promise<GenericApiResponse> {
-    const endpoint = import.meta.env.VITE_API_URL + "/auth/me";
-    const options: RequestInit = {
-        method: "get",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    };
+// Db
+import userModel from "./db/user";
 
-    const response = await fetch(endpoint, options);
-    const result = await response.json();
-    console.log("The content of result is: ", result);
-    return result;
+// Types
+import type { Route } from "./+types/root";
+
+export async function loader({ request }: Route.LoaderArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
+    const userId = session.get("userId");
+
+    if (!userId) return null;
+
+    const user = await userModel.getById(userId, true);
+
+    return user;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-    const loaderData = useRouteLoaderData<GenericApiResponse>("root");
-
     return (
         <html lang="en">
             <head>
@@ -55,7 +54,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </head>
             <body>
                 <Navbar />
-                {loaderData?.error ? <ServerError /> : null}
                 {children}
                 <Sidebar />
                 <Footer />

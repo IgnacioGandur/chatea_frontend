@@ -1,11 +1,20 @@
 import styles from "./home.module.css";
 import type { Route } from "./+types/home";
+import { getSession } from "~/session.server";
 
 export function meta({}: Route.MetaArgs) {
     return [
         { title: "Welcome to Chateá!" },
         { name: "description", content: "Welcome to React Router!" },
     ];
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
+
+    const userId = session.get("userId");
+
+    console.log("User id: ", userId);
 }
 
 export default function Home() {

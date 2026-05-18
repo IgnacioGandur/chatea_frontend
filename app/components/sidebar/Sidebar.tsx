@@ -12,6 +12,11 @@ interface Link {
 
 const links: Link[] = [
     {
+        text: "Users",
+        icon: "groups",
+        to: "users",
+    },
+    {
         text: "Home",
         icon: "home",
         to: "/",
@@ -45,7 +50,14 @@ export default function Sidebar() {
             }
         }
 
+        function handleEscapeKey(e: KeyboardEvent) {
+            if (e.key === "Escape" && isOpen) {
+                setIsOpen(false);
+            }
+        }
+
         document.addEventListener("click", handleClick);
+        document.addEventListener("keydown", handleEscapeKey);
 
         return () => document.removeEventListener("click", handleClick);
     }, [isOpen]);
@@ -73,7 +85,6 @@ export default function Sidebar() {
                             return (
                                 <NavLink
                                     key={link.to}
-                                    onClick={toggleSidebar}
                                     className={({ isActive, isPending }) =>
                                         isActive
                                             ? `${styles.link} ${styles.active}`
