@@ -11,10 +11,10 @@
     },
     "routeIdToServerBundleId": {
       "routes/home/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/protected/Protected": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/users/Users": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/register/register": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/login/Login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/dashboard/outlets/dashboard-index/dashboardIndex": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/dashboard/outlets/settings/settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
@@ -30,21 +30,6 @@
         "parentId": "root",
         "file": "app/routes/home/home.tsx",
         "index": true,
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
-      "layouts/only-logged-users": {
-        "id": "layouts/only-logged-users",
-        "parentId": "root",
-        "file": "app/layouts/only-logged-users.tsx",
-        "config": {}
-      },
-      "routes/protected/Protected": {
-        "id": "routes/protected/Protected",
-        "parentId": "layouts/only-logged-users",
-        "file": "app/routes/protected/Protected.tsx",
-        "path": "protected",
         "config": {
           "runtime": "nodejs"
         }
@@ -76,9 +61,24 @@
           "runtime": "nodejs"
         }
       },
+      "routes/logout": {
+        "id": "routes/logout",
+        "parentId": "root",
+        "file": "app/routes/logout.tsx",
+        "path": "logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "layouts/only-logged-users": {
+        "id": "layouts/only-logged-users",
+        "parentId": "root",
+        "file": "app/layouts/only-logged-users.tsx",
+        "config": {}
+      },
       "routes/dashboard/dashboard": {
         "id": "routes/dashboard/dashboard",
-        "parentId": "root",
+        "parentId": "layouts/only-logged-users",
         "file": "app/routes/dashboard/dashboard.tsx",
         "path": "dashboard",
         "config": {}
@@ -128,17 +128,6 @@
         "file": "routes/home/home.tsx",
         "index": true
       },
-      "layouts/only-logged-users": {
-        "id": "layouts/only-logged-users",
-        "parentId": "root",
-        "file": "./layouts/only-logged-users.tsx"
-      },
-      "routes/protected/Protected": {
-        "id": "routes/protected/Protected",
-        "parentId": "layouts/only-logged-users",
-        "file": "./routes/protected/Protected.tsx",
-        "path": "protected"
-      },
       "routes/users/Users": {
         "id": "routes/users/Users",
         "parentId": "root",
@@ -157,9 +146,20 @@
         "file": "./routes/login/Login.tsx",
         "path": "login"
       },
+      "routes/logout": {
+        "id": "routes/logout",
+        "parentId": "root",
+        "file": "./routes/logout.tsx",
+        "path": "logout"
+      },
+      "layouts/only-logged-users": {
+        "id": "layouts/only-logged-users",
+        "parentId": "root",
+        "file": "./layouts/only-logged-users.tsx"
+      },
       "routes/dashboard/dashboard": {
         "id": "routes/dashboard/dashboard",
-        "parentId": "root",
+        "parentId": "layouts/only-logged-users",
         "file": "./routes/dashboard/dashboard.tsx",
         "path": "dashboard"
       },
@@ -196,15 +196,6 @@
             "index": true
           },
           {
-            "file": "./layouts/only-logged-users.tsx",
-            "children": [
-              {
-                "file": "./routes/protected/Protected.tsx",
-                "path": "protected"
-              }
-            ]
-          },
-          {
             "file": "./routes/users/Users.tsx",
             "path": "users"
           },
@@ -217,18 +208,27 @@
             "path": "login"
           },
           {
-            "file": "./routes/dashboard/dashboard.tsx",
+            "file": "./routes/logout.tsx",
+            "path": "logout"
+          },
+          {
+            "file": "./layouts/only-logged-users.tsx",
             "children": [
               {
-                "file": "./routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
-                "index": true
-              },
-              {
-                "file": "./routes/dashboard/outlets/settings/settings.tsx",
-                "path": "settings"
+                "file": "./routes/dashboard/dashboard.tsx",
+                "children": [
+                  {
+                    "file": "./routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
+                    "index": true
+                  },
+                  {
+                    "file": "./routes/dashboard/outlets/settings/settings.tsx",
+                    "path": "settings"
+                  }
+                ],
+                "path": "dashboard"
               }
-            ],
-            "path": "dashboard"
+            ]
           }
         ]
       }
