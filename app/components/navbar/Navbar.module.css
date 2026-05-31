@@ -2,8 +2,20 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: var(--size-4);
+    padding: var(--size-4);
     border-bottom: 1px solid var(--color-line);
     color: var(--color-text);
     padding: var(--size-2);
+
+    .iconSection {
+        display: flex;
+        align-items: center;
+        gap: var(--size-2);
+
+        .title {
+            font-size: var(--font-size-3);
+            font-family: var(--font-special);
+        }
+    }
 }

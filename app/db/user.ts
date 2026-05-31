@@ -11,10 +11,6 @@ class User {
         this.prisma = prisma;
     }
 
-    async getAll(): Promise<UserType[]> {
-        return await this.prisma.user.findMany();
-    }
-
     async create(
         firstName: string,
         lastName: string,
@@ -52,6 +48,14 @@ class User {
             },
             omit: {
                 password: omitPassword,
+            },
+        });
+    }
+
+    async getAll(): Promise<Omit<UserType, "password">[]> {
+        return await this.prisma.user.findMany({
+            omit: {
+                password: true,
             },
         });
     }

@@ -10,7 +10,6 @@ import {
     useFetcher,
     type ActionFunctionArgs,
     data,
-    createSession,
 } from "react-router";
 import { MoonLoader } from "react-spinners";
 import bcrypt from "bcryptjs";
@@ -54,16 +53,18 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
 }
 
+type FormValues = {
+    firstName: string;
+    lastName: string;
+    username: string;
+    password: string;
+    confirm: string;
+};
+
 export async function action({ request }: ActionFunctionArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     const formData = await request.formData();
-    const values = Object.fromEntries(formData) as {
-        firstName: string;
-        lastName: string;
-        username: string;
-        password: string;
-        confirm: string;
-    };
+    const values = Object.fromEntries(formData) as FormValues;
     const { firstName, lastName, username, password } = values;
     const result = await validateUserRegister.safeParseAsync(values);
 
@@ -114,12 +115,17 @@ export default function Register() {
         }));
     }
 
+    const isSubmitting = fetcher.state === "submitting";
+
     // Validation errors
     const hasValidationErrors = fetcher.data?.success === false;
     const validationErrors = fetcher.data?.errors;
     const validationErrorsMessage = fetcher.data?.message;
     const showErrors =
-        hasValidationErrors && validationErrors && validationErrorsMessage;
+        hasValidationErrors &&
+        validationErrors &&
+        validationErrorsMessage &&
+        !isSubmitting;
 
     // Passwords
     const passwordsAreEmpty = inputs.password === "" && inputs.confirm === "";
@@ -134,7 +140,7 @@ export default function Register() {
                     errors={validationErrors}
                 />
             ) : null}
-            {fetcher.state === "submitting" ? (
+            {isSubmitting ? (
                 <div className="loader">
                     <h2>Submitting...</h2>
                     <MoonLoader

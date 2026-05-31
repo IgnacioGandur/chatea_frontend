@@ -8,10 +8,91 @@ datasource db {
 }
 
 model User {
-  id                Int    @id @default(autoincrement())
-  profilePictureUrl String
-  firstName         String
-  lastName          String
-  username          String @unique
-  password          String
+  id                 Int            @id @default(autoincrement())
+  lastActive         DateTime       @default(now())
+  username           String         @unique @db.VarChar(30)
+  password           String
+  firstName          String         @db.VarChar(30)
+  lastName           String         @db.VarChar(30)
+  profilePictureUrl  String
+  joinedOn           DateTime       @default(now())
+  messages           Message[]      @relation("UserMessages")
+  participants       Participant[]
+  friendsA           Friendship[]   @relation("UserAFriends")
+  friendsB           Friendship[]   @relation("UserBFriends")
+  ownedConversations Conversation[] @relation("ConversationOwner")
+}
+
+model Friendship {
+  id        Int              @id @default(autoincrement())
+  userAId   Int
+  userBId   Int
+  createdAt DateTime         @default(now())
+  status    FriendshipStatus @default(PENDING)
+  userA     User             @relation("UserAFriends", fields: [userAId], references: [id], onDelete: Cascade)
+  userB     User             @relation("UserBFriends", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+}
+
+model Conversation {
+  id             Int           @id @default(autoincrement())
+  title          String?
+  profilePicture String?
+  description    String?
+  isGroup        Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  ownerId        Int?
+  owner          User?         @relation("ConversationOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  messages       Message[]
+  lastMessageAt  DateTime?
+  participants   Participant[]
+}
+
+model Participant {
+  userId         Int
+  conversationId Int
+  lastDeletedAt  DateTime?
+  listVisible    Boolean      @default(true)
+  joinedAt       DateTime     @default(now())
+  role           GroupRole    @default(USER)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, conversationId])
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  senderId       Int
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deleted        Boolean      @default(false)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("UserMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  attachments    Attachment[]
+}
+
+model Attachment {
+  id         Int      @id @default(autoincrement())
+  messageId  Int
+  fileName   String
+  fileUrl    String
+  fileType   String
+  uploadedAt DateTime @default(now())
+  message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
+enum GroupRole {
+  OWNER
+  ADMIN
+  USER
 }

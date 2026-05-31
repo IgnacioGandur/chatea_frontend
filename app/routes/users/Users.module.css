@@ -1,2 +1,16 @@
 .users {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-2);
+
+    .usersContainer {
+        display: flex;
+        flex-direction: column;
+        gap: inherit;
+
+        .user {
+            border: 2px solid blue;
+            display: flex;
+        }
+    }
 }

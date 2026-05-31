@@ -1,14 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-    /* Colors */
-    --color-main: #00b4d8;
-    --color-main-light: #48cae4;
-    --color-main-dark: #0077b6;
+    --color-main: #007584;
+    --color-main-light: #00c2d1;
+    --color-main-dark: #00303e;
+    --color-main-transparent: #00758433;
 
-    --color-secondary: #9d4edd;
-    --color-secondary-light: #e0aaff;
-    --color-secondary-dark: #5a189a;
+    --color-secondary: #810ca8;
+    --color-secondary-light: #e5b8f4;
+    --color-secondary-dark: #2d033b;
+    --color-secondary-transparent: #810ca855;
+
+    --color-special: #06d6a0;
 
     --color-background: #e0e1dd;
     --color-text: #062726;
@@ -17,6 +20,7 @@
     --color-line: rgba(0, 0, 0, 0.2);
 
     --color-error: #800e13;
+    --color-error-bright: #da2c38;
     --color-error-dimmed: #38040e;
 
     /* Sizes */
@@ -40,28 +44,40 @@
     --radius-xl: 0.75rem;
     --radius-2xl: 1rem;
     --radius-3xl: 1.5rem;
-    --radius-full: 9999px;
+    --radius-full: 999px;
     --radius-total: 50%;
 
-    /* Fonts */
+    /* Font Families */
     --font-main: "Google Sans", sans-serif;
     --font-secondary: "Raleway", sans-serif;
     --font-special: "Dancing Script", cursive;
 
     /* Font Sizes */
     --font-size-mini: 0.68rem;
-    --font-size-1: 0.8rem;
+    --font-size-1: 0.72rem;
     --font-size-2: 1rem;
     --font-size-3: 1.25rem;
     --font-size-4: 1.5rem;
     --font-size-5: 1.8rem;
     --font-size-6: 2.25rem;
 
+    /* Icon Sizes */
+    --icon-size-1: 1rem;
+    --icon-size-2: 1.5rem;
+    --icon-size-3: 2rem;
+    --icon-size-4: 2.25rem;
+    --icon-size-5: 3rem;
+    --icon-size-6: 4rem;
+    --icon-size-7: 5rem;
+
     /* Shadows */
     --shadow-1: 0px 0px 3px rgba(0, 0, 0, 0.2);
     --shadow-2: 0px 0px 3px rgba(0, 0, 0, 0.4);
     --shadow-3: 0px 0px 3px rgba(0, 0, 0, 0.6);
     --shadow-4: 0px 0px 3px rgba(0, 0, 0, 0.8);
+
+    /* General Transitions */
+    --transition-1: all 300ms ease-in-out;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -70,6 +86,7 @@
         --color-text: #f6f7f8;
         --color-text-dimmed: #b4bcc7;
 
-        --color-line: #343a40;
+        /* --color-line: #343a40; */
+        --color-line: #343a4080;
     }
 }

@@ -1,0 +1,9 @@
+.sendMessageForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+
+    .inputsWrapper {
+        display: flex;
+    }
+}

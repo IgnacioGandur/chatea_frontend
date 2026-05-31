@@ -1,0 +1,19 @@
+.popoverContainer {
+    .anchor {
+        border: none;
+    }
+
+    .popover {
+        background-color: var(--color-background);
+        position-area: bottom span-left;
+        transition: all 250ms ease-in-out;
+    }
+
+    .popover:popover-open {
+        opacity: 1;
+
+        @starting-style {
+            opacity: 0;
+        }
+    }
+}

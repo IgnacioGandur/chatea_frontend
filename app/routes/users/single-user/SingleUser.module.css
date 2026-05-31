@@ -1,0 +1,20 @@
+.user {
+    display: flex;
+    gap: var(--size-2);
+    border: 2px solid red;
+
+    .data {
+        display: flex;
+        justify-content: space-between;
+
+        .name {
+            color: var(--color-text);
+        }
+
+        .username {
+            color: var(--color-text-dimmed);
+            font-style: italic;
+            font-size: var(--font-size-1);
+        }
+    }
+}

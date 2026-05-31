@@ -1,0 +1,93 @@
+.conversationPreview {
+    display: grid;
+    grid-template-areas:
+        "ppf title-and-date"
+        "ppf message";
+    gap: var(--size-2);
+    padding: var(--size-2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-line);
+
+    /* Dont' squish text */
+    .titleAndDate > .title,
+    .titleAndDate > .lastMessageAt,
+    .lastMessageContent > .content {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ppf {
+        grid-area: ppf;
+        border-radius: var(--radius-total);
+        aspect-ratio: 1/1;
+        width: 45px;
+        height: 45px;
+        border: 1px solid var(--color-line);
+    }
+
+    .titleAndDate {
+        grid-area: title-and-date;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .lastMessageAt {
+            color: var(--color-text-dimmed);
+            font-size: var(--font-size-1);
+            font-style: italic;
+        }
+    }
+
+    .lastMessageContent {
+        grid-area: message;
+        display: flex;
+        gap: var(--size-1);
+
+        .you {
+            font-style: italic;
+            color: var(--color-text-dimmed);
+        }
+
+        .content {
+            width: 235px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+.conversationPreview:hover,
+.conversationPreview:focus {
+    background-color: var(--color-main-transparent);
+}
+
+.conversationPreview.active {
+    background-color: var(--color-main-transparent);
+}
+
+.conversationPreview.pending {
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2),
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    background-size: 300%;
+    background-position: center right;
+    animation: backgroundGradient 1.2s linear infinite;
+}
+
+@keyframes backgroundGradient {
+    to {
+        background-position: center left;
+    }
+}

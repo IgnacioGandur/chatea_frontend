@@ -1,0 +1,26 @@
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+    height: max-content;
+    width: fit-content;
+
+    .content {
+        padding: var(--size-2) calc(var(--size-2) * 2);
+        border-radius: var(--radius-2xl);
+        background-color: var(--color-main-dark);
+    }
+
+    .date {
+        font-size: var(--font-size-1);
+        color: var(--color-text-dimmed);
+        font-style: italic;
+    }
+}
+
+.you {
+    align-self: flex-end;
+
+    .content {
+    }
+}

@@ -1,3 +1,6 @@
+// CSS
+import styles from "./root.module.css";
+
 // General styles and variables
 import "./css/app.css";
 import "./css/variables.css";
@@ -14,6 +17,7 @@ import {
     Scripts,
     ScrollRestoration,
 } from "react-router";
+import { Toaster } from "react-hot-toast";
 
 // Components
 import Navbar from "./components/navbar/Navbar";
@@ -53,6 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
             <body>
+                <Toaster position="top-center" />
                 <Navbar />
                 {children}
                 <Sidebar />
@@ -85,11 +90,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     }
 
     return (
-        <main className="pt-16 p-4 container mx-auto">
+        <main className={styles.errorBoundary}>
             <h1>{message}</h1>
             <p>{details}</p>
             {stack && (
-                <pre className="w-full p-4 overflow-x-auto">
+                <pre>
                     <code>{stack}</code>
                 </pre>
             )}

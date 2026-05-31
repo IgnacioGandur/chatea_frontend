@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./Sidebar.module.css";
 import { AnimatePresence, motion } from "motion/react";
-import { NavLink } from "react-router";
+import { NavLink, useRouteLoaderData } from "react-router";
 import type { MaterialSymbols } from "material-design-icons-literal-types";
 
 interface Link {
@@ -10,12 +10,7 @@ interface Link {
     to: string;
 }
 
-const links: Link[] = [
-    {
-        text: "Users",
-        icon: "groups",
-        to: "users",
-    },
+const unloggedLinks: Link[] = [
     {
         text: "Home",
         icon: "home",
@@ -33,7 +28,24 @@ const links: Link[] = [
     },
 ];
 
+const loggedLinks: Link[] = [
+    {
+        text: "Conversations",
+        icon: "conversation",
+        to: "conversations",
+    },
+    {
+        text: "Users",
+        icon: "groups",
+        to: "users",
+    },
+];
+
 export default function Sidebar() {
+    const rootData = useRouteLoaderData("root");
+    const [links, setLinks] = useState<Link[]>(
+        rootData ? loggedLinks : unloggedLinks,
+    );
     const [isOpen, setIsOpen] = useState(false);
     const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -41,6 +53,7 @@ export default function Sidebar() {
         setIsOpen((prevState) => !prevState);
     }
 
+    // Handle closing of sidebar.
     useEffect(() => {
         function handleClick(e: PointerEvent) {
             if (sidebarRef && sidebarRef.current && isOpen) {
@@ -61,6 +74,10 @@ export default function Sidebar() {
 
         return () => document.removeEventListener("click", handleClick);
     }, [isOpen]);
+
+    useEffect(() => {
+        setLinks(rootData ? loggedLinks : unloggedLinks);
+    }, [rootData]);
 
     return (
         <AnimatePresence>

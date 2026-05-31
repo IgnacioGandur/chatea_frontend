@@ -1,24 +1,27 @@
 .user {
-    display: flex;
-    gap: var(--size-2);
+    display: grid;
+    grid-template-areas:
+        "name ppf"
+        "username ppf";
+    gap: 0 var(--size-2);
 
-    .names {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
+    .name {
+        grid-area: name;
+        text-transform: capitalize;
+        align-self: flex-end;
+    }
 
-        .name {
-            text-transform: capitalize;
-        }
-
-        .username {
-            font-size: var(--font-size-1);
-            color: var(--color-text-dimmed);
-            font-style: italic;
-        }
+    .username {
+        grid-area: username;
+        font-size: var(--font-size-1);
+        color: var(--color-text-dimmed);
+        font-style: italic;
+        justify-self: end;
+        align-self: flex-start;
     }
 
     .ppf {
+        grid-area: ppf;
         width: 35px;
         height: 35px;
         aspect-ratio: 1/1;
@@ -27,26 +30,59 @@
     }
 }
 
-.menuOpen {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-1);
-    position: relative;
+.altPopover {
+    top: var(--size-2);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
 
-    .absoluteContainer {
-        width: 100%;
-        position: absolute;
-        left: 0;
-        bottom: -130%;
+    .links {
+        display: flex;
+        flex-direction: column;
 
-        .links {
+        .link {
+            width: 100%;
+            flex: 1;
+            font-size: var(--font-size-2);
+            text-decoration: none;
+            padding: var(--size-2) calc(var(--size-2) * 2);
+            text-align: end;
             display: flex;
-            flex-direction: column;
-            gap: var(--size-1);
-            align-items: flex-end;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--size-4);
+            transition: var(--transition-1);
+
+            .icon {
+                font-size: 1.25rem;
+                color: var(--color-text-dimmed);
+                font-variation-settings: "FILL" 1;
+            }
+
+            .text {
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+        }
+
+        .separator {
+            width: 100%;
+            background-color: var(--color-line);
+            height: 1px;
+        }
+
+        .link.logout {
+            color: var(--color-error-bright);
+            border: none;
+
+            .icon {
+                color: var(--color-error-bright);
+                rotate: -90deg;
+            }
+        }
+
+        .link:hover,
+        .link:focus {
+            background-color: var(--color-main-transparent);
         }
     }
-}
-
-.menuClosed {
 }

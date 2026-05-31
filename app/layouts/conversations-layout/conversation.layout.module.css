@@ -1,0 +1,5 @@
+.conversations {
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+}

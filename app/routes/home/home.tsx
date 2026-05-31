@@ -1,6 +1,7 @@
 import styles from "./home.module.css";
 import type { Route } from "./+types/home";
-import { getSession } from "~/session.server";
+import React from "react";
+import { Await } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -9,15 +10,17 @@ export function meta({}: Route.MetaArgs) {
     ];
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-    const session = await getSession(request.headers.get("Cookie"));
+export function loader({}: Route.LoaderArgs) {
+    const promise = new Promise((res) =>
+        setTimeout(() => res("Data from the promise"), 5000),
+    );
 
-    const userId = session.get("userId");
-
-    console.log("User id: ", userId);
+    return { promise };
 }
 
-export default function Home() {
+export default function Home({ loaderData }: Route.ComponentProps) {
+    const loader = <div className={styles.loader}>Loading data...</div>;
+
     return (
         <main className={styles.home}>
             <h1 className={styles.title}>Chateá!</h1>
@@ -27,6 +30,13 @@ export default function Home() {
                 impedit, architecto amet obcaecati sapiente et, ipsam modi
                 voluptates. Sint aliquid voluptas temporibus.
             </p>
+            <React.Suspense fallback={loader}>
+                <Await resolve={loaderData.promise}>
+                    {(value) => (
+                        <h1>This is the content of the promise: {value}</h1>
+                    )}
+                </Await>
+            </React.Suspense>
         </main>
     );
 }

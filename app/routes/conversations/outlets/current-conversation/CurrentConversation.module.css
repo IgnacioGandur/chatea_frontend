@@ -1,0 +1,150 @@
+.currentConversation {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .header {
+        display: flex;
+        border-bottom: 1px solid var(--color-line);
+        padding: var(--size-2);
+        gap: var(--size-2);
+
+        .userInfo {
+            display: flex;
+            gap: inherit;
+            text-decoration: none;
+
+            .ppf {
+                border-radius: var(--radius-total);
+                width: 45px;
+                height: 45px;
+                aspect-ratio: 1/1;
+                border: 1px solid var(--color-line);
+            }
+
+            .names {
+                display: flex;
+                flex-direction: column;
+
+                .title {
+                    font-size: var(--font-size-3);
+                }
+
+                .username {
+                    color: var(--color-text-dimmed);
+                    font-style: italic;
+                    font-size: var(--font-size-1);
+                }
+            }
+        }
+    }
+
+    .messages,
+    .noMessages {
+        flex: 1;
+    }
+
+    .messages {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: var(--size-2);
+        padding: var(--size-2);
+    }
+
+    .messageLoader,
+    .sendMessageForm {
+        border-top: 1px solid var(--color-line);
+    }
+
+    .messageLoader {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: var(--size-2);
+        align-items: center;
+        justify-content: center;
+        padding: calc(var(--size-2) * 3);
+
+        .message {
+            font-size: var(--font-size-1);
+            color: var(--color-text-dimmed);
+            font-style: italic;
+        }
+    }
+
+    .sendMessageForm {
+        display: flex;
+        gap: var(--size-2);
+        padding: calc(var(--size-2) * 2);
+
+        .input {
+            flex: 1;
+            background-color: transparent;
+            padding: var(--size-2) calc(var(--size-2) * 2);
+            border: 1px solid var(--color-line);
+            border-radius: var(--radius-full);
+            color: var(--color-text);
+            outline: none;
+            transition: var(--transition-1);
+        }
+
+        .input:hover,
+        .input:focus {
+            border: 1px solid var(--color-main-dark);
+            background-color: var(--color-main-transparent);
+        }
+
+        .sendMessageButton {
+            display: grid;
+            place-items: center;
+            border-radius: var(--radius-total);
+            border: 1px solid var(--color-line);
+            padding: var(--size-2);
+            align-self: flex-end;
+            aspect-ratio: 1/1;
+            transition: var(--transition-1);
+
+            .icon {
+                font-size: var(--icon-size-2);
+            }
+        }
+
+        .sendMessageButton:hover,
+        .sendMessageButton:focus {
+            background-color: var(--color-main-dark);
+            border: 1px solid var(--color-main);
+        }
+    }
+}
+
+.errorBoundary {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--size-3);
+
+    .header {
+        .title {
+            font-size: var(--font-size-6);
+        }
+    }
+
+    > * {
+        display: inherit;
+        flex-direction: inherit;
+        align-items: inherit;
+        gap: inherit;
+    }
+
+    .details {
+        .code {
+            font-size: calc(var(--font-size-6) * 3);
+            color: var(--color-error);
+            font-weight: 100;
+        }
+
+        .description {
+            color: var(--color-text-dimmed);
+        }
+    }
+}

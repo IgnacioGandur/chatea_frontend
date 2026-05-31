@@ -1,27 +1,129 @@
-import { PrismaClient, Prisma } from "../generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import prisma from "~/db/prisma";
+import bcrypt from "bcryptjs";
 
-const adapter = new PrismaPg({
-    connectionString: process.env["DATABASE_URL"],
-});
+const password = await bcrypt.hash("bla", 10);
+const ppfBase = "https://ui-avatars.com/api/?background=random&name=";
 
-const prisma = new PrismaClient({ adapter });
+async function main() {
+    // Users
+    const johnDoe = await prisma.user.create({
+        data: {
+            username: "john",
+            firstName: "John",
+            lastName: "Doe",
+            password,
+            profilePictureUrl: `${ppfBase}john+doe`,
+        },
+    });
 
-const userData: Prisma.UserCreateInput[] = [
-    {
-        username: "john_doe",
-        password: "123",
-    },
-    {
-        username: "jane_doe",
-        password: "123",
-    },
-];
+    const janeDoe = await prisma.user.create({
+        data: {
+            username: "jane",
+            firstName: "Jane",
+            lastName: "Doe",
+            password,
+            profilePictureUrl: `${ppfBase}jane+doe`,
+        },
+    });
 
-export async function main() {
-    for (const u of userData) {
-        await prisma.user.create({ data: u });
-    }
+    const jillDoe = await prisma.user.create({
+        data: {
+            username: "jill",
+            firstName: "Jill",
+            lastName: "Doe",
+            password,
+            profilePictureUrl: `${ppfBase}jill+doe`,
+        },
+    });
+
+    const ignacio = await prisma.user.create({
+        data: {
+            username: "ignacio",
+            firstName: "Ignacio",
+            lastName: "Doe",
+            password,
+            profilePictureUrl: `${ppfBase}ignacio+doe`,
+        },
+    });
+
+    // Conversations
+    const conversation1 = await prisma.conversation.create({
+        data: {
+            isGroup: false,
+            ownerId: johnDoe.id,
+            messages: {
+                createMany: {
+                    data: [
+                        {
+                            content: "Hello from John Doe to Jane Doe!",
+                            senderId: johnDoe.id,
+                        },
+                        {
+                            content: "Hello from Jane Doe to John Doe!",
+                            senderId: janeDoe.id,
+                        },
+                    ],
+                },
+            },
+            participants: {
+                createMany: {
+                    data: [
+                        {
+                            userId: johnDoe.id,
+                            joinedAt: new Date(),
+                        },
+                        {
+                            userId: janeDoe.id,
+                            joinedAt: new Date(),
+                        },
+                    ],
+                },
+            },
+        },
+    });
+
+    const conversation2 = await prisma.conversation.create({
+        data: {
+            isGroup: false,
+            ownerId: jillDoe.id,
+            messages: {
+                createMany: {
+                    data: [
+                        {
+                            content: "Hello from Ignacio Gandur to Jane Doe!",
+                            senderId: ignacio.id,
+                        },
+                        {
+                            content: "Hello from Jill Doe to Ignacio Gandur!",
+                            senderId: jillDoe.id,
+                        },
+                    ],
+                },
+            },
+            participants: {
+                createMany: {
+                    data: [
+                        {
+                            userId: jillDoe.id,
+                            joinedAt: new Date(),
+                        },
+                        {
+                            userId: ignacio.id,
+                            joinedAt: new Date(),
+                        },
+                    ],
+                },
+            },
+        },
+    });
 }
 
-main();
+main()
+    .then(async () => {
+        await prisma.$disconnect();
+    })
+    .catch(async (e) => {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+    });

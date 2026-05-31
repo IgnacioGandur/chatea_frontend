@@ -1,0 +1,12 @@
+.logo {
+    max-width: 265px;
+    height: auto;
+
+    .exteriorRing {
+        color: var(--color-line);
+    }
+
+    .background {
+        color: var(--color-background);
+    }
+}
