@@ -3,6 +3,7 @@ import styles from "./Sidebar.module.css";
 import { AnimatePresence, motion } from "motion/react";
 import { NavLink, useRouteLoaderData } from "react-router";
 import type { MaterialSymbols } from "material-design-icons-literal-types";
+import LogoSmall from "../logo-small/LogoSmall";
 
 interface Link {
     text: string;
@@ -38,6 +39,11 @@ const loggedLinks: Link[] = [
         text: "Users",
         icon: "groups",
         to: "users",
+    },
+    {
+        text: "Friends",
+        icon: "handshake",
+        to: "friendships",
     },
 ];
 
@@ -83,6 +89,7 @@ export default function Sidebar() {
         <AnimatePresence>
             {isOpen ? (
                 <motion.aside
+                    className={styles.sidebar}
                     key="sidebar"
                     ref={sidebarRef}
                     initial={{
@@ -94,9 +101,22 @@ export default function Sidebar() {
                     exit={{
                         left: "-100%",
                     }}
-                    className={styles.sidebar}
                 >
-                    <p>sidebar</p>
+                    <div className={styles.logoSection}>
+                        <LogoSmall />
+                        <h2 className={styles.title}>Chateá!</h2>
+                        <button
+                            onClick={toggleSidebar}
+                            title="Close sidebar."
+                            className={styles.closeSidebarButton}
+                        >
+                            <span
+                                className={`material-symbols-rounded ${styles.icon}`}
+                            >
+                                arrow_menu_close
+                            </span>
+                        </button>
+                    </div>
                     <div className={styles.links}>
                         {links.map((link) => {
                             return (
@@ -111,12 +131,29 @@ export default function Sidebar() {
                                     }
                                     to={link.to}
                                 >
-                                    {link.text}
+                                    <span
+                                        className={`material-symbols-rounded ${styles.icon}`}
+                                    >
+                                        {link.icon}
+                                    </span>
+                                    <div className={styles.separator}></div>
+                                    <span className={styles.text}>
+                                        {link.text}
+                                    </span>
                                 </NavLink>
                             );
                         })}
                     </div>
-                    <button onClick={toggleSidebar}>Close</button>
+                    <p className={styles.author}>
+                        <span className={styles.message}>
+                            Made by Ignacio Gandur
+                        </span>
+                        <span
+                            className={`${styles.icon} material-symbols-rounded`}
+                        >
+                            wand_stars
+                        </span>
+                    </p>
                 </motion.aside>
             ) : (
                 <motion.button

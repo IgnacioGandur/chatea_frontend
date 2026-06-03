@@ -1,21 +1,28 @@
-import Popover from "~/components/popover/Popover";
+// Types
 import type { User } from "../../../../generated/prisma/client";
+
+// CSS
 import styles from "./SingleUser.module.css";
+
+// Packages
 import { NavLink, useRouteLoaderData } from "react-router";
-import SendMessageForm from "./send-message-form/SendMessageForm";
+import type React from "react";
 
 interface SingleUserProps {
     isYou: boolean;
     user: Omit<User, "password">;
+    children?: React.ReactNode;
 }
 
-export default function SingleUser({ user, isYou }: SingleUserProps) {
+export default function SingleUser({ user, isYou, children }: SingleUserProps) {
     const rootData = useRouteLoaderData("root") as User;
+    const name = `${user.firstName} ${user.lastName}`;
 
     const linkToProfile = (
         <NavLink
+            title={`Go to ${name}'s profile.`}
             to={`/users/${user.username}`}
-            className={styles.data}
+            className={styles.linkToProfile}
         >
             {({ isPending }) => {
                 return isPending ? (
@@ -25,11 +32,9 @@ export default function SingleUser({ user, isYou }: SingleUserProps) {
                         <img
                             className={styles.ppf}
                             src={user.profilePictureUrl}
-                            alt={`${user.firstName} ${user.lastName}`}
+                            alt={name}
                         />
-                        <h2 className={styles.name}>
-                            {user.firstName} {user.lastName}
-                        </h2>
+                        <h2 className={styles.name}>{name}</h2>
                         <p className={styles.username}>@{user.username}</p>
                     </>
                 );
@@ -37,33 +42,16 @@ export default function SingleUser({ user, isYou }: SingleUserProps) {
         </NavLink>
     );
 
-    const sendMessagePopover = isYou ? (
-        <p className={styles.you}>You</p>
-    ) : (
-        <Popover
-            popoverTarget={`user-${user.id}`}
-            anchorName={`--user-${user.id}`}
-            buttonContent={"send message"}
-        >
-            {
-                <SendMessageForm
-                    formAction="/send-message"
-                    userBId={user.id}
-                />
-            }
-        </Popover>
-    );
-
     return (
-        <article className={styles.user}>
+        <div className={styles.user}>
+            {linkToProfile}{" "}
             {rootData ? (
-                <>
-                    {linkToProfile}
-                    {sendMessagePopover}
-                </>
-            ) : (
-                <>{linkToProfile}</>
-            )}
-        </article>
+                isYou ? (
+                    <p className={styles.you}>(You)</p>
+                ) : (
+                    <>{children}</>
+                )
+            ) : null}
+        </div>
     );
 }

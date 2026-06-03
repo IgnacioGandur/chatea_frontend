@@ -10,9 +10,9 @@ export default function CustomLoader({
 }: CustomLoaderProps) {
     return (
         <section className={styles.customLoader}>
-            <h3>{message}</h3>
+            <h3 className={styles.title}>{message}</h3>
             <MoonLoader
-                size="36px"
+                size="32px"
                 color="var(--color-main)"
             />
         </section>

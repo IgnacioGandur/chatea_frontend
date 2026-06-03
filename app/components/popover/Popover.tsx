@@ -2,11 +2,15 @@ import type React from "react";
 import styles from "./Popover.module.css";
 
 interface PopoverProps {
-    children: React.ReactNode;
     anchorName: string;
-    buttonContent: React.ReactNode | string;
     popoverTarget: string;
+    buttonContent: React.ReactNode | string;
     altPopoverClass?: string;
+    anchorButtonClass?: string;
+    popoverContainerClass?: string;
+    anchorButtonTitle?: string;
+    anchorButtonAriaLabel: string;
+    children: React.ReactNode;
 }
 
 export default function Popover({
@@ -14,13 +18,19 @@ export default function Popover({
     popoverTarget,
     buttonContent,
     altPopoverClass,
+    anchorButtonClass,
+    popoverContainerClass,
+    anchorButtonTitle,
+    anchorButtonAriaLabel,
     children,
 }: PopoverProps) {
     return (
-        <div className={styles.popoverContainer}>
+        <div className={`${styles.popoverContainer} ${popoverContainerClass}`}>
             <button
+                aria-label={anchorButtonAriaLabel}
+                title={anchorButtonTitle}
                 popoverTarget={popoverTarget}
-                className={styles.anchor}
+                className={`${styles.anchor} ${anchorButtonClass}`}
                 style={{
                     anchorName,
                 }}

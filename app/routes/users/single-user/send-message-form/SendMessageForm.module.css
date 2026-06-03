@@ -3,7 +3,47 @@
     flex-direction: column;
     gap: var(--size-1);
 
+    .validationErrors {
+        background-color: var(--color-error-dimmed);
+        padding: var(--size-2);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--color-error);
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-2);
+
+        .title {
+            font-size: var(--font-size-2);
+        }
+
+        .errors {
+            list-style-type: none;
+        }
+    }
+
     .inputsWrapper {
         display: flex;
+        flex-direction: column;
+        gap: var(--size-2);
+
+        .sendButton {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--size-2);
+            padding: var(--size-1) calc(var(--size-2) * 2);
+            border-radius: var(--radius-full);
+            border: 2px solid var(--color-line);
+            font-weight: 700;
+            font-family: var(--font-secondary);
+            font-size: var(--font-size-1);
+            transition: var(--transition-1);
+        }
+
+        .sendButton:hover,
+        .sendButton:focus {
+            border: 2px solid var(--color-main);
+            background-color: var(--color-main-transparent);
+        }
     }
 }

@@ -39,6 +39,9 @@ export default [
                 ),
             ]),
         ]),
+
+        // Friendships
+        route("friendships", "./routes/friendships/Friendships.tsx"),
     ]),
 
     // Actions

@@ -2,15 +2,110 @@
     display: flex;
     flex-direction: column;
     gap: var(--size-2);
+    padding: 0;
+
+    .header {
+        border-bottom: 1px solid var(--color-line);
+        padding: var(--size-2);
+
+        .text {
+            display: flex;
+            align-items: center;
+            gap: var(--size-2);
+
+            .icon {
+                font-size: var(--icon-size-5);
+                background-image: var(--gradient-main-colors);
+                background-clip: text;
+                color: transparent;
+            }
+        }
+    }
 
     .usersContainer {
         display: flex;
         flex-direction: column;
-        gap: inherit;
 
-        .user {
-            border: 2px solid blue;
+        .buttonsSection {
             display: flex;
+            align-items: center;
+            gap: var(--size-2);
+
+            .sendMessagePopover {
+                padding: var(--size-3);
+                border: 1px solid var(--color-line);
+                box-shadow: var(--shadow-1);
+                border-radius: var(--radius-2xl);
+                position-area: left center;
+                right: 0.5rem;
+            }
+
+            .button {
+                display: grid;
+                place-items: center;
+                border: 1px solid var(--color-line);
+                padding: var(--size-1);
+                border-radius: var(--radius-total);
+                transition: var(--transition-1);
+
+                .icon {
+                    font-size: 1.75rem;
+                }
+            }
+
+            .button.loader {
+                animation: rotateIcon 660ms linear infinite;
+            }
+
+            .button:hover,
+            .button:focus {
+                background-color: var(--color-main-transparent);
+                border: 1px solid var(--color-main);
+            }
+
+            .friendshipPopover {
+                position-area: left center;
+                padding: var(--size-3);
+                border-radius: var(--radius-xl);
+                border: 1px solid var(--color-line);
+                box-shadow: var(--shadow-1);
+                right: var(--size-2);
+
+                .friendshipForm {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--size-4);
+
+                    .formTitle {
+                        font-size: var(--font-size-2);
+                        font-family: var(--font-secondary);
+                        font-weight: 600;
+                    }
+
+                    .pillButton {
+                        justify-content: center;
+                        padding: var(--size-2);
+                    }
+
+                    .rejectButton:hover,
+                    .rejectButton:focus {
+                        background-color: var(--color-error-dimmed);
+                        border: 2px solid var(--color-error);
+                    }
+                }
+            }
+
+            .responseButtonsContainer {
+                display: flex;
+                align-items: center;
+                gap: var(--size-2);
+            }
         }
+    }
+}
+
+@keyframes rotateIcon {
+    to {
+        transform: rotate(360deg);
     }
 }

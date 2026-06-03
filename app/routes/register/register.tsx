@@ -18,10 +18,12 @@ import bcrypt from "bcryptjs";
 import validateUserRegister from "~/validators/validateUserRegister";
 import ValidationErrors from "~/components/validation-errors/ValidationErrors";
 import CustomInput from "~/components/custom-input/CustomInput";
-import userModel from "~/db/user";
 import { useState, type ChangeEvent } from "react";
 import type { $ZodIssue } from "zod/v4/core";
 import { getSession, commitSession } from "~/session.server";
+
+// Db
+import userModel from "~/db/user.model";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -66,14 +68,15 @@ export async function action({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
     const values = Object.fromEntries(formData) as FormValues;
     const { firstName, lastName, username, password } = values;
-    const result = await validateUserRegister.safeParseAsync(values);
 
-    if (!result.success) {
+    const validation = await validateUserRegister.safeParseAsync(values);
+
+    if (!validation.success) {
         return {
             success: false,
             message:
                 "There's something wrong with the inputs you provided, please correct them:",
-            errors: result.error.issues,
+            errors: validation.error.issues,
         };
     }
 

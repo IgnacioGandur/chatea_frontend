@@ -1,9 +1,9 @@
-import styles from "./Icon.module.css";
+import styles from "./LogoSmall.module.css";
 
-export default function Icon() {
+export default function LogoSmall() {
     return (
         <svg
-            className={styles.icon}
+            className={styles.logoSmall}
             width="348"
             height="282"
             viewBox="0 0 348 282"

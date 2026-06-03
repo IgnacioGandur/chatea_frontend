@@ -1,5 +1,5 @@
 import * as z from "zod";
-import userModel from "~/db/user";
+import userModel from "~/db/user.model";
 import bcrypt from "bcryptjs";
 
 const minLengthMessage = "Username field can't be empty.";

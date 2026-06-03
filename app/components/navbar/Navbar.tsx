@@ -2,7 +2,7 @@ import styles from "./Navbar.module.css";
 import { useRouteLoaderData } from "react-router";
 import type { User } from "../../../generated/prisma/client";
 import LoggedUser from "./logged-user/LoggedUser";
-import Icon from "./icon/Icon";
+import LogoSmall from "~/components/logo-small/LogoSmall";
 
 export default function Navbar() {
     const data = useRouteLoaderData("root") as User;
@@ -10,7 +10,7 @@ export default function Navbar() {
     return (
         <nav className={styles.navbar}>
             <div className={styles.iconSection}>
-                <Icon />
+                <LogoSmall />
                 <h2 className={styles.title}>Chateá!</h2>
             </div>
             {data ? (

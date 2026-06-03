@@ -13,9 +13,11 @@ import {
     isRouteErrorResponse,
     Links,
     Meta,
+    NavLink,
     Outlet,
     Scripts,
     ScrollRestoration,
+    useNavigate,
 } from "react-router";
 import { Toaster } from "react-hot-toast";
 
@@ -28,10 +30,14 @@ import Sidebar from "./components/sidebar/Sidebar";
 import { getSession } from "./session.server";
 
 // Db
-import userModel from "./db/user";
+import userModel from "~/db/user.model";
 
 // Types
 import type { Route } from "./+types/root";
+
+// Assets
+import notFoundImage from "/images/404.svg";
+import generic400Error from "/images/400.svg";
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
@@ -74,16 +80,23 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-    let message = "Oops!";
+    const navigate = useNavigate();
+
+    let title: string | number = "Oops!";
+    let statusMessage: string | undefined;
     let details = "An unexpected error occurred.";
     let stack: string | undefined;
+    let image: string | undefined;
 
     if (isRouteErrorResponse(error)) {
-        message = error.status === 404 ? "404" : "Error";
+        title = error.status || "Error";
+        // title = error.status === 404 ? "404" : "Error";
+        statusMessage = error.status === 404 ? "Not Found." : "Server Error.";
         details =
             error.status === 404
-                ? "The requested page could not be found."
+                ? "The page you are looking for doesn't exist..."
                 : error.statusText || details;
+        image = error.status === 404 ? notFoundImage : generic400Error;
     } else if (import.meta.env.DEV && error && error instanceof Error) {
         details = error.message;
         stack = error.stack;
@@ -91,13 +104,39 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
     return (
         <main className={styles.errorBoundary}>
-            <h1>{message}</h1>
-            <p>{details}</p>
-            {stack && (
-                <pre>
-                    <code>{stack}</code>
-                </pre>
-            )}
+            <section className={styles.info}>
+                <h1 className={styles.title}>{title}</h1>
+                <p className={styles.statusMessage}>{statusMessage}</p>
+                <p className={styles.details}>{details}</p>
+                {stack && (
+                    <pre>
+                        <code>{stack}</code>
+                    </pre>
+                )}
+                <div className={styles.links}>
+                    <NavLink
+                        title="Go to home."
+                        className={styles.link}
+                        to="/"
+                    >
+                        Go home
+                    </NavLink>
+                    <button
+                        title="Go to previous page."
+                        className={styles.link}
+                        onClick={() => navigate(-1)}
+                    >
+                        Go back
+                    </button>
+                </div>
+            </section>
+            <section className={styles.graphics}>
+                <img
+                    src={image}
+                    alt="Not found"
+                    className={styles.image}
+                />
+            </section>
         </main>
     );
 }

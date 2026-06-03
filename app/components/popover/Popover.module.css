@@ -1,6 +1,8 @@
 .popoverContainer {
     .anchor {
         border: none;
+        display: grid;
+        place-items: center;
     }
 
     .popover {

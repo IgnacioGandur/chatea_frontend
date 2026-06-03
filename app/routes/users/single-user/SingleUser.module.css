@@ -1,20 +1,54 @@
 .user {
     display: flex;
     gap: var(--size-2);
-    border: 2px solid red;
+    border-bottom: 1px solid var(--color-line);
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--size-2);
 
-    .data {
-        display: flex;
-        justify-content: space-between;
+    .linkToProfile {
+        display: grid;
+        grid-template-areas:
+            "ppf name"
+            "ppf username";
+        gap: 0 var(--size-2);
+        text-decoration: none;
+
+        .ppf {
+            grid-area: ppf;
+            width: 45px;
+            height: 45px;
+            border-radius: var(--radius-total);
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            object-position: center;
+        }
 
         .name {
+            grid-area: name;
             color: var(--color-text);
+            font-size: var(--font-size-2);
+            align-self: end;
         }
 
         .username {
             color: var(--color-text-dimmed);
             font-style: italic;
             font-size: var(--font-size-1);
+            align-self: start;
         }
     }
+
+    .you {
+        font-size: var(--font-size-1);
+        color: var(--color-text-dimmed);
+        font-style: italic;
+    }
+}
+
+.user:has(.linkToProfile:hover),
+.user:has(.linkToProfile:focus),
+.user:has(.buttonsSection:hover),
+.user:has(.buttonsSection:focus) {
+    background-color: var(--color-main-transparent);
 }

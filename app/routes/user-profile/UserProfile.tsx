@@ -1,6 +1,6 @@
 import styles from "./UserProfile.module.css";
 import type { Route } from "./+types/UserProfile";
-import userModel from "~/db/user";
+import userModel from "~/db/user.model";
 import { data } from "react-router";
 import { CustomErrorBoundary } from "~/components/custom-error-boundary/CustomErrorBoundary";
 

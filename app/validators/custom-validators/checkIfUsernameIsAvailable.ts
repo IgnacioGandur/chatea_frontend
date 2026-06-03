@@ -1,4 +1,4 @@
-import userModel from "../../db/user";
+import userModel from "~/db/user.model";
 
 export default async function checkIfUsernameIsAvailable(
     username: string,

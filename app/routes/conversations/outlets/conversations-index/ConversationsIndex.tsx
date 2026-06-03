@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 import styles from "./ConversationsIndex.module.css";
-import Logo from "./logo/Logo";
+import Logo from "~/components/logo/Logo";
 
 export default function ConversationsIndex() {
     return (

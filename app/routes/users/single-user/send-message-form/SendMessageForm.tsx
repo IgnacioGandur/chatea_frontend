@@ -4,6 +4,7 @@ import { useState } from "react";
 import CustomInput from "~/components/custom-input/CustomInput";
 import CustomLoader from "~/components/custom-loader/CustomLoader";
 import type { $ZodIssue } from "zod/v4/core";
+import PillButton from "~/components/pill-button/PillButton";
 
 interface SendMessageFormProps {
     formAction?: string;
@@ -49,31 +50,9 @@ export default function SendMessageForm({
             method="post"
             className={styles.sendMessageForm}
         >
-            <div className={styles.inputsWrapper}>
-                <input
-                    type="hidden"
-                    name="userBId"
-                    value={userBId}
-                />
-                <CustomInput
-                    type="text"
-                    labelText={`Send a message!`}
-                    id="message"
-                    icon="message"
-                    placeholder={`Hi! Nice to meet you!`}
-                    clarification="Be nice."
-                    required={false}
-                    name="message"
-                    value={message.message}
-                    onChange={handleMessage}
-                />
-                <button className={styles.sendButton}>
-                    <span className="material-symbols-rounded">send</span>
-                </button>
-            </div>
             {showValidationErrors ? (
-                <div className="validationErrors">
-                    <h4 className="title">{validationErrorsMessage}</h4>
+                <section className={styles.validationErrors}>
+                    <h3 className={styles.title}>{validationErrorsMessage}</h3>
                     <ul className={styles.errors}>
                         {validationErrors.map((error, index) => {
                             return (
@@ -86,8 +65,36 @@ export default function SendMessageForm({
                             );
                         })}
                     </ul>
-                </div>
+                </section>
             ) : null}
+            <div className={styles.inputsWrapper}>
+                <input
+                    type="hidden"
+                    name="userBId"
+                    value={userBId}
+                />
+                <CustomInput
+                    type="text"
+                    labelText={`Send a message!`}
+                    id="message"
+                    icon="comic_bubble"
+                    placeholder={`Hi! Nice to meet you!`}
+                    clarification="Be nice."
+                    required={true}
+                    name="message"
+                    value={message.message}
+                    onChange={handleMessage}
+                />
+                <PillButton
+                    buttonAriaLabel="Send the message."
+                    buttonTitle="Send a message to this user."
+                    includeEmptySpace={true}
+                    includeIcon={true}
+                    icon="upload"
+                    type="submit"
+                    buttonText="Send"
+                />
+            </div>
         </fetcher.Form>
     );
 }

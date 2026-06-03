@@ -1,21 +1,79 @@
 .customInput {
     display: flex;
     flex-direction: column;
-    gap: var(--size-1);
-    border: 1px solid var(--color-line);
+    gap: var(--size-2);
+    padding: var(--size-1);
 
     .label::first-letter {
         text-transform: capitalize;
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+        font-weight: 600;
     }
 
     .wrapper {
         display: flex;
-        gap: var(--size-1);
-        padding: calc(var(--size-2) / 2);
+        gap: var(--size-2);
         align-items: center;
+        border: 2px solid var(--color-line);
+        border-radius: var(--radius-full);
+        padding: var(--size-1);
+        padding-left: calc(var(--size-1) * 2);
+        transition: var(--transition-1);
+
+        .icon {
+            font-size: var(--icon-size-2);
+        }
+
+        .separator {
+            width: 6px;
+            height: 6px;
+            background-image: var(--gradient-main-colors);
+            border-radius: var(--radius-total);
+        }
+
+        .input {
+            flex: 1;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: var(--color-text);
+            padding: var(--size-2);
+        }
+
+        .togglePasswordVisibility {
+            border: 2px solid red;
+            display: grid;
+            place-items: center;
+            border: 1px solid transparent;
+            border-radius: var(--radius-total);
+            padding: var(--size-1);
+        }
+
+        .togglePasswordVisibility:hover,
+        .togglePasswordVisibility:focus {
+            background-color: var(--color-main-transparent);
+            border: 1px solid var(--color-main);
+        }
+    }
+
+    .wrapper:has(.input:focus, input:hover) {
+        background-color: var(--color-main-transparent);
+        border: 2px solid var(--color-main);
+    }
+
+    .wrapper:has(.input:user-invalid) {
+        background-color: var(--color-error-dimmed);
+        border: 2px solid var(--color-error);
+    }
+
+    .wrapper:has(.input:user-valid) {
+        background-color: var(--color-success-transparent);
+        border: 2px solid var(--color-success);
     }
 
     .clarification {
         font-size: var(--font-size-mini);
+        color: var(--color-text-dimmed);
     }
 }

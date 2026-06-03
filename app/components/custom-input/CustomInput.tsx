@@ -42,9 +42,11 @@ export default function CustomInput({
                 {labelText}
             </label>
             <div className={styles.wrapper}>
-                <span className="material-symbols-rounded">{icon}</span>
+                <span className={`material-symbols-rounded ${styles.icon}`}>
+                    {icon}
+                </span>
+                <div className={styles.separator}></div>
                 <input
-                    required={required}
                     className={styles.input}
                     type={
                         type === "password" && !showPassword
@@ -56,15 +58,18 @@ export default function CustomInput({
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
+                    required={required}
                 />
                 {type === "password" ? (
                     <button
-                        type="button"
+                        className={styles.togglePasswordVisibility}
                         title={showPassword ? "Hide password" : "Show password"}
                         onClick={togglePasswordVisibility}
-                        className={styles.togglePasswordVisibility}
+                        type="button"
                     >
-                        <span className="material-symbols-rounded">
+                        <span
+                            className={`material-symbols-rounded ${styles.icon}`}
+                        >
                             {showPassword ? "visibility_off" : "visibility"}
                         </span>
                     </button>

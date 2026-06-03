@@ -1,15 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-    --color-main: #007584;
-    --color-main-light: #00c2d1;
-    --color-main-dark: #00303e;
-    --color-main-transparent: #00758433;
+    /* Colors */
+    --color-main: #00bbf9;
+    --color-main-light: #90e0ef;
+    --color-main-dark: #005f73;
+    --color-main-transparent: #00bbf933;
 
-    --color-secondary: #810ca8;
-    --color-secondary-light: #e5b8f4;
-    --color-secondary-dark: #2d033b;
-    --color-secondary-transparent: #810ca855;
+    /* --color-secondary: #810ca8; */
+    --color-secondary: #f15bb5;
+    --color-secondary-light: #c77dff;
+    --color-secondary-dark: #240046;
+    --color-secondary-transparent: #f15bb522;
 
     --color-special: #06d6a0;
 
@@ -22,6 +24,11 @@
     --color-error: #800e13;
     --color-error-bright: #da2c38;
     --color-error-dimmed: #38040e;
+
+    --color-success: #00c49a;
+    --color-success-bright: #b7e4c7;
+    --color-success-dimmed: #1b4332;
+    --color-success-transparent: #00c49a33;
 
     /* Sizes */
     --size-1: 0.25rem;
@@ -60,6 +67,8 @@
     --font-size-4: 1.5rem;
     --font-size-5: 1.8rem;
     --font-size-6: 2.25rem;
+    --font-size-7: 4rem;
+    --font-size-8: 6rem;
 
     /* Icon Sizes */
     --icon-size-1: 1rem;
@@ -78,15 +87,31 @@
 
     /* General Transitions */
     --transition-1: all 300ms ease-in-out;
+
+    /* Gradients */
+    --gradient-main-colors: linear-gradient(
+        45deg,
+        var(--color-main-light),
+        var(--color-secondary-light)
+    );
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
+        /* Colors */
         --color-background: #0b090a;
         --color-text: #f6f7f8;
         --color-text-dimmed: #b4bcc7;
 
         /* --color-line: #343a40; */
-        --color-line: #343a4080;
+        /* --color-line: #343a4080; */
+        --color-line: rgba(255, 255, 255, 0.125);
+
+        /* Gradients */
+        --gradient-main-colors: linear-gradient(
+            45deg,
+            var(--color-main),
+            var(--color-secondary)
+        );
     }
 }

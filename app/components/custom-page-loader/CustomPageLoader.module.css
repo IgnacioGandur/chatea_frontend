@@ -1,0 +1,14 @@
+.customPageLoader {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--size-6);
+
+    .title {
+        font-size: var(--font-size-6);
+        font-family: var(--font-secondary);
+        font-weight: 200;
+    }
+}

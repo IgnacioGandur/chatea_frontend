@@ -19,7 +19,7 @@ import throwValidationErrors from "~/validators/throwValidationErrors";
 import { commitSession, getSession } from "~/session.server";
 
 // Db
-import userModel from "~/db/user";
+import userModel from "~/db/user.model";
 import CustomLoader from "~/components/custom-loader/CustomLoader";
 
 interface LoginActionResponse {
