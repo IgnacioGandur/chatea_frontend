@@ -38,16 +38,20 @@ import type { Route } from "./+types/root";
 // Assets
 import notFoundImage from "/images/404.svg";
 import generic400Error from "/images/400.svg";
+import friendshipModel from "./db/friendship.model";
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     const userId = session.get("userId");
 
-    if (!userId) return null;
+    if (!userId) return { user: undefined };
 
     const user = await userModel.getById(userId, true);
 
-    return user;
+    const friendshipRequestsPromise =
+        friendshipModel.getPendingFriendshipRequestsForUser(userId);
+
+    return { user, friendshipRequestsPromise };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

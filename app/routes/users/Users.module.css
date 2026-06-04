@@ -4,24 +4,6 @@
     gap: var(--size-2);
     padding: 0;
 
-    .header {
-        border-bottom: 1px solid var(--color-line);
-        padding: var(--size-2);
-
-        .text {
-            display: flex;
-            align-items: center;
-            gap: var(--size-2);
-
-            .icon {
-                font-size: var(--icon-size-5);
-                background-image: var(--gradient-main-colors);
-                background-clip: text;
-                color: transparent;
-            }
-        }
-    }
-
     .usersContainer {
         display: flex;
         flex-direction: column;
@@ -61,6 +43,12 @@
             .button:focus {
                 background-color: var(--color-main-transparent);
                 border: 1px solid var(--color-main);
+            }
+
+            .button.suspenseLoader {
+                .icon {
+                    color: transparent;
+                }
             }
 
             .friendshipPopover {
@@ -109,3 +97,9 @@
         transform: rotate(360deg);
     }
 }
+
+/* @keyframes animateLoaderBackground { */
+/*     to { */
+/*         background-position: center right; */
+/*     } */
+/* } */

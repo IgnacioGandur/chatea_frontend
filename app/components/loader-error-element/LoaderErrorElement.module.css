@@ -1,0 +1,30 @@
+.error {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--size-6);
+
+    .title {
+    }
+
+    .icon {
+        font-size: var(--icon-size-9);
+    }
+
+    .buttons {
+        gap: inherit;
+        .button {
+            text-decoration: none;
+            padding: var(--size-2) calc(var(--size-2) * 2);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-family: var(--font-secondary);
+
+            .icon {
+                font-size: var(--icon-size-2);
+            }
+        }
+    }
+}

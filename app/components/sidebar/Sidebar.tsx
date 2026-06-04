@@ -4,12 +4,21 @@ import { AnimatePresence, motion } from "motion/react";
 import { NavLink, useRouteLoaderData } from "react-router";
 import type { MaterialSymbols } from "material-design-icons-literal-types";
 import LogoSmall from "../logo-small/LogoSmall";
+import type { RootLoaderData } from "~/types/RootLoaderData";
 
 interface Link {
     text: string;
     icon: MaterialSymbols;
     to: string;
 }
+
+const sharedLinks: Link[] = [
+    {
+        text: "About",
+        icon: "info",
+        to: "/about",
+    },
+];
 
 const unloggedLinks: Link[] = [
     {
@@ -43,12 +52,12 @@ const loggedLinks: Link[] = [
     {
         text: "Friends",
         icon: "handshake",
-        to: "friendships",
+        to: "friends",
     },
 ];
 
 export default function Sidebar() {
-    const rootData = useRouteLoaderData("root");
+    const { user: rootData } = useRouteLoaderData("root") as RootLoaderData;
     const [links, setLinks] = useState<Link[]>(
         rootData ? loggedLinks : unloggedLinks,
     );
@@ -118,7 +127,7 @@ export default function Sidebar() {
                         </button>
                     </div>
                     <div className={styles.links}>
-                        {links.map((link) => {
+                        {[...links, ...sharedLinks].map((link) => {
                             return (
                                 <NavLink
                                     key={link.to}
@@ -156,8 +165,8 @@ export default function Sidebar() {
                     </p>
                 </motion.aside>
             ) : (
-                <motion.button
-                    key="hide-sidebar-button"
+                <motion.div
+                    className={styles.ring}
                     initial={{
                         left: "-100%",
                     }}
@@ -167,11 +176,17 @@ export default function Sidebar() {
                     exit={{
                         left: "-100%",
                     }}
-                    className={styles.showSidebarButton}
-                    onClick={toggleSidebar}
                 >
-                    <span className="material-symbols-rounded">menu</span>
-                </motion.button>
+                    <motion.button
+                        className={styles.showSidebarButton}
+                        aria-label="Open navigation sidebar"
+                        title="Open sidebar"
+                        key="hide-sidebar-button"
+                        onClick={toggleSidebar}
+                    >
+                        <span className="material-symbols-rounded">menu</span>
+                    </motion.button>
+                </motion.div>
             )}
         </AnimatePresence>
     );

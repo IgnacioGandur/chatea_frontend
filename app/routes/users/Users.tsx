@@ -1,30 +1,35 @@
 // CSS
 import styles from "./Users.module.css";
+import classes from "~/css/classes.module.css";
 
 // Components
 import SingleUser from "./single-user/SingleUser";
 import CustomPageLoader from "~/components/custom-page-loader/CustomPageLoader";
 import Popover from "~/components/popover/Popover";
 import SendMessageForm from "./single-user/send-message-form/SendMessageForm";
+import PillButton from "~/components/pill-button/PillButton";
+import PageHeader from "~/components/page-header/PageHeader";
+import LoaderErrorElement from "~/components/loader-error-element/LoaderErrorElement";
 
 // Packages
 import * as z from "zod";
 import { Suspense, useEffect } from "react";
 import { Await, useFetcher, useRouteLoaderData, data } from "react-router";
+import toast from "react-hot-toast";
 
 // Types
 import type { Route } from "./+types/Users";
 import type { Friendship, User } from "~/../generated/prisma/client";
+import type { $ZodIssue } from "zod/v4/core";
 
 // Db
 import userModel from "~/db/user.model";
+import friendshipModel from "~/db/friendship.model";
 
 // Session
 import { getSession } from "~/session.server";
-import friendshipModel from "~/db/friendship.model";
-import toast from "react-hot-toast";
-import PillButton from "~/components/pill-button/PillButton";
-import type { $ZodIssue } from "zod/v4/core";
+
+// Utilities
 import ValidationErrors from "~/components/validation-errors/ValidationErrors";
 import checkIfUserExistsById from "~/validators/custom-validators/checkIfUserExistsById";
 
@@ -271,7 +276,9 @@ interface ActionResponse {
 
 export default function Users({ loaderData }: Route.ComponentProps) {
     const fetcher = useFetcher<ActionResponse>();
-    const rootData = useRouteLoaderData("root") as Omit<User, "password">;
+    const { user: rootData } = useRouteLoaderData("root") as {
+        user: Omit<User, "password">;
+    };
 
     const { usersPromise, friendshipsPromise } = loaderData;
 
@@ -308,23 +315,48 @@ export default function Users({ loaderData }: Route.ComponentProps) {
         hasValidationErrors && validationErrorMessage && validationErrors;
 
     const buttonLoader = (
-        <div className={`${styles.button} ${styles.loader}`}>
+        <div
+            className={`${styles.button} ${classes.suspenseBackgroundAnimation}`}
+        >
             <span className={`${styles.icon} material-symbols-rounded`}>
                 progress_activity
             </span>
         </div>
     );
 
+    const friendshipErrorElement = (
+        <div className={styles.friendshipErrorElement}>
+            <p
+                className={`
+                ${styles.message}
+                ${classes.smallText}
+                `}
+            >
+                Can't load your friendship status with this user.
+            </p>
+        </div>
+    );
+
+    const suspenseLoaderButton = (
+        <div
+            className={`
+            ${styles.button} 
+            ${styles.suspenseLoader} 
+            ${classes.suspenseBackgroundAnimation}
+            `}
+        >
+            <span className={`${styles.icon} material-symbols-rounded`}>
+                abc
+            </span>
+        </div>
+    );
+
     return (
         <main className={styles.users}>
-            <header className={styles.header}>
-                <div className={styles.text}>
-                    <span className={`${styles.icon} material-symbols-rounded`}>
-                        groups
-                    </span>
-                    <h1 className={styles.title}>Users</h1>
-                </div>
-            </header>
+            <PageHeader
+                title="Users"
+                icon="groups"
+            />
             {showValidationErrors && (
                 <ValidationErrors
                     errors={validationErrors}
@@ -341,7 +373,12 @@ export default function Users({ loaderData }: Route.ComponentProps) {
             >
                 <Await
                     resolve={usersPromise}
-                    errorElement={<p>We were not able to get users...</p>}
+                    errorElement={
+                        <LoaderErrorElement
+                            icon="bomb"
+                            title="We were not able to retrieve users."
+                        />
+                    }
                 >
                     {(users) => {
                         return users.length === 1 ? (
@@ -405,11 +442,16 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                     />
                                                 </Popover>
                                                 <Suspense
-                                                    fallback={<p>Loading...</p>}
+                                                    fallback={
+                                                        suspenseLoaderButton
+                                                    }
                                                 >
                                                     <Await
                                                         resolve={
                                                             friendshipsPromise
+                                                        }
+                                                        errorElement={
+                                                            friendshipErrorElement
                                                         }
                                                     >
                                                         {(friendships) => {

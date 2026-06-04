@@ -69,6 +69,7 @@
     --font-size-6: 2.25rem;
     --font-size-7: 4rem;
     --font-size-8: 6rem;
+    --font-size-button: 0.9rem;
 
     /* Icon Sizes */
     --icon-size-1: 1rem;
@@ -78,6 +79,8 @@
     --icon-size-5: 3rem;
     --icon-size-6: 4rem;
     --icon-size-7: 5rem;
+    --icon-size-8: 8rem;
+    --icon-size-9: 12rem;
 
     /* Shadows */
     --shadow-1: 0px 0px 3px rgba(0, 0, 0, 0.2);
@@ -103,8 +106,6 @@
         --color-text: #f6f7f8;
         --color-text-dimmed: #b4bcc7;
 
-        /* --color-line: #343a40; */
-        /* --color-line: #343a4080; */
         --color-line: rgba(255, 255, 255, 0.125);
 
         /* Gradients */

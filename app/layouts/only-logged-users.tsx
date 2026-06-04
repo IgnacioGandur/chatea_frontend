@@ -4,15 +4,11 @@ import {
     useRouteLoaderData,
     Outlet,
 } from "react-router";
-import type { User } from "~/types/user";
+import type { RootLoaderData } from "~/types/RootLoaderData";
 
 export default function OnlyLoggedUsers() {
     const location = useLocation();
-    const data = useRouteLoaderData("root") as {
-        success: boolean;
-        message: string;
-        user: User;
-    };
+    const { user: data } = useRouteLoaderData("root") as RootLoaderData;
 
     const to =
         `/login?message=` +

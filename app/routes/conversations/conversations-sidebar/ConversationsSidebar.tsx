@@ -12,7 +12,9 @@ export default function ConversationsSidebar({
 }: ConversationsSidebarProps) {
     return conversations.length === 0 ? (
         <aside className={`${styles.sidebar} ${styles.noConversations}`}>
-            <h4>You don't have any conversations yet...</h4>
+            <h4 className={styles.title}>
+                You don't have any conversations yet...
+            </h4>
             <NavLink
                 className={styles.link}
                 to="/users"

@@ -36,7 +36,9 @@ export default function PillButton({
             className={`${styles.button} ${altButtonClassName}`}
         >
             {includeEmptySpace && <div className="empty"></div>}
-            <span className={styles.text}>{buttonText}</span>
+            {buttonText ? (
+                <span className={styles.text}>{buttonText}</span>
+            ) : null}
             {includeIcon && (
                 <span className={`material-symbols-rounded ${styles.icon}`}>
                     {icon}

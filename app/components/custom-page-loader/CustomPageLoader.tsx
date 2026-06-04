@@ -3,7 +3,7 @@ import { BarLoader } from "react-spinners";
 
 interface CustomPageLoaderProps {
     message: string;
-    color: string;
+    color?: string;
 }
 
 export default function CustomPageLoader({
@@ -15,7 +15,7 @@ export default function CustomPageLoader({
             <h1 className={styles.title}>{message}</h1>
             <BarLoader
                 className={styles.loader}
-                color={color}
+                color={color || "var(--color-main)"}
             />
         </section>
     );

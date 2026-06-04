@@ -1,0 +1,139 @@
+.suspenseBackgroundAnimation {
+    --bg-color: rgba(0, 0, 0, 0.1);
+
+    background-image: linear-gradient(
+        to right,
+        var(--bg-color),
+        var(--color-background),
+        var(--bg-color),
+        var(--color-background)
+    );
+    background-size: 300%;
+    background-position: center left;
+    animation: animateLoaderBackground 1s linear infinite reverse;
+
+    @media (prefers-color-scheme: dark) {
+        --bg-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .icon {
+        color: transparent;
+    }
+}
+
+.iconWithGradientColors {
+    background-image: var(--gradient-main-colors);
+    color: transparent;
+    background-clip: text;
+}
+
+.flexRowJustifySpaceBetween {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flexRowCenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--size-2);
+}
+
+.buttonHoverStyleMainColor {
+    border: 2px solid var(--color-line);
+    background-color: var(--color-background);
+    transition: var(--transition-1);
+}
+
+.buttonHoverStyleMainColor:hover,
+.buttonHoverStyleMainColor:focus {
+    border: 2px solid var(--color-main);
+    background-color: var(--color-main-transparent);
+}
+
+.spinIcon {
+    animation: spinIcon 1s ease-in-out infinite;
+}
+
+.subText {
+    font-size: 0.9rem;
+    font-family: var(--font-secondary);
+    color: var(--color-text-dimmed);
+    font-style: italic;
+}
+
+.titleMain {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-6);
+    font-weight: 300;
+}
+
+.titleSmall {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-2);
+    font-weight: 400;
+}
+
+.smallText {
+    font-size: var(--font-size-1);
+    color: var(--color-text-dimmed);
+    font-style: italic;
+}
+
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexColumnCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.roundDefaultButton {
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--color-line) !important;
+    padding: var(--size-1);
+    border-radius: var(--radius-total);
+    transition: var(--transition-1);
+}
+
+.roundDefaultButton:hover,
+.roundDefaultButton:focus {
+    background-color: var(--color-main-transparent);
+    border: 1px solid var(--color-main);
+}
+
+.defaultIcon {
+    font-size: 1.75rem;
+}
+
+.loaderIcon {
+    font-size: 1.75rem;
+    color: transparent;
+}
+
+.profilePictureSmall {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: var(--radius-total);
+    border: 1px solid var(--color-line);
+}
+
+@keyframes animateLoaderBackground {
+    to {
+        background-position: center right;
+    }
+}
+
+@keyframes spinIcon {
+    to {
+        transform: rotate(360deg);
+    }
+}

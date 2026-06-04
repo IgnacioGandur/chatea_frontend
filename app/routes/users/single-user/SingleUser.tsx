@@ -7,15 +7,22 @@ import styles from "./SingleUser.module.css";
 // Packages
 import { NavLink, useRouteLoaderData } from "react-router";
 import type React from "react";
+import type { RootLoaderData } from "~/types/RootLoaderData";
 
 interface SingleUserProps {
     isYou: boolean;
     user: Omit<User, "password">;
     children?: React.ReactNode;
+    altClassName?: string;
 }
 
-export default function SingleUser({ user, isYou, children }: SingleUserProps) {
-    const rootData = useRouteLoaderData("root") as User;
+export default function SingleUser({
+    user,
+    isYou,
+    altClassName,
+    children,
+}: SingleUserProps) {
+    const { user: rootData } = useRouteLoaderData("root") as RootLoaderData;
     const name = `${user.firstName} ${user.lastName}`;
 
     const linkToProfile = (
@@ -43,7 +50,7 @@ export default function SingleUser({ user, isYou, children }: SingleUserProps) {
     );
 
     return (
-        <div className={styles.user}>
+        <li className={`${styles.user} ${altClassName}`}>
             {linkToProfile}{" "}
             {rootData ? (
                 isYou ? (
@@ -52,6 +59,6 @@ export default function SingleUser({ user, isYou, children }: SingleUserProps) {
                     <>{children}</>
                 )
             ) : null}
-        </div>
+        </li>
     );
 }

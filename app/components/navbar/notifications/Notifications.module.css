@@ -1,0 +1,101 @@
+.notifications {
+    position: relative;
+
+    .indicator {
+        aspect-ratio: 1/1;
+        padding: 3px;
+        background-color: var(--color-main);
+        position: absolute;
+        min-width: 0.65rem;
+        top: 0%;
+        right: 0%;
+        font-size: var(--font-size-1);
+        color: var(--color-text);
+        font-size: var(--font-size-1);
+        border-radius: var(--radius-total);
+    }
+
+    .popoverContainerClass {
+        .altPopoverClass {
+            top: var(--size-2);
+            position-area: bottom span-left;
+
+            .emptyNotifications,
+            .hasNotifications {
+                padding: var(--size-4);
+                gap: var(--size-3);
+                min-width: 300px;
+            }
+
+            .emptyNotifications {
+                .icon {
+                    font-size: var(--icon-size-7);
+                }
+            }
+
+            .hasNotifications {
+                .separator {
+                    align-self: stretch;
+                    min-height: 2px;
+                    border-radius: 10px;
+                    background-image: var(--gradient-main-colors);
+                }
+
+                .requestsContainer {
+                    gap: var(--size-1);
+                    .request {
+                        gap: 0 var(--size-1);
+                        padding: var(--size-1) var(--size-2);
+                        border-radius: var(--radius-lg);
+                        background-color: var(--color-background);
+                        transition: var(--transition-1);
+
+                        .link {
+                            display: grid;
+                            grid-template-areas:
+                                "ppf name"
+                                "ppf username";
+                            gap: 0 var(--size-1);
+                            align-items: flex-end;
+                            justify-content: flex-start;
+                            flex: 1;
+                            text-decoration: none;
+
+                            .ppf {
+                                grid-area: ppf;
+                                align-self: center;
+                            }
+
+                            .name {
+                                font-size: 0.9rem;
+                                grid-area: name;
+                            }
+
+                            .username {
+                                grid-area: username;
+                                font-size: var(--font-size-1);
+                                color: var(--color-text-dimmed);
+                                font-style: italic;
+                            }
+                        }
+
+                        .buttons {
+                            grid-area: buttons;
+                            gap: var(--size-2);
+
+                            .pillButton {
+                                padding: 0.25rem;
+                                border-radius: var(--radius-total);
+                            }
+                        }
+                    }
+
+                    .request:has(.link:hover),
+                    .request:has(.link:focus) {
+                        background-color: var(--color-main-transparent);
+                    }
+                }
+            }
+        }
+    }
+}

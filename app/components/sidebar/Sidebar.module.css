@@ -4,17 +4,46 @@
     box-shadow: var(--shadow-1);
 }
 
-.showSidebarButton {
+.ring {
     position: absolute;
     bottom: calc(var(--size-4) * 2);
     left: calc(var(--size-4) * 2);
+    padding: 2px;
+    background-image: var(--gradient-main-colors);
     border-radius: var(--radius-total);
-    padding: var(--size-2);
-    aspect-ratio: 1/1;
     display: grid;
     place-items: center;
-    border: 1px solid var(--color-line);
     z-index: 100;
+    box-shadow: var(--shadow-1);
+
+    .showSidebarButton {
+        border-radius: var(--radius-total);
+        padding: var(--size-2);
+        aspect-ratio: 1/1;
+        display: grid;
+        place-items: center;
+        background-image: linear-gradient(
+            to right,
+            var(--color-background),
+            var(--color-background),
+            var(--color-main-dark),
+            var(--color-secondary-dark)
+        );
+        background-size: 300%;
+        background-position: center left;
+        transition: var(--transition-1);
+
+        span {
+            font-variation-settings: "FILL" 1;
+        }
+    }
+}
+
+.ring:hover,
+.ring:focus {
+    .showSidebarButton {
+        background-position: center right;
+    }
 }
 
 .sidebar {

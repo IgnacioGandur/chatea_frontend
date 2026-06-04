@@ -41,9 +41,14 @@ export default [
         ]),
 
         // Friendships
-        route("friendships", "./routes/friendships/Friendships.tsx"),
-    ]),
+        route("friends", "./routes/friends/Friends.tsx"),
 
-    // Actions
-    route("send-message", "./actions/send-message.ts"),
+        // Actions
+        route("send-message", "./actions/send-message.ts"),
+        route(
+            "respond-friendship-request",
+            "./actions/respond-friendship-request.ts",
+        ),
+    ]),
+    route("about", "./routes/about/About.tsx"),
 ] satisfies RouteConfig;

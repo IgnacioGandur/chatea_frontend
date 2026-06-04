@@ -31,6 +31,7 @@ import type { ValidationErrorsType } from "~/types/ValidationErrorsType";
 import participantModel from "~/db/participant.model";
 import SingleMessage from "./single-message/SingleMessage";
 import { CustomErrorBoundary } from "~/components/custom-error-boundary/CustomErrorBoundary";
+import type { RootLoaderData } from "~/types/RootLoaderData";
 
 export function meta({ loaderData, matches }: Route.MetaArgs) {
     const rootData = matches.find((route) => route?.id === "root")
@@ -165,12 +166,12 @@ export async function action({ request, params }: Route.ActionArgs) {
 export default function CurrentConversation({
     loaderData,
 }: Route.ComponentProps) {
-    const rootData = useRouteLoaderData("root") as User;
+    const { user: rootData } = useRouteLoaderData("root") as RootLoaderData;
     const fetcher = useFetcher<ValidationErrorsType>();
     const isGroup = loaderData?.isGroup;
 
     const userB = loaderData?.participants.find(
-        (p) => p.userId !== rootData.id,
+        (p) => p.userId !== rootData!.id,
     )?.user;
 
     const name = userB ? `${userB.firstName} ${userB.lastName}` : null;

@@ -12,7 +12,7 @@ export function meta({}: Route.MetaArgs) {
 
 export function loader({}: Route.LoaderArgs) {
     const promise = new Promise((res) =>
-        setTimeout(() => res("Data from the promise"), 5000),
+        setTimeout(() => res("Data from the promise"), 1000),
     );
 
     return { promise };

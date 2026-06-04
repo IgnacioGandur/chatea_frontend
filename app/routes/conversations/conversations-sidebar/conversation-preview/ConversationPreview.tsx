@@ -1,9 +1,9 @@
 import type { GetUserConversations } from "~/db/conversation.types";
-import type { User } from "../../../../../generated/prisma/client";
 import styles from "./ConversationPreview.module.css";
 import { NavLink, useRouteLoaderData } from "react-router";
 import { formatDistanceToNow } from "date-fns";
 import avatar from "/images/avatar.png";
+import type { RootLoaderData } from "~/types/RootLoaderData";
 
 interface ConversationPreviewProps {
     conversation: GetUserConversations;
@@ -12,11 +12,11 @@ interface ConversationPreviewProps {
 export default function ConversationPreview({
     conversation,
 }: ConversationPreviewProps) {
-    const loggedUser = useRouteLoaderData("root") as User;
+    const { user: loggedUser } = useRouteLoaderData("root") as RootLoaderData;
     const isGroup = conversation.isGroup;
 
     const userB = conversation.participants.find(
-        (p) => p.userId !== loggedUser.id,
+        (p) => p.userId !== loggedUser!.id,
     )?.user;
 
     const title = userB

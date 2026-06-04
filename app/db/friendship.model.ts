@@ -1,8 +1,13 @@
 import type {
+    Prisma,
     PrismaClient,
     Friendship as FriendshipType,
 } from "../../generated/prisma/client";
-import type { FriendshipIncludeUserA } from "./friendship.types";
+import type {
+    FriendshipIncludeBothUsers,
+    FriendshipIncludeUserA,
+    FriendshipWithUserA,
+} from "./friendship.types";
 import prisma from "./prisma";
 
 class Friendship {
@@ -74,7 +79,7 @@ class Friendship {
                 },
             });
 
-            return "Nice! You are now friends!";
+            return "Nice! You have a new friend!";
         } else {
             await this.prisma.friendship.delete({
                 where: {
@@ -112,6 +117,42 @@ class Friendship {
         return await this.prisma.friendship.findUnique({
             where: {
                 id: Number(friendshipId),
+            },
+        });
+    }
+
+    async getUserAcceptedFriendships(
+        userId: number | string,
+    ): Promise<FriendshipIncludeBothUsers[]> {
+        return await this.prisma.friendship.findMany({
+            where: {
+                status: "ACCEPTED",
+                OR: [
+                    {
+                        userAId: Number(userId),
+                    },
+                    {
+                        userBId: Number(userId),
+                    },
+                ],
+            },
+            include: {
+                userA: true,
+                userB: true,
+            },
+        });
+    }
+
+    async getPendingFriendshipRequestsForUser(
+        userId: number | string,
+    ): Promise<FriendshipWithUserA[]> {
+        return await this.prisma.friendship.findMany({
+            where: {
+                status: "PENDING",
+                userBId: Number(userId),
+            },
+            include: {
+                userA: true,
             },
         });
     }

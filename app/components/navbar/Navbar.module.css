@@ -18,4 +18,8 @@
             font-family: var(--font-special);
         }
     }
+
+    .wrapper {
+        gap: var(--size-4);
+    }
 }
