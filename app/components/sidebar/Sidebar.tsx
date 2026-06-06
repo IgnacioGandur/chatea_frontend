@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./Sidebar.module.css";
+import classes from "~/css/classes.module.css";
 import { AnimatePresence, motion } from "motion/react";
 import { NavLink, useRouteLoaderData } from "react-router";
 import type { MaterialSymbols } from "material-design-icons-literal-types";
@@ -13,6 +14,16 @@ interface Link {
 }
 
 const sharedLinks: Link[] = [
+    {
+        text: "Users",
+        icon: "groups",
+        to: "users",
+    },
+    {
+        text: "Groups",
+        icon: "communities",
+        to: "groups",
+    },
     {
         text: "About",
         icon: "info",
@@ -43,11 +54,6 @@ const loggedLinks: Link[] = [
         text: "Conversations",
         icon: "conversation",
         to: "conversations",
-    },
-    {
-        text: "Users",
-        icon: "groups",
-        to: "users",
     },
     {
         text: "Friends",
@@ -141,7 +147,7 @@ export default function Sidebar() {
                                     to={link.to}
                                 >
                                     <span
-                                        className={`material-symbols-rounded ${styles.icon}`}
+                                        className={`material-symbols-rounded ${styles.icon} ${classes.iconWithGradientColors}`}
                                     >
                                         {link.icon}
                                     </span>

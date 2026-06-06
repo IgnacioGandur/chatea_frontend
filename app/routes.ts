@@ -11,6 +11,7 @@ export default [
     route("users/:username", "./routes/user-profile/UserProfile.tsx"),
     route("register", "./routes/register/register.tsx"),
     route("login", "./routes/login/Login.tsx"),
+    route("groups", "./routes/groups/Groups.tsx"),
 
     // Routes only for logged users.
     layout("./layouts/only-logged-users.tsx", [

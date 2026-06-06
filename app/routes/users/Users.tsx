@@ -13,9 +13,8 @@ import LoaderErrorElement from "~/components/loader-error-element/LoaderErrorEle
 
 // Packages
 import * as z from "zod";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { Await, useFetcher, useRouteLoaderData, data } from "react-router";
-import toast from "react-hot-toast";
 
 // Types
 import type { Route } from "./+types/Users";
@@ -31,7 +30,12 @@ import { getSession } from "~/session.server";
 
 // Utilities
 import ValidationErrors from "~/components/validation-errors/ValidationErrors";
-import checkIfUserExistsById from "~/validators/custom-validators/checkIfUserExistsById";
+import EmptySection from "~/components/empty-section/EmptySection";
+import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
+import { useFetcherToast } from "~/hooks/useFetcherToast";
+import { validateSendFriendshipRequest } from "~/validators/validateSendFriendshipRequest";
+import { validateCancelFriendshipRequest } from "~/validators/validateCancelFriendshipRequest";
+import { validateFriendshipRequestResponse } from "~/validators/validateFriendshipRequestResponse";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -84,40 +88,35 @@ export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
     const values = Object.fromEntries(formData) as FormValues;
 
+    const intentValidation = z
+        .object({
+            intent: z.enum([
+                "send-friendship-request",
+                "cancel-friendship-request",
+                "respond-friendship-request",
+            ]),
+        })
+        .safeParse({ intent: values.intent });
+
+    if (!intentValidation.success) {
+        return {
+            success: false,
+            message: "You provided an invalid intent.",
+            errors: intentValidation.error.issues,
+        };
+    }
+
     values.userAId = loggedUserId;
 
     switch (values.intent) {
         case "send-friendship-request": {
-            const validation = await z
-                .object({
-                    userAId: z.number("The userAId field should be a number."),
-                    userBId: z
-                        .number("The userBId field should be a number.")
-                        .refine(checkIfUserExistsById, {
-                            error: `The user with and ID of ${values.userBId} doesn't exist.`,
-                            path: ["userBId"],
-                        })
-                        .refine(
-                            async (userBId) => {
-                                const friendshipAlreadyExists =
-                                    await friendshipModel.getFriendshipBetweenUserIds(
-                                        values.userAId,
-                                        userBId,
-                                    );
+            const userAId = Number(values.userAId);
+            const userBId = Number(values.userBId);
 
-                                if (friendshipAlreadyExists) {
-                                    return false;
-                                }
-
-                                return true;
-                            },
-                            { error: "This friendship already exists." },
-                        ),
-                })
-                .safeParseAsync({
-                    userAId: Number(values.userAId),
-                    userBId: Number(values.userBId),
-                });
+            const validation = await validateSendFriendshipRequest(
+                userAId,
+                userBId,
+            );
 
             if (!validation.success) {
                 return {
@@ -139,46 +138,13 @@ export async function action({ request }: Route.ActionArgs) {
         }
 
         case "cancel-friendship-request": {
-            const validation = await z
-                .object({
-                    userAId: z.number("The userAId should be a number."),
-                    friendshipId: z.number({
-                        error: (issue) =>
-                            `Friendship ID should be a number. Received: '${issue.input}'`,
-                    }),
-                })
-                .superRefine(async (data, ctx) => {
-                    // 'userAId' is the logged user ID.
-                    const { userAId, friendshipId } = data;
+            const userAId = Number(loggedUserId);
+            const friendshipId = Number(values.friendshipId);
 
-                    const friendship =
-                        await friendshipModel.getFriendshipById(friendshipId);
-
-                    if (!friendship) {
-                        ctx.addIssue({
-                            code: "custom",
-                            path: ["friendshipId"],
-                            message: `The friendship with an ID of '${friendshipId}' doesn't exist.`,
-                        });
-                        return;
-                    }
-
-                    const loggedUserIsParticipant =
-                        friendship.userAId === userAId;
-                    friendship.userBId === userAId;
-
-                    if (!loggedUserIsParticipant) {
-                        ctx.addIssue({
-                            code: "custom",
-                            path: ["friendshipId"],
-                            message: "You are not a part of this friendship.",
-                        });
-                    }
-                })
-                .safeParseAsync({
-                    userAId: Number(loggedUserId),
-                    friendshipId: Number(values.friendshipId),
-                });
+            const validation = await validateCancelFriendshipRequest(
+                userAId,
+                friendshipId,
+            );
 
             if (!validation.success) {
                 return {
@@ -199,46 +165,12 @@ export async function action({ request }: Route.ActionArgs) {
         }
 
         case "respond-friendship-request": {
-            const validation = await z
-                .object({
-                    response: z.enum(["accept", "reject"], {
-                        error: (issue) =>
-                            `Invalid response value. Response can only be 'accept' or 'reject'. Received: '${issue.input}'.`,
-                    }),
-                    friendshipId: z.number("Friendship ID should be a number."),
-                })
-                .superRefine(async (data, ctx) => {
-                    const { friendshipId } = data;
-
-                    const friendship =
-                        await friendshipModel.getFriendshipById(friendshipId);
-
-                    if (!friendship) {
-                        ctx.addIssue({
-                            code: "custom",
-                            path: ["friendshipId"],
-                            message: `The friendship with an ID of: '${friendshipId}' doesn't exist.`,
-                        });
-
-                        return;
-                    }
-
-                    const loggedUserIsParticipant =
-                        friendship.userAId == Number(loggedUserId) ||
-                        friendship.userBId == Number(loggedUserId);
-
-                    if (!loggedUserIsParticipant) {
-                        ctx.addIssue({
-                            code: "custom",
-                            path: ["friendshipId"],
-                            message: "You are not a part of this conversation.",
-                        });
-                    }
-                })
-                .safeParseAsync({
-                    friendshipId: Number(values.friendshipId),
-                    response: values.response,
-                });
+            const friendshipId = Number(values.friendshipId);
+            const validation = await validateFriendshipRequestResponse(
+                Number(loggedUserId),
+                friendshipId,
+                values.response,
+            );
 
             if (!validation.success) {
                 return {
@@ -258,20 +190,14 @@ export async function action({ request }: Route.ActionArgs) {
                 message: response,
             };
         }
-
-        default: {
-            throw data("Method Not Allowed", {
-                status: 405,
-                statusText: "Invalid method value.",
-            });
-        }
     }
 }
 
 interface ActionResponse {
     success: boolean;
     message: string;
-    errors?: $ZodIssue[];
+    errors: $ZodIssue[];
+    isSendingMessage: boolean;
 }
 
 export default function Users({ loaderData }: Route.ComponentProps) {
@@ -285,40 +211,24 @@ export default function Users({ loaderData }: Route.ComponentProps) {
     const currentIntent = fetcher.formData?.get("intent");
     const isHandlingFriendship = fetcher.state !== "idle" && currentIntent;
 
-    // Notifications
-    // Success/Error while sending friendship request.
-    useEffect(() => {
-        if (fetcher.data) {
-            const notificationMessage = fetcher.data.message;
-            fetcher.data.success
-                ? toast.success(notificationMessage)
-                : toast.error(notificationMessage);
-        }
-    }, [fetcher.data]);
-
-    // Waiting while the request is being handled.
-    useEffect(() => {
-        if (fetcher.state === "submitting") {
-            toast.loading("Handling request, please wait...", {
-                id: "friendship-request",
-            });
-        } else {
-            toast.dismiss("friendship-request");
-        }
-    }, [fetcher.state]);
-
-    // Validation errors (if any)
-    const hasValidationErrors = fetcher.data?.success === false;
-    const validationErrorMessage = fetcher.data?.message;
-    const validationErrors = fetcher.data?.errors;
     const showValidationErrors =
-        hasValidationErrors && validationErrorMessage && validationErrors;
+        checkForValidationErrors(fetcher) && !fetcher.data?.isSendingMessage;
+
+    useFetcherToast(fetcher, {
+        failMessage: showValidationErrors
+            ? "Friendship operation failed."
+            : "Message failed.",
+        loadingMessage: showValidationErrors
+            ? "Handling friendship..."
+            : "Sending message...",
+        toastId: showValidationErrors ? "friendship" : "send-message",
+    });
 
     const buttonLoader = (
         <div
-            className={`${styles.button} ${classes.suspenseBackgroundAnimation}`}
+            className={`${classes.roundDefaultButton} ${classes.suspenseBackgroundAnimation}`}
         >
-            <span className={`${styles.icon} material-symbols-rounded`}>
+            <span className={`${classes.defaultIcon} material-symbols-rounded`}>
                 progress_activity
             </span>
         </div>
@@ -340,12 +250,11 @@ export default function Users({ loaderData }: Route.ComponentProps) {
     const suspenseLoaderButton = (
         <div
             className={`
-            ${styles.button} 
-            ${styles.suspenseLoader} 
             ${classes.suspenseBackgroundAnimation}
+            ${classes.roundDefaultButton}
             `}
         >
-            <span className={`${styles.icon} material-symbols-rounded`}>
+            <span className={`${classes.loaderIcon} material-symbols-rounded`}>
                 abc
             </span>
         </div>
@@ -359,8 +268,8 @@ export default function Users({ loaderData }: Route.ComponentProps) {
             />
             {showValidationErrors && (
                 <ValidationErrors
-                    errors={validationErrors}
-                    title={validationErrorMessage}
+                    errors={fetcher.data!.errors}
+                    title={fetcher.data!.message}
                 />
             )}
             <Suspense
@@ -381,15 +290,30 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                     }
                 >
                     {(users) => {
-                        return users.length === 1 ? (
-                            <div className={styles.emptyUsers}>
-                                <h1>
-                                    You are the only user in the platform :(
-                                </h1>
-                            </div>
-                        ) : (
+                        if (users.length === 0) {
+                            return (
+                                <EmptySection
+                                    icon="sentiment_worried"
+                                    message="Nobody has registered yet..."
+                                    linkMessage="Be the first one!"
+                                    linkPath="/register"
+                                />
+                            );
+                        }
+
+                        return (
                             <ul className={styles.usersContainer}>
                                 {users.map((user, i) => {
+                                    if (!rootData) {
+                                        return (
+                                            <SingleUser
+                                                key={user.id}
+                                                isYou={false}
+                                                user={user}
+                                            />
+                                        );
+                                    }
+
                                     const isYou = user.id === rootData.id;
 
                                     const name = (
@@ -402,6 +326,12 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                         isHandlingFriendship &&
                                         currentIntent ===
                                             "send-friendship-request" &&
+                                        Number(
+                                            fetcher.formData?.get("userBId"),
+                                        ) === user.id;
+
+                                    const isSendingMessageToThisUser =
+                                        fetcher.state !== "idle" &&
                                         Number(
                                             fetcher.formData?.get("userBId"),
                                         ) === user.id;
@@ -423,13 +353,19 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                     popoverTarget={`message-to-user-${i}`}
                                                     anchorName={`--message-to-user-${i}`}
                                                     anchorButtonClass={
-                                                        styles.button
+                                                        classes.roundDefaultButton
                                                     }
                                                     buttonContent={
                                                         <span
-                                                            className={`material-symbols-rounded ${styles.icon}`}
+                                                            className={`
+                                                                material-symbols-rounded
+                                                                ${classes.defaultIcon}
+                                                                ${isSendingMessageToThisUser ? classes.spinIcon : ""}
+                                                            `}
                                                         >
-                                                            comic_bubble
+                                                            {isSendingMessageToThisUser
+                                                                ? "progress_activity"
+                                                                : "comic_bubble"}
                                                         </span>
                                                     }
                                                     altPopoverClass={
@@ -437,6 +373,7 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                     }
                                                 >
                                                     <SendMessageForm
+                                                        altFetcher={fetcher}
                                                         formAction="/send-message"
                                                         userBId={user.id}
                                                     />
@@ -458,6 +395,7 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                             if (!friendships)
                                                                 return;
 
+                                                            // Find the friendship (if any) between the logged user and the user being rendered.
                                                             const friendship =
                                                                 friendships.find(
                                                                     (f) => {
@@ -547,12 +485,12 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                         anchorName={`--remove-friendship-with-${user.username}`}
                                                                         popoverTarget={`remove-friendship-with-${user.username}`}
                                                                         anchorButtonClass={
-                                                                            styles.button
+                                                                            classes.roundDefaultButton
                                                                         }
                                                                         anchorButtonTitle="Remove this user from your friends list."
                                                                         buttonContent={
                                                                             <span
-                                                                                className={`${styles.icon} material-symbols-rounded`}
+                                                                                className={`${classes.defaultIcon} material-symbols-rounded`}
                                                                             >
                                                                                 person_remove
                                                                             </span>
@@ -621,11 +559,11 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                         anchorName={`--cancel-friendship-request-with-${user.username}`}
                                                                         popoverTarget={`cancel-friendship-request-${user.username}`}
                                                                         anchorButtonClass={
-                                                                            styles.button
+                                                                            classes.roundDefaultButton
                                                                         }
                                                                         buttonContent={
                                                                             <span
-                                                                                className={`${styles.icon} material-symbols-rounded`}
+                                                                                className={`${classes.defaultIcon} material-symbols-rounded`}
                                                                             >
                                                                                 person_cancel
                                                                             </span>
@@ -700,11 +638,11 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                         anchorName={`--respond-friendship-request-${user.username}`}
                                                                         popoverTarget={`respond-friendship-request-${user.username}`}
                                                                         anchorButtonClass={
-                                                                            styles.button
+                                                                            classes.roundDefaultButton
                                                                         }
                                                                         buttonContent={
                                                                             <span
-                                                                                className={`${styles.icon} material-symbols-rounded`}
+                                                                                className={`${classes.defaultIcon} material-symbols-rounded`}
                                                                             >
                                                                                 handshake
                                                                             </span>
@@ -804,11 +742,11 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                         type="submit"
                                                                         aria-label="Send friendship request"
                                                                         className={
-                                                                            styles.button
+                                                                            classes.roundDefaultButton
                                                                         }
                                                                     >
                                                                         <span
-                                                                            className={`${styles.icon} material-symbols-rounded`}
+                                                                            className={`${classes.defaultIcon} material-symbols-rounded`}
                                                                         >
                                                                             person_add
                                                                         </span>

@@ -1,12 +1,12 @@
 import * as z from "zod";
 import friendshipModel from "~/db/friendship.model";
 
-export default async function validateRespondFriendshipRequest(
-    loggedUserId: number | string,
-    friendshipId: number | string,
+export function validateFriendshipRequestResponse(
+    loggedUserId: number,
+    friendshipId: number,
     response: "accept" | "reject",
 ) {
-    return await z
+    return z
         .object({
             response: z.enum(["accept", "reject"], {
                 error: (issue) =>
@@ -31,8 +31,8 @@ export default async function validateRespondFriendshipRequest(
             }
 
             const loggedUserIsParticipant =
-                friendship.userAId == Number(loggedUserId) ||
-                friendship.userBId == Number(loggedUserId);
+                friendship.userAId === loggedUserId ||
+                friendship.userBId === loggedUserId;
 
             if (!loggedUserIsParticipant) {
                 ctx.addIssue({
@@ -43,7 +43,7 @@ export default async function validateRespondFriendshipRequest(
             }
         })
         .safeParseAsync({
-            friendshipId: Number(friendshipId),
-            response: response,
+            friendshipId,
+            response,
         });
 }

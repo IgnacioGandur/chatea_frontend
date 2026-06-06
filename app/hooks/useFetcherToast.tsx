@@ -8,6 +8,7 @@ interface FetcherData {
 }
 
 interface UseFetcherToastOptions {
+    failMessage?: string;
     loadingMessage?: string;
     toastId?: string;
 }
@@ -17,6 +18,7 @@ export function useFetcherToast(
     options: UseFetcherToastOptions = {},
 ) {
     const {
+        failMessage = "Operation failed.",
         loadingMessage = "Handling request, please wait...",
         toastId = "fetcher-request",
     } = options;
@@ -35,7 +37,7 @@ export function useFetcherToast(
             if (success) {
                 toast.success(message);
             } else {
-                toast.error(message);
+                toast.error(failMessage);
             }
         }
     }, [fetcherData]);

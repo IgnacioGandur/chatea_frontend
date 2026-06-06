@@ -34,6 +34,7 @@ export async function action({ request }: Route.ActionArgs) {
             success: false,
             message: "We were not able to send your message: ",
             errors: validateMessage.error.issues,
+            isSendingMessage: true,
         };
     }
 

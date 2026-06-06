@@ -3,11 +3,13 @@ import type { User } from "../../../../generated/prisma/client";
 
 // CSS
 import styles from "./SingleUser.module.css";
+import classes from "~/css/classes.module.css";
 
 // Packages
 import { NavLink, useRouteLoaderData } from "react-router";
 import type React from "react";
 import type { RootLoaderData } from "~/types/RootLoaderData";
+import { FadeLoader, PuffLoader, ScaleLoader } from "react-spinners";
 
 interface SingleUserProps {
     isYou: boolean;
@@ -33,7 +35,17 @@ export default function SingleUser({
         >
             {({ isPending }) => {
                 return isPending ? (
-                    <div>Loaing...</div>
+                    <div
+                        className={`${styles.loader} ${classes.suspenseBackgroundAnimation}`}
+                    >
+                        <PuffLoader
+                            size={38}
+                            color="var(--color-secondary-light)"
+                        />
+                        <p className={`${classes.subText}`}>
+                            Loading profile...
+                        </p>
+                    </div>
                 ) : (
                     <>
                         <img
@@ -50,7 +62,7 @@ export default function SingleUser({
     );
 
     return (
-        <li className={`${styles.user} ${altClassName}`}>
+        <li className={`${styles.user} ${altClassName ? altClassName : ""}`}>
             {linkToProfile}{" "}
             {rootData ? (
                 isYou ? (

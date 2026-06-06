@@ -1,8 +1,8 @@
 import { getSession } from "~/session.server";
 import type { Route } from "./+types/respond-friendship-request";
 import { data } from "react-router";
-import validateRespondFriendshipRequest from "~/validators/validateRespondFriendshipRequest";
 import friendshipModel from "~/db/friendship.model";
+import { validateFriendshipRequestResponse } from "~/validators/validateFriendshipRequestResponse";
 
 type FormValues = {
     friendshipId: string;
@@ -20,13 +20,12 @@ export async function action({ request }: Route.ActionArgs) {
         });
     }
 
-    await new Promise((r) => setTimeout(r, 3000));
     const formData = await request.formData();
     const values = Object.fromEntries(formData) as FormValues;
 
-    const validation = await validateRespondFriendshipRequest(
-        userId,
-        values.friendshipId,
+    const validation = await validateFriendshipRequestResponse(
+        Number(userId),
+        Number(values.friendshipId),
         values.response,
     );
 

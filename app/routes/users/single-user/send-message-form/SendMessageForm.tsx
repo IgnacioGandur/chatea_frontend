@@ -1,39 +1,39 @@
-import { useFetcher } from "react-router";
+import { useFetcher, type FetcherWithComponents } from "react-router";
 import styles from "./SendMessageForm.module.css";
 import { useState } from "react";
 import CustomInput from "~/components/custom-input/CustomInput";
 import CustomLoader from "~/components/custom-loader/CustomLoader";
 import type { $ZodIssue } from "zod/v4/core";
 import PillButton from "~/components/pill-button/PillButton";
-
-interface SendMessageFormProps {
-    formAction?: string;
-    userBId: number;
-}
+import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
+import ValidationErrors from "~/components/validation-errors/ValidationErrors";
 
 interface ActionResponse {
     success: boolean;
     message: string;
     errors: $ZodIssue[];
+    isSendingMessage: boolean;
+}
+
+interface SendMessageFormProps {
+    altFetcher?: FetcherWithComponents<ActionResponse>;
+    formAction?: string;
+    userBId: number;
 }
 
 export default function SendMessageForm({
+    altFetcher,
     formAction,
     userBId,
 }: SendMessageFormProps) {
-    const fetcher = useFetcher<ActionResponse>();
+    const fetcher = altFetcher ?? useFetcher<ActionResponse>();
     const isNotIdle = fetcher.state !== "idle";
     const [message, setMessage] = useState({
         message: "",
     });
 
-    // Validation errors
-    const hasValidationErrors = fetcher.data?.success === false;
-    const validationErrorsMessage = fetcher.data?.message;
-    const validationErrors = fetcher.data?.errors;
-
     const showValidationErrors =
-        hasValidationErrors && validationErrorsMessage && validationErrors;
+        checkForValidationErrors(fetcher) && fetcher.data?.isSendingMessage;
 
     function handleMessage(e: React.ChangeEvent<HTMLInputElement>) {
         setMessage((prevMessage) => ({
@@ -50,22 +50,16 @@ export default function SendMessageForm({
             method="post"
             className={styles.sendMessageForm}
         >
+            <input
+                type="hidden"
+                name="intent"
+                value="send-message"
+            />
             {showValidationErrors ? (
-                <section className={styles.validationErrors}>
-                    <h3 className={styles.title}>{validationErrorsMessage}</h3>
-                    <ul className={styles.errors}>
-                        {validationErrors.map((error, index) => {
-                            return (
-                                <li
-                                    key={index}
-                                    className={styles.error}
-                                >
-                                    {error.message}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </section>
+                <ValidationErrors
+                    title={fetcher.data!.message}
+                    errors={fetcher.data!.errors}
+                />
             ) : null}
             <div className={styles.inputsWrapper}>
                 <input
@@ -80,10 +74,10 @@ export default function SendMessageForm({
                     icon="comic_bubble"
                     placeholder={`Hi! Nice to meet you!`}
                     clarification="Be nice."
-                    required={true}
                     name="message"
                     value={message.message}
                     onChange={handleMessage}
+                    required
                 />
                 <PillButton
                     buttonAriaLabel="Send the message."

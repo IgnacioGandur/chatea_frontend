@@ -1,0 +1,37 @@
+.roundInfoTooltip {
+    position: relative;
+
+    .button:hover + .message,
+    .button:focus + .message {
+        transform: translate(-50%, 90%) scale(1);
+    }
+
+    .message {
+        background-color: var(--color-background);
+        color: var(--color-text);
+        border: 2px solid var(--color-line);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: var(--size-1) var(--size-2);
+        border-radius: var(--radius-lg);
+        transition: var(--transition-1);
+        transform: translate(-50%, -50%) scale(0);
+        font-family: var(--font-secondary);
+        font-size: 0.9rem;
+    }
+
+    .message::after {
+        content: "";
+        position: absolute;
+        top: -7px;
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+        width: 14px;
+        height: 14px;
+        background-color: var(--color-background);
+        border-left: 2px solid var(--color-line);
+        border-top: 2px solid var(--color-line);
+    }
+}

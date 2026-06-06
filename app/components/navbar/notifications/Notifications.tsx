@@ -8,11 +8,12 @@ import PillButton from "~/components/pill-button/PillButton";
 import { useFetcherToast } from "~/hooks/useFetcherToast";
 import type { $ZodIssue } from "zod/v4/core";
 import ValidationErrors from "~/components/validation-errors/ValidationErrors";
+import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
 
 interface ActionResponse {
     success: boolean;
     message: string;
-    errors?: $ZodIssue[];
+    errors: $ZodIssue[];
 }
 
 export default function Notifications() {
@@ -41,8 +42,8 @@ export default function Notifications() {
         >
             <span
                 className={`
-            material-symbols-rounded
-            ${classes.loaderIcon}
+                material-symbols-rounded
+                ${classes.loaderIcon}
             `}
             >
                 abc
@@ -57,11 +58,7 @@ export default function Notifications() {
         toastId: "respond-friendship",
     });
 
-    const hasValidationErrors = fetcher.data?.success === false;
-    const validationErrorMessage = fetcher.data?.message;
-    const validationErrors = fetcher.data?.errors;
-    const showValidationErrors =
-        hasValidationErrors && validationErrorMessage && validationErrors;
+    const showValidationErrors = checkForValidationErrors(fetcher);
 
     return (
         <Suspense fallback={suspenseLoaderButton}>
@@ -125,8 +122,8 @@ export default function Notifications() {
                                     >
                                         {showValidationErrors ? (
                                             <ValidationErrors
-                                                title={validationErrorMessage}
-                                                errors={validationErrors}
+                                                title={fetcher.data!.message}
+                                                errors={fetcher.data!.errors}
                                             />
                                         ) : null}
                                         <h3 className={`${classes.titleSmall}`}>
@@ -179,7 +176,7 @@ export default function Notifications() {
                                                             }
                                                         >
                                                             <img
-                                                                className={`${classes.profilePictureSmall} ${styles.ppf}`}
+                                                                className={`${classes.profilePictureRoundSmall} ${styles.ppf}`}
                                                                 src={
                                                                     user.profilePictureUrl
                                                                 }

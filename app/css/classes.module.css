@@ -16,8 +16,9 @@
         --bg-color: rgba(255, 255, 255, 0.2);
     }
 
-    .icon {
+    span {
         color: transparent;
+        user-select: none;
     }
 }
 
@@ -117,13 +118,50 @@
     color: transparent;
 }
 
-.profilePictureSmall {
+.profilePictureRoundSmall {
+    background-color: var(--color-background);
     width: 30px;
     height: 30px;
     object-fit: cover;
     object-position: center;
     border-radius: var(--radius-total);
-    border: 1px solid var(--color-line);
+    border: 2px solid var(--color-line);
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.noWrap {
+    text-wrap: nowrap;
+}
+
+.floatingForm {
+    gap: var(--size-4);
+    padding: var(--size-4);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-line);
+}
+
+.separator {
+    align-self: stretch;
+    min-height: 2px;
+    border-radius: 10px;
+    background-image: var(--gradient-main-colors);
+}
+
+.textSmallSecondary {
+    font-family: var(--font-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 @keyframes animateLoaderBackground {

@@ -11,8 +11,8 @@ interface CustomInput {
     clarification?: string;
     required: boolean;
     name: string;
-    value: string;
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    value?: string;
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CustomInput({
@@ -57,7 +57,7 @@ export default function CustomInput({
                     name={name}
                     placeholder={placeholder}
                     value={value}
-                    onChange={onChange}
+                    onChange={onChange ? onChange : undefined}
                     required={required}
                 />
                 {type === "password" ? (

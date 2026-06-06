@@ -4,8 +4,8 @@ import type { MaterialSymbols } from "material-design-icons-literal-types";
 
 interface EmptySectionProps {
     message: string;
-    linkMessage: string;
-    linkPath: string;
+    linkMessage?: string;
+    linkPath?: string;
     icon: MaterialSymbols;
 }
 
@@ -21,12 +21,14 @@ export default function EmptySection({
             <span className={`material-symbols-rounded ${styles.icon}`}>
                 {icon}
             </span>
-            <NavLink
-                className={styles.link}
-                to={linkPath}
-            >
-                {linkMessage}
-            </NavLink>
+            {linkMessage && linkPath ? (
+                <NavLink
+                    className={styles.link}
+                    to={linkPath}
+                >
+                    {linkMessage}
+                </NavLink>
+            ) : null}
         </section>
     );
 }

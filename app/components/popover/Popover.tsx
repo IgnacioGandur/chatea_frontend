@@ -2,7 +2,7 @@ import type React from "react";
 import styles from "./Popover.module.css";
 
 interface PopoverProps {
-    anchorName: string;
+    anchorName: `--${string}`;
     popoverTarget: string;
     buttonContent: React.ReactNode | string;
     altPopoverClass?: string;
@@ -38,7 +38,7 @@ export default function Popover({
                 {buttonContent}
             </button>
             <div
-                className={`${styles.popover} ${altPopoverClass}`}
+                className={`${styles.popover} ${altPopoverClass ? altPopoverClass : ""}`}
                 popover="auto"
                 id={popoverTarget}
                 style={{
