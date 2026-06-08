@@ -1,28 +1,82 @@
-.sidebar {
+.conversationsSidebar,
+.skeleton {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--color-line);
+    min-width: 340px;
 }
 
-.sidebar.noConversations {
-    justify-content: center;
-    align-items: center;
-    gap: var(--size-4);
-    align-items: center;
-    min-width: max-content;
-    padding: var(--size-4);
+.conversationsSidebar {
+    border-right: 1px solid var(--color-line);
 
-    > * {
-        text-align: center;
+    .header {
+        gap: var(--size-3);
+        padding: var(--size-3);
+        border-bottom: 1px solid var(--color-line);
+
+        .separator {
+            background-image: var(--gradient-main-colors);
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-total);
+        }
+
+        .icon {
+            font-size: var(--icon-size-4);
+        }
     }
 
-    .title {
-        font-size: var(--font-size-2);
-    }
+    .noConversations {
+        flex: 1;
+        gap: var(--size-4);
+        min-width: max-content;
+        padding: var(--size-4);
 
-    .link {
-        color: var(--color-text-dimmed);
-        font-size: var(--font-size-1);
-        font-style: italic;
+        > * {
+            text-align: center;
+        }
+
+        .link {
+            color: var(--color-text-dimmed);
+            font-size: var(--font-size-1);
+            font-style: italic;
+        }
+    }
+}
+
+.skeleton {
+    .skeletonConversation {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+            "ppf title"
+            "ppf message";
+        gap: var(--size-2);
+        padding: var(--size-2);
+        border-bottom: 1px solid var(--color-line);
+
+        .skeletonPpf {
+            grid-area: ppf;
+            border-radius: var(--radius-total);
+            aspect-ratio: 1/1;
+            width: 45px;
+            height: 45px;
+            border: 1px solid var(--color-line);
+        }
+
+        .skeletonTitle,
+        .skeletonMessage {
+            height: var(--font-size-2);
+            border-radius: var(--radius-md);
+        }
+
+        .skeletonTitle {
+            grid-area: title;
+            width: 60%;
+        }
+
+        .skeletonMessage {
+            grid-area: message;
+            width: 100%;
+        }
     }
 }

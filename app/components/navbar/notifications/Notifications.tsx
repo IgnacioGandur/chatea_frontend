@@ -53,10 +53,7 @@ export default function Notifications() {
 
     if (!friendshipRequestsPromise) return;
 
-    useFetcherToast(fetcher, {
-        loadingMessage: "Responding request...",
-        toastId: "respond-friendship",
-    });
+    const setToastData = useFetcherToast(fetcher);
 
     const showValidationErrors = checkForValidationErrors(fetcher);
 
@@ -176,7 +173,7 @@ export default function Notifications() {
                                                             }
                                                         >
                                                             <img
-                                                                className={`${classes.profilePictureRoundSmall} ${styles.ppf}`}
+                                                                className={`${classes.profilePictureRound} ${classes.pictureSmall} ${styles.ppf}`}
                                                                 src={
                                                                     user.profilePictureUrl
                                                                 }
@@ -198,6 +195,16 @@ export default function Notifications() {
                                                             </span>
                                                         </NavLink>
                                                         <fetcher.Form
+                                                            onSubmit={() => {
+                                                                setToastData({
+                                                                    loadingMessage:
+                                                                        "Responding request...",
+                                                                    failMessage:
+                                                                        "Error while responding request.",
+                                                                    toastId:
+                                                                        "respond-friendship",
+                                                                });
+                                                            }}
                                                             method="post"
                                                             action="/respond-friendship-request"
                                                             className={`${styles.buttons} ${classes.flexRowCenter}`}

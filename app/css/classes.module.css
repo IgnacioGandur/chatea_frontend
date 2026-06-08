@@ -41,6 +41,32 @@
     gap: var(--size-2);
 }
 
+.flexRowStartCenter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.flexColumnCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.flexColumnStartCenter {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
 .buttonHoverStyleMainColor {
     border: 2px solid var(--color-line);
     background-color: var(--color-background);
@@ -76,22 +102,22 @@
     font-weight: 400;
 }
 
+.titleSmallMainFont {
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.titleMedium {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-4);
+    font-weight: 400;
+}
+
 .smallText {
     font-size: var(--font-size-1);
     color: var(--color-text-dimmed);
     font-style: italic;
-}
-
-.flexColumn {
-    display: flex;
-    flex-direction: column;
-}
-
-.flexColumnCenter {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .roundDefaultButton {
@@ -118,14 +144,28 @@
     color: transparent;
 }
 
-.profilePictureRoundSmall {
-    background-color: var(--color-background);
+.pictureSmall {
     width: 30px;
     height: 30px;
+}
+
+.pictureMedium {
+    width: 40px;
+    height: 40px;
+}
+
+.pictureBig {
+    width: 150px;
+    height: 150px;
+}
+
+.profilePictureRound {
+    aspect-ratio: 1/1;
     object-fit: cover;
     object-position: center;
     border-radius: var(--radius-total);
     border: 2px solid var(--color-line);
+    background-color: var(--color-background);
 }
 
 .srOnly {
@@ -162,6 +202,45 @@
     font-family: var(--font-secondary);
     font-size: 0.8rem;
     font-weight: 600;
+}
+
+.textMainDimmedItalic {
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    color: var(--color-text-dimmed);
+    font-style: italic;
+}
+
+.textMainDimmedItalic::first-letter {
+    text-transform: capitalize;
+}
+
+.disabledLink {
+    text-decoration: none;
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.ellipsisOnOverflowingText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ballSeparator {
+    width: 6px;
+    height: 6px;
+    background-image: var(--gradient-main-colors);
+    border-radius: var(--radius-total);
+}
+
+.textAlignCenter {
+    text-align: center;
+}
+
+.noBorderNoOutline {
+    border: none;
+    outline: none;
 }
 
 @keyframes animateLoaderBackground {

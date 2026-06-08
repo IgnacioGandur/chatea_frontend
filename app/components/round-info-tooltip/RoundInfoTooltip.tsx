@@ -5,13 +5,17 @@ import { useId } from "react";
 
 interface RoundInfoTooltipProps {
     className?: string;
+    buttonClassName?: string;
     icon: MaterialSymbols;
+    iconClassName?: string;
     tooltipMessage: string;
 }
 
 export default function RoundInfoTooltip({
     className,
+    buttonClassName,
     icon,
+    iconClassName,
     tooltipMessage,
 }: RoundInfoTooltipProps) {
     const tooltipId = useId();
@@ -24,15 +28,16 @@ export default function RoundInfoTooltip({
             `}
         >
             <button
-                type="button"
                 className={`
+                    ${buttonClassName ? buttonClassName : ""}
                     ${styles.button}
                     ${classes.roundDefaultButton}
-                    `}
+                `}
+                type="button"
                 aria-labelledby={tooltipId}
             >
                 <span
-                    className={`${classes.defaultIcon} material-symbols-rounded`}
+                    className={`${classes.defaultIcon} ${iconClassName ? iconClassName : ""} material-symbols-rounded`}
                 >
                     {icon}
                 </span>

@@ -214,15 +214,7 @@ export default function Users({ loaderData }: Route.ComponentProps) {
     const showValidationErrors =
         checkForValidationErrors(fetcher) && !fetcher.data?.isSendingMessage;
 
-    useFetcherToast(fetcher, {
-        failMessage: showValidationErrors
-            ? "Friendship operation failed."
-            : "Message failed.",
-        loadingMessage: showValidationErrors
-            ? "Handling friendship..."
-            : "Sending message...",
-        toastId: showValidationErrors ? "friendship" : "send-message",
-    });
+    const setToastData = useFetcherToast(fetcher);
 
     const buttonLoader = (
         <div
@@ -497,6 +489,18 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                         }
                                                                     >
                                                                         <fetcher.Form
+                                                                            onSubmit={() =>
+                                                                                setToastData(
+                                                                                    {
+                                                                                        failMessage:
+                                                                                            "Error while removing friend.",
+                                                                                        loadingMessage:
+                                                                                            "Removing from friends...",
+                                                                                        toastId:
+                                                                                            "remove-friend",
+                                                                                    },
+                                                                                )
+                                                                            }
                                                                             className={
                                                                                 styles.friendshipForm
                                                                             }
@@ -571,6 +575,18 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                         anchorButtonTitle="Cancel friendship request"
                                                                     >
                                                                         <fetcher.Form
+                                                                            onSubmit={() =>
+                                                                                setToastData(
+                                                                                    {
+                                                                                        loadingMessage:
+                                                                                            "Canceling request...",
+                                                                                        failMessage:
+                                                                                            "Error while canceling request.",
+                                                                                        toastId:
+                                                                                            "Cancel-request",
+                                                                                    },
+                                                                                )
+                                                                            }
                                                                             className={
                                                                                 styles.friendshipForm
                                                                             }
@@ -669,6 +685,18 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                                 friend!
                                                                             </h3>
                                                                             <fetcher.Form
+                                                                                onSubmit={() => {
+                                                                                    setToastData(
+                                                                                        {
+                                                                                            loadingMessage:
+                                                                                                "Responding request...",
+                                                                                            failMessage:
+                                                                                                "Error while responding request.",
+                                                                                            toastId:
+                                                                                                "respond-request",
+                                                                                        },
+                                                                                    );
+                                                                                }}
                                                                                 className={
                                                                                     styles.responseButtonsContainer
                                                                                 }
@@ -724,7 +752,21 @@ export default function Users({ loaderData }: Route.ComponentProps) {
                                                                     </Popover>
                                                                 )
                                                             ) : (
-                                                                <fetcher.Form method="post">
+                                                                <fetcher.Form
+                                                                    onSubmit={() =>
+                                                                        setToastData(
+                                                                            {
+                                                                                failMessage:
+                                                                                    "Error while sending request.",
+                                                                                loadingMessage:
+                                                                                    "Sending request...",
+                                                                                toastId:
+                                                                                    "send-request",
+                                                                            },
+                                                                        )
+                                                                    }
+                                                                    method="post"
+                                                                >
                                                                     <input
                                                                         type="hidden"
                                                                         name="intent"

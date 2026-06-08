@@ -1,0 +1,48 @@
+.popover {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+
+    .showPopoverButton {
+    }
+
+    .content {
+        background-color: var(--color-background);
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .content.left {
+        right: 100%;
+        bottom: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: var(--size-1);
+    }
+
+    .content.right {
+        left: 100%;
+        bottom: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: var(--size-1);
+    }
+
+    .content.bottom {
+        top: 100%;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: var(--size-1);
+    }
+
+    .content.top {
+        bottom: 100%;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: var(--size-1);
+    }
+}

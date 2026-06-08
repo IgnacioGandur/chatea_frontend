@@ -6,6 +6,7 @@ import { NavLink, useRouteLoaderData } from "react-router";
 import type { MaterialSymbols } from "material-design-icons-literal-types";
 import LogoSmall from "../logo-small/LogoSmall";
 import type { RootLoaderData } from "~/types/RootLoaderData";
+import { useClickOutside } from "~/hooks/useClickOutside";
 
 interface Link {
     text: string;
@@ -74,27 +75,7 @@ export default function Sidebar() {
         setIsOpen((prevState) => !prevState);
     }
 
-    // Handle closing of sidebar.
-    useEffect(() => {
-        function handleClick(e: PointerEvent) {
-            if (sidebarRef && sidebarRef.current && isOpen) {
-                if (!sidebarRef.current.contains(e.target as Node)) {
-                    setIsOpen(false);
-                }
-            }
-        }
-
-        function handleEscapeKey(e: KeyboardEvent) {
-            if (e.key === "Escape" && isOpen) {
-                setIsOpen(false);
-            }
-        }
-
-        document.addEventListener("click", handleClick);
-        document.addEventListener("keydown", handleEscapeKey);
-
-        return () => document.removeEventListener("click", handleClick);
-    }, [isOpen]);
+    useClickOutside(sidebarRef, isOpen, setIsOpen);
 
     useEffect(() => {
         setLinks(rootData ? loggedLinks : unloggedLinks);
@@ -136,6 +117,7 @@ export default function Sidebar() {
                         {[...links, ...sharedLinks].map((link) => {
                             return (
                                 <NavLink
+                                    onClick={() => setIsOpen(false)}
                                     key={link.to}
                                     className={({ isActive, isPending }) =>
                                         isActive

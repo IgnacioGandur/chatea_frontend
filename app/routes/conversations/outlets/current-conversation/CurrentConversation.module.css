@@ -1,10 +1,35 @@
+.infoVisible {
+    grid-template-areas:
+        "validationErrors info"
+        "header info"
+        "messages info"
+        "sendMessage info";
+    grid-template-columns: 1fr 250px;
+}
+
+.infoHidden {
+    grid-template-areas:
+        "validationErrors"
+        "header"
+        "messages"
+        "sendMessage";
+    grid-template-columns: 1fr;
+}
+
 .currentConversation {
     width: 100%;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+
+    .validationErrors {
+        grid-area: validationErrors;
+    }
 
     .header {
+        grid-area: header;
+        position: relative;
         display: flex;
+        justify-content: space-between;
         border-bottom: 1px solid var(--color-line);
         padding: var(--size-2);
         gap: var(--size-2);
@@ -14,12 +39,9 @@
             gap: inherit;
             text-decoration: none;
 
-            .ppf {
-                border-radius: var(--radius-total);
+            .headerPpf {
                 width: 45px;
                 height: 45px;
-                aspect-ratio: 1/1;
-                border: 1px solid var(--color-line);
             }
 
             .names {
@@ -37,10 +59,38 @@
                 }
             }
         }
+
+        .toggleConversationInfoButton {
+            padding: var(--size-2) var(--size-4);
+            gap: var(--size-2);
+            border-radius: var(--radius-full);
+            border: 1px solid transparent;
+            transition: var(--transition-1);
+
+            .icon {
+                transition: transform 600ms ease 175ms;
+            }
+
+            .icon.infoClosed {
+                transform: rotate(540deg);
+            }
+
+            .icon.infoOpen {
+                transform: rotate(0deg);
+            }
+        }
+
+        .toggleConversationInfoButton:hover,
+        .toggleConversationInfoButton:focus-visible {
+            border: 1px solid var(--color-main);
+            background-color: var(--color-main-transparent);
+        }
     }
 
+    .emptyMessages,
     .messages,
     .noMessages {
+        grid-area: messages;
         flex: 1;
     }
 
@@ -53,6 +103,7 @@
 
     .messageLoader,
     .sendMessageForm {
+        grid-area: sendMessage;
         border-top: 1px solid var(--color-line);
     }
 
@@ -113,6 +164,13 @@
             background-color: var(--color-main-dark);
             border: 1px solid var(--color-main);
         }
+    }
+
+    .conversationInfo {
+        grid-area: info;
+        border-left: 1px solid var(--color-line);
+        gap: var(--size-6);
+        padding: var(--size-4);
     }
 }
 

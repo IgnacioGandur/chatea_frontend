@@ -7,7 +7,11 @@ import type {
     GroupWithParticipants,
 } from "./groups.types";
 import prisma from "./prisma";
-import type { Conversation, PrismaClient } from "~/../generated/prisma/client";
+import type {
+    Conversation,
+    Participant,
+    PrismaClient,
+} from "~/../generated/prisma/client";
 
 class Group {
     prisma: PrismaClient;
@@ -35,7 +39,7 @@ class Group {
         description: string,
         ownerId: string | number,
     ): Promise<Conversation> {
-        const profilePicture = `https://ui-avatars.com/api/?background=random&name=${title}`;
+        const profilePicture = `https://ui-avatars.com/api/?background=random&name=${title.replaceAll(" ", "+")}`;
 
         return await this.prisma.conversation.create({
             data: {
@@ -85,6 +89,75 @@ class Group {
                     userId,
                     conversationId,
                 },
+            },
+        });
+    }
+
+    async updateGroup(
+        conversationId: number,
+        field: "profilePicture" | "title" | "description",
+        value: string,
+    ) {
+        await this.prisma.conversation.update({
+            where: {
+                id: conversationId,
+            },
+            data: {
+                [field]: value,
+            },
+        });
+    }
+
+    async removeParticipantFromGroup(
+        participantId: number,
+        conversationId: number,
+    ): Promise<void> {
+        await this.prisma.participant.delete({
+            where: {
+                userId_conversationId: {
+                    conversationId,
+                    userId: participantId,
+                },
+            },
+        });
+    }
+
+    async getGroupParticipant(
+        participantId: number,
+        conversationId: number,
+    ): Promise<Participant | null> {
+        return await this.prisma.participant.findUnique({
+            where: {
+                userId_conversationId: {
+                    userId: participantId,
+                    conversationId,
+                },
+            },
+        });
+    }
+
+    async getGroupParticipants(conversationId: number): Promise<Participant[]> {
+        return await this.prisma.participant.findMany({
+            where: {
+                conversationId,
+            },
+        });
+    }
+
+    async updateGroupParticipanRole(
+        conversationId: number,
+        participantId: number,
+        role: "USER" | "ADMIN",
+    ): Promise<void> {
+        await this.prisma.participant.update({
+            where: {
+                userId_conversationId: {
+                    userId: participantId,
+                    conversationId,
+                },
+            },
+            data: {
+                role,
             },
         });
     }

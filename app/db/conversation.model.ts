@@ -45,10 +45,17 @@ class Conversation {
         return conversation;
     }
 
-    async get(id: number | string): Promise<ConversationType | null> {
+    async get(id: number | string): Promise<Prisma.ConversationGetPayload<{
+        include: {
+            participants: true;
+        };
+    }> | null> {
         return await this.prisma.conversation.findUnique({
             where: {
                 id: Number(id),
+            },
+            include: {
+                participants: true,
             },
         });
     }

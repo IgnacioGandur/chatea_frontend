@@ -64,6 +64,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     content="width=device-width, initial-scale=1"
                 />
                 <Meta />
+                <meta
+                    name="description"
+                    content="Chateá! A minimalist messaging app where you can meet new people to chat with. You can also create chat groups to share interests with people all over the world! We are waiting for you!"
+                />
                 <Links />
             </head>
             <body>

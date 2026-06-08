@@ -1,0 +1,173 @@
+.conversationInfo {
+    border-left: 1px solid var(--color-line);
+    gap: var(--size-6);
+    padding: var(--size-4);
+
+    .header {
+        align-self: stretch;
+        gap: var(--size-2);
+
+        .icon {
+            font-size: var(--icon-size-4);
+        }
+    }
+
+    .ppfWrapper {
+        width: fit-content;
+        height: fit-content;
+        position: relative;
+        border-radius: var(--radius-total);
+        background-color: red;
+        display: grid;
+        place-items: center;
+
+        .editButton {
+            position: absolute;
+            bottom: 0%;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            border-radius: var(--radius-total);
+            padding: var(--size-1);
+            border: 2px solid var(--color-line);
+        }
+    }
+
+    .titleWrapper {
+        gap: var(--size-2);
+
+        .infoTitle {
+            font-size: var(--font-size-2);
+            text-transform: capitalize;
+        }
+    }
+
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-1);
+        align-self: stretch;
+        align-items: flex-start;
+
+        .groupOwner,
+        .participants {
+            display: flex;
+            align-items: center;
+            gap: var(--size-2);
+        }
+
+        .participants {
+            gap: 0;
+            list-style-type: none;
+
+            .participant {
+            }
+        }
+    }
+
+    .wrapper.showParticipantsModalButton:hover,
+    .wrapper.showParticipantsModalButton:focus-visible {
+        .participants {
+            .participant {
+                .participantPpf {
+                    border: 2px solid var(--color-main);
+                    box-shadow: 0px 0px 12px var(--color-main);
+                    transition: all 400ms linear;
+                }
+            }
+        }
+    }
+
+    .participantsModal {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-4);
+        padding: var(--size-4);
+        min-width: 600px;
+
+        .modalHeader {
+            gap: var(--size-3);
+
+            .icon {
+                font-size: var(--icon-size-4);
+            }
+        }
+
+        .modalParticipantsList {
+            list-style-type: none;
+            flex: 1;
+            gap: var(--size-2);
+
+            .participant {
+                padding: var(--size-2);
+                border-radius: var(--radius-xl);
+                border: 1px solid var(--color-line);
+                display: grid;
+                grid-template-areas:
+                    "ppf roleIcon name options"
+                    "ppf username username options"
+                    "ppf joinDate joinDate options";
+                grid-template-columns: max-content max-content 1fr max-content;
+                gap: 0 var(--size-1);
+                align-items: center;
+
+                .ppf,
+                .options {
+                    align-self: center;
+                }
+
+                .ppf {
+                    grid-area: ppf;
+                }
+
+                .name,
+                .username {
+                    height: fit-content;
+                }
+
+                .name {
+                    align-self: stretch;
+                    justify-self: stretch;
+                    grid-area: name;
+                }
+
+                .roleIcon {
+                    width: fit-content;
+                    grid-area: roleIcon;
+
+                    .altButtonStyle {
+                        border: none !important;
+                        padding: 0;
+                        background-color: transparent;
+
+                        span {
+                            font-size: var(--icon-size-2);
+                        }
+                    }
+                }
+
+                .username {
+                    width: fit-content;
+                    grid-area: username;
+                }
+
+                .you {
+                    grid-area: options;
+                }
+
+                .options {
+                    grid-area: options;
+                }
+
+                .joinDate {
+                    grid-area: joinDate;
+                }
+            }
+        }
+    }
+
+    .creationDate {
+        color: var(--color-text);
+        font-size: var(--font-size-1);
+        margin-top: auto;
+    }
+}

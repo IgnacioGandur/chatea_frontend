@@ -1,0 +1,21 @@
+.anchorButton {
+    border: none;
+
+    .buttonIcon {
+        font-size: 1.25rem;
+    }
+}
+
+.editPopover {
+    margin-top: var(--size-2);
+
+    .editForm {
+        gap: var(--size-3);
+        border: 1px solid var(--color-line);
+
+        .pillButton {
+            justify-content: center;
+            padding: var(--size-2);
+        }
+    }
+}

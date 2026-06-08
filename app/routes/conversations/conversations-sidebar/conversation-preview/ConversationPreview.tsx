@@ -1,8 +1,10 @@
 import type { GetUserConversations } from "~/db/conversation.types";
 import styles from "./ConversationPreview.module.css";
+import classes from "~/css/classes.module.css";
 import { NavLink, useRouteLoaderData } from "react-router";
 import { formatDistanceToNow } from "date-fns";
 import avatar from "/images/avatar.png";
+import NavLinkLoader from "~/components/navlink-loader/NavLinkLoader";
 import type { RootLoaderData } from "~/types/RootLoaderData";
 
 interface ConversationPreviewProps {
@@ -19,56 +21,114 @@ export default function ConversationPreview({
         (p) => p.userId !== loggedUser!.id,
     )?.user;
 
-    const title = userB
-        ? `${userB.firstName} ${userB.lastName}`
-        : conversation.title;
+    const userBName = `${userB?.firstName} ${userB?.lastName}`;
+    const title = isGroup ? conversation.title : userBName;
+    const ppf = isGroup
+        ? conversation.profilePicture
+        : userB?.profilePictureUrl;
 
-    const ppf = userB ? userB.profilePictureUrl : conversation.profilePicture;
+    const titleElement = (
+        <h4
+            className={`
+            ${classes.ellipsisOnOverflowingText}
+            ${classes.titleSmallMainFont}
+        `}
+        >
+            {title}
+        </h4>
+    );
 
     return (
         <NavLink
             to={`/conversations/${conversation.id}`}
             className={({ isActive, isPending }) => {
-                return isActive
-                    ? `${styles.conversationPreview} ${styles.active}`
-                    : isPending
-                      ? `${styles.conversationPreview} ${styles.pending}`
+                return isPending
+                    ? `${classes.flexRowStartCenter} ${classes.disabledLink}`
+                    : isActive
+                      ? `${styles.conversationPreview} ${styles.active}`
                       : styles.conversationPreview;
             }}
         >
-            {isGroup ? (
-                <span className={`material-symbols-rounded ${styles.icon}`}>
-                    group
-                </span>
-            ) : null}
-            <img
-                src={ppf || avatar}
-                alt="Profile picture"
-                className={styles.ppf}
-            />
-            <div className={styles.titleAndDate}>
-                <h4 className={styles.title}>{title}</h4>
-                {conversation.lastMessageAt ? (
-                    <span className={styles.lastMessageAt}>
-                        {formatDistanceToNow(conversation.lastMessageAt, {
-                            addSuffix: true,
-                        })}
-                    </span>
-                ) : null}
-            </div>
-            {conversation.messages.map((m) => {
-                return (
-                    <div
-                        key={m.id}
-                        className={styles.lastMessageContent}
-                    >
-                        {loggedUser.id === m.senderId ? (
-                            <span className={styles.you}>You:</span>
-                        ) : null}
-                        <p className={styles.content}>{m.content}</p>
-                    </div>
+            {({ isPending }) => {
+                return isPending ? (
+                    <NavLinkLoader
+                        style={{ borderBottom: "1px solid var(--color-line)" }}
+                        message="Loading conversation..."
+                    />
+                ) : (
+                    <>
+                        <img
+                            src={ppf || avatar}
+                            alt="Profile picture"
+                            className={`${classes.profilePictureRound} ${styles.ppf}`}
+                        />
+                        <div className={styles.titleAndDate}>
+                            {isGroup ? (
+                                <div
+                                    className={`${styles.groupTitle} ${classes.flexRowStartCenter}`}
+                                >
+                                    <span
+                                        title="Group conversation"
+                                        aria-label="This is a group conversation"
+                                        className={`
+                                            ${styles.icon}
+                                            ${classes.iconWithGradientColors}
+                                            material-symbols-rounded
+                                        `}
+                                    >
+                                        group
+                                    </span>
+                                    <div
+                                        className={classes.ballSeparator}
+                                    ></div>
+                                    {titleElement}
+                                </div>
+                            ) : (
+                                titleElement
+                            )}
+                            {conversation.lastMessageAt ? (
+                                <span
+                                    className={`${styles.lastMessageAt} ${classes.ellipsisOnOverflowingText}`}
+                                >
+                                    {formatDistanceToNow(
+                                        conversation.lastMessageAt,
+                                        {
+                                            addSuffix: true,
+                                        },
+                                    )}
+                                </span>
+                            ) : null}
+                        </div>
+                        {conversation.messages.length === 0 ? (
+                            <p className={styles.lastMessageContent}>
+                                No messages.
+                            </p>
+                        ) : (
+                            conversation.messages.map((m) => {
+                                return (
+                                    <div
+                                        key={m.id}
+                                        className={styles.lastMessageContent}
+                                    >
+                                        {loggedUser!.id === m.senderId ? (
+                                            <span className={styles.you}>
+                                                You:
+                                            </span>
+                                        ) : null}
+                                        <p
+                                            className={
+                                                classes.ellipsisOnOverflowingText
+                                            }
+                                        >
+                                            {m.content}
+                                        </p>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </>
                 );
-            })}
+            }}
         </NavLink>
     );
 }

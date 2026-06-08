@@ -1,12 +1,12 @@
-import type { MaterialIcons } from "material-design-icons-literal-types";
+import type { MaterialSymbols } from "material-design-icons-literal-types";
 import styles from "./CustomInput.module.css";
 import { useState, type ChangeEvent } from "react";
 
 interface CustomInput {
-    type: "text" | "password";
+    type?: "text" | "password";
     labelText: string;
     id: string;
-    icon: MaterialIcons;
+    icon: MaterialSymbols;
     placeholder: string;
     clarification?: string;
     required: boolean;
@@ -16,7 +16,7 @@ interface CustomInput {
 }
 
 export default function CustomInput({
-    type,
+    type = "text",
     labelText,
     icon,
     id,

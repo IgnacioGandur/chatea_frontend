@@ -1,4 +1,4 @@
-import styles from "./conversation.layout.module.css";
+import styles from "./conversations.layout.module.css";
 import { Outlet } from "react-router";
 import ConversationsSidebar from "~/routes/conversations/conversations-sidebar/ConversationsSidebar";
 import { getSession } from "~/session.server";
@@ -17,20 +17,28 @@ export async function loader({ request }: Route.LoaderArgs) {
         });
     }
 
-    const conversations = await conversationsModel.getUserConversations(
+    // const conversationsPromise = new Promise((r) => {
+    //     setTimeout(() => {
+    //         r(conversationsModel.getUserConversations(userId, null));
+    //     }, 3000);
+    // });
+
+    const conversationsPromise = conversationsModel.getUserConversations(
         userId,
         null,
     );
 
-    return conversations;
+    return { conversationsPromise };
 }
 
 export default function ConversationLayout({
     loaderData,
 }: Route.ComponentProps) {
+    const { conversationsPromise } = loaderData;
+
     return (
         <main className={styles.conversations}>
-            <ConversationsSidebar conversations={loaderData.conversations} />
+            <ConversationsSidebar conversationsPromise={conversationsPromise} />
             <Outlet />
         </main>
     );

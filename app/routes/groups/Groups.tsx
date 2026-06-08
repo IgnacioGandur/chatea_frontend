@@ -4,7 +4,7 @@ import classes from "~/css/classes.module.css";
 
 // Packages
 import * as z from "zod";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import {
     Await,
     data,
@@ -44,7 +44,6 @@ import { useFetcherToast } from "~/hooks/useFetcherToast";
 import type { RootLoaderData } from "~/types/RootLoaderData";
 import RoundInfoTooltip from "~/components/round-info-tooltip/RoundInfoTooltip";
 import validateLeavingOrJoiningGroup from "~/validators/validateLeavingOrJoiningGroup";
-import SubmittingFormLoader from "~/components/submitting-form-loader/SubmittingFormLoader";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -63,15 +62,18 @@ export async function loader({}: Route.LoaderArgs) {
     return { groupsPromise };
 }
 
+const validIntents = ["create-group", "join-group", "leave-group"] as const;
+
+type ValidIntent = (typeof validIntents)[number];
+
 type FormValues = {
-    intent: "create-group" | "join-group" | "leave-group";
+    intent: ValidIntent;
     title: string;
     description: string;
     conversationId: string;
 };
 
 export async function action({ request }: Route.ActionArgs) {
-    await new Promise((r) => setTimeout(r, 3000));
     const session = await getSession(request.headers.get("Cookie"));
     const userId = session.get("userId");
 
@@ -91,7 +93,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     const intentValidation = z
         .object({
-            intent: z.enum(["create-group", "join-group", "leave-group"], {
+            intent: z.enum(validIntents, {
                 error: (issue) =>
                     `Invlid intent value. Received: '${issue.input}'.`,
             }),
@@ -196,24 +198,10 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
     const { groupsPromise } = loaderData;
     const { user } = useRouteLoaderData("root") as RootLoaderData;
 
-    const [toastMessages, setToastMessages] = useState<{
-        id: string;
-        loading: string;
-        fail: string;
-    }>({
-        id: "",
-        loading: "",
-        fail: "",
-    });
-
     // Validation errors
     const hasValidationErrors = checkForValidationErrors(fetcher);
 
-    useFetcherToast(fetcher, {
-        loadingMessage: toastMessages.loading,
-        toastId: toastMessages.id,
-        failMessage: toastMessages.fail,
-    });
+    const setToastData = useFetcherToast(fetcher);
 
     return (
         <main className={styles.groups}>
@@ -245,10 +233,10 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                     <fetcher.Form
                         className={`${classes.floatingForm} ${classes.flexColumnCenter}`}
                         onSubmit={() =>
-                            setToastMessages({
-                                fail: "Group creation failed.",
-                                loading: "Creating group",
-                                id: "create-group",
+                            setToastData({
+                                failMessage: "Group creation failed.",
+                                loadingMessage: "Creating group...",
+                                toastId: "group-creation",
                             })
                         }
                         method="post"
@@ -407,11 +395,13 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                                                 >
                                                     <fetcher.Form
                                                         onSubmit={() =>
-                                                            setToastMessages({
-                                                                fail: "Leave group failed.",
-                                                                id: "leave-group",
-                                                                loading:
+                                                            setToastData({
+                                                                loadingMessage:
                                                                     "Leaving group...",
+                                                                failMessage:
+                                                                    "Error while leaving group.",
+                                                                toastId:
+                                                                    "leave-group",
                                                             })
                                                         }
                                                         className={`
@@ -476,11 +466,13 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                                                 >
                                                     <fetcher.Form
                                                         onSubmit={() =>
-                                                            setToastMessages({
-                                                                fail: "Join group failed.",
-                                                                id: "join-group",
-                                                                loading:
+                                                            setToastData({
+                                                                loadingMessage:
                                                                     "Joining group...",
+                                                                failMessage:
+                                                                    "Error while joining group.",
+                                                                toastId:
+                                                                    "join-group",
                                                             })
                                                         }
                                                         className={`
@@ -529,7 +521,7 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                                                     group.title ??
                                                     "Group profile"
                                                 }
-                                                className={`${styles.ppf} ${classes.profilePictureRoundSmall}`}
+                                                className={`${styles.ppf} ${classes.profilePictureRound} ${classes.pictureBig}`}
                                             />
                                             <h2 className={styles.groupTitle}>
                                                 {group.title}
@@ -564,17 +556,12 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                                                                 participant.user
                                                                     .lastName;
 
-                                                            const marginLeft = `-${16 * i}px`;
-
                                                             return i === 9 &&
                                                                 group._count
                                                                     .participants >
                                                                     10 ? (
                                                                 <div
-                                                                    style={{
-                                                                        marginLeft,
-                                                                    }}
-                                                                    className={`${classes.profilePictureRoundSmall} ${styles.moreParticipants}`}
+                                                                    className={`${classes.pictureSmall} ${classes.profilePictureRound} ${styles.moreParticipants}`}
                                                                 >
                                                                     <span
                                                                         className={`${styles.icon} material-symbols-rounded`}
@@ -584,6 +571,9 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                                                                 </div>
                                                             ) : (
                                                                 <li
+                                                                    style={{
+                                                                        transform: `translateX(-${16 * i}px)`,
+                                                                    }}
                                                                     key={
                                                                         participant.userId
                                                                     }
@@ -592,12 +582,10 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                                                                     }
                                                                 >
                                                                     <img
-                                                                        style={{
-                                                                            marginLeft,
-                                                                        }}
                                                                         className={`
                                                                             ${styles.participantPpf}
-                                                                            ${classes.profilePictureRoundSmall}
+                                                                            ${classes.profilePictureRound}
+                                                                            ${classes.pictureSmall}
                                                                             `}
                                                                         src={
                                                                             participant

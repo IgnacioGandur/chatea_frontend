@@ -10,6 +10,7 @@ type FormValues = {
 };
 
 export async function action({ request }: Route.ActionArgs) {
+    await new Promise((r) => setTimeout(r, 3000));
     const session = await getSession(request.headers.get("Cookie"));
     const userId = session.get("userId");
 
