@@ -10,3 +10,4 @@
 .netlify
 
 /generated/prisma
+supabase_password
