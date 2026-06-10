@@ -52,6 +52,11 @@ const unloggedLinks: Link[] = [
 
 const loggedLinks: Link[] = [
     {
+        text: "Dashboard",
+        icon: "dashboard",
+        to: "dashboard",
+    },
+    {
         text: "Conversations",
         icon: "conversation",
         to: "conversations",
@@ -63,6 +68,7 @@ const loggedLinks: Link[] = [
     },
 ];
 
+// TODO: Display a loader while the link is loading and then close the sidebar.
 export default function Sidebar() {
     const { user: rootData } = useRouteLoaderData("root") as RootLoaderData;
     const [links, setLinks] = useState<Link[]>(

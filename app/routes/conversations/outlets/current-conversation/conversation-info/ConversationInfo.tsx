@@ -50,6 +50,11 @@ export default function ConversationInfo({
 
     const setToastData = useFetcherToast(fetcher);
 
+    const isNotIdle = fetcher.state !== "idle";
+    const isUpdatingProfilePicture =
+        (isNotIdle && fetcher.formData?.get("profilePictureUrl")) ||
+        fetcher.formData?.get("file");
+
     return (
         <aside
             className={`
@@ -77,26 +82,65 @@ export default function ConversationInfo({
                     icon="crown"
                 />
             ) : null}
-            <div className={styles.ppfWrapper}>
-                <img
-                    className={`${classes.profilePictureRound} ${classes.pictureBig}`}
-                    src={ppf ?? undefined}
-                    alt={title ?? undefined}
-                />
-                {loggedUserIsGroupOwner ? (
-                    <EditFieldButton
-                        anchorButtonClass={styles.editButton}
-                        buttonIcon="background_replace"
-                        labelText="Edit group's profile picture URL"
-                        fieldId="edit-group-ppf"
-                        inputIcon="edit"
-                        placeholder="https://placehold.co/600x400.png"
-                        inputName="profilePictureUrl"
-                        intentValue="edit-group"
-                        fetcher={fetcher}
+            {isUpdatingProfilePicture ? (
+                <div
+                    className={`${styles.ppfLoader} ${classes.profilePictureRound} ${classes.pictureBig} ${classes.suspenseBackgroundAnimation}`}
+                ></div>
+            ) : (
+                <div className={styles.ppfWrapper}>
+                    <img
+                        className={`${classes.profilePictureRound} ${classes.pictureBig}`}
+                        src={ppf ?? undefined}
+                        alt={title ?? undefined}
                     />
-                ) : null}
-            </div>
+                    {loggedUserIsGroupOwner ? (
+                        <>
+                            <EditFieldButton
+                                anchorButtonClass={styles.editButton}
+                                buttonIcon="background_replace"
+                                labelText="Edit group's profile picture URL"
+                                fieldId="edit-group-ppf"
+                                inputIcon="edit"
+                                placeholder="https://placehold.co/600x400.png"
+                                inputName="profilePictureUrl"
+                                intentValue="edit-group"
+                                fetcher={fetcher}
+                            />
+                            <AltPopover
+                                icon="upload"
+                                className={styles.uploadPpf}
+                            >
+                                <fetcher.Form
+                                    onSubmit={() =>
+                                        setToastData({
+                                            failMessage:
+                                                "Profile picture update failed.",
+                                            loadingMessage:
+                                                "Updating profile picture...",
+                                            toastId: "upload-profile-picture",
+                                        })
+                                    }
+                                    encType="multipart/form-data"
+                                    method="post"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="intent"
+                                        value="upload-profile-picture"
+                                    />
+                                    <input
+                                        type="file"
+                                        name="file"
+                                        accept="image/*"
+                                        required
+                                    />
+                                    <button type="submit">Upload</button>
+                                </fetcher.Form>
+                            </AltPopover>
+                        </>
+                    ) : null}
+                </div>
+            )}
             <div
                 className={`${styles.titleWrapper} ${classes.flexRowStartCenter}`}
             >
@@ -191,6 +235,7 @@ export default function ConversationInfo({
                     </ul>
                 </button>
             ) : null}
+            <button>Leave group</button>
             <p
                 className={`
                     ${styles.creationDate}

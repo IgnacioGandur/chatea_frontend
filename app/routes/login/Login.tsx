@@ -15,17 +15,17 @@ import validateUserLogin from "~/validators/validateUserLogin";
 import ValidationErrors from "~/components/validation-errors/ValidationErrors";
 
 // Validators
-import throwValidationErrors from "~/validators/throwValidationErrors";
 import { commitSession, getSession } from "~/session.server";
 
 // Db
 import userModel from "~/db/user.model";
 import CustomLoader from "~/components/custom-loader/CustomLoader";
+import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
 
 interface LoginActionResponse {
     success: boolean;
     message: string;
-    errors?: $ZodIssue[];
+    errors: $ZodIssue[];
 }
 
 export function meta({}: Route.MetaArgs) {
@@ -57,19 +57,26 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
 }
 
+type FormValues = {
+    username: string;
+    password: string;
+};
+
 export async function action({ request }: Route.ActionArgs) {
     const session = await getSession(request.headers.get("Cookie"));
 
     const form = await request.formData();
-    const values = Object.fromEntries(form) as {
-        username: string;
-        password: string;
-    };
+    const values = Object.fromEntries(form) as FormValues;
+    const { username, password } = values;
 
-    const validationResult = await validateUserLogin.safeParseAsync(values);
+    const validation = await validateUserLogin(username, password);
 
-    if (!validationResult.success) {
-        return throwValidationErrors(validationResult.error.issues);
+    if (!validation.success) {
+        return {
+            success: false,
+            message: "Unable to log user:",
+            errors: validation.error.issues,
+        };
     }
 
     const user = await userModel.get(values.username);
@@ -101,12 +108,7 @@ export default function Login() {
         }));
     }
 
-    // Validation
-    const responseHasinputErrors = fetcher.data && !fetcher.data?.success;
-    const inputErrorsMessage = fetcher.data?.message;
-    const inputErrors = fetcher.data?.errors;
-    const showValidationErrors =
-        responseHasinputErrors && inputErrorsMessage && inputErrors;
+    const hasValidationErrors = checkForValidationErrors(fetcher);
 
     const isSubmitting = fetcher.state === "submitting";
 
@@ -117,10 +119,10 @@ export default function Login() {
             ) : null}
             <h1>login page</h1>
             {message ? <p className={styles.message}>{message}</p> : null}
-            {showValidationErrors ? (
+            {hasValidationErrors ? (
                 <ValidationErrors
-                    title={inputErrorsMessage}
-                    errors={inputErrors}
+                    title={fetcher.data!.message}
+                    errors={fetcher.data!.errors}
                 />
             ) : null}
             {isSubmitting ? (

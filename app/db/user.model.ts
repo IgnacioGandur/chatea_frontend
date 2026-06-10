@@ -1,8 +1,10 @@
 import prisma from "./prisma";
 import {
+    Prisma,
     PrismaClient,
     type User as UserType,
 } from "../../generated/prisma/client";
+import type { UserProfileStats } from "./user.types";
 
 class User {
     prisma: PrismaClient;
@@ -56,6 +58,95 @@ class User {
         return await this.prisma.user.findMany({
             omit: {
                 password: true,
+            },
+        });
+    }
+
+    async getUserProfileStats(id: number): UserProfileStats {
+        const [
+            user,
+            sentMessagesCount,
+            friendshipsCount,
+            totalConversationsCount,
+            privateConversationsCount,
+            groupConversationsCount,
+            ownedGroupsCount,
+        ] = await this.prisma.$transaction([
+            this.prisma.user.findUnique({
+                where: {
+                    id,
+                },
+            }),
+            this.prisma.message.count({
+                where: {
+                    senderId: id,
+                },
+            }),
+            this.prisma.friendship.count({
+                where: {
+                    status: "ACCEPTED",
+                    OR: [{ userAId: id }, { userBId: id }],
+                },
+            }),
+            this.prisma.conversation.count({
+                where: {
+                    participants: {
+                        some: {
+                            userId: id,
+                        },
+                    },
+                },
+            }),
+            this.prisma.conversation.count({
+                where: {
+                    isGroup: false,
+                    participants: {
+                        some: {
+                            userId: id,
+                        },
+                    },
+                },
+            }),
+            this.prisma.conversation.count({
+                where: {
+                    isGroup: true,
+                    participants: {
+                        some: {
+                            userId: id,
+                        },
+                    },
+                },
+            }),
+            this.prisma.conversation.count({
+                where: {
+                    isGroup: true,
+                    ownerId: id,
+                },
+            }),
+        ]);
+
+        return {
+            user,
+            sentMessagesCount,
+            friendshipsCount,
+            totalConversationsCount,
+            privateConversationsCount,
+            groupConversationsCount,
+            ownedGroupsCount,
+        };
+    }
+
+    async updateUser(
+        id: number,
+        field: "profilePictureUrl",
+        value: string,
+    ): Promise<UserType> {
+        return await this.prisma.user.update({
+            where: {
+                id,
+            },
+            data: {
+                [field]: value,
             },
         });
     }

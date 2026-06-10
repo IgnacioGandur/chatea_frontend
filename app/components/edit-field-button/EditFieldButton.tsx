@@ -17,6 +17,7 @@ interface EditFieldButtonProps {
     intentValue: string;
     fetcher: FetcherWithComponents<any>;
     inputClarification?: string;
+    onSubmit?: () => void;
 }
 
 export default function EditFieldButton({
@@ -30,6 +31,7 @@ export default function EditFieldButton({
     intentValue,
     fetcher,
     inputClarification,
+    onSubmit,
 }: EditFieldButtonProps) {
     return (
         <Popover
@@ -48,6 +50,7 @@ export default function EditFieldButton({
             anchorButtonTitle={labelText}
         >
             <fetcher.Form
+                onSubmit={onSubmit}
                 className={`
                     ${styles.editForm}
                     ${classes.floatingForm}

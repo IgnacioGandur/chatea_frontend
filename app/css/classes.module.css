@@ -34,6 +34,11 @@
     align-items: center;
 }
 
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}
+
 .flexRowCenter {
     display: flex;
     align-items: center;
@@ -159,6 +164,11 @@
     height: 150px;
 }
 
+.pictureGiant {
+    width: 250px;
+    height: 250px;
+}
+
 .profilePictureRound {
     aspect-ratio: 1/1;
     object-fit: cover;
@@ -228,8 +238,9 @@
 }
 
 .ballSeparator {
-    width: 6px;
-    height: 6px;
+    min-width: 6px;
+    min-height: 6px;
+    aspect-ratio: 1/1;
     background-image: var(--gradient-main-colors);
     border-radius: var(--radius-total);
 }

@@ -9,7 +9,7 @@ interface ValidationErrorsProps {
 }
 
 export default function ValidationErrors({
-    roundBorders = true,
+    roundBorders = false,
     className,
     title,
     errors,
@@ -20,18 +20,20 @@ export default function ValidationErrors({
             className={`${styles.validationErrors} ${className ? className : ""}`}
         >
             <h3 className={styles.title}>{title}</h3>
-            <ul className={styles.errors}>
-                {errors.map((e, i) => {
-                    return (
-                        <li
-                            key={i}
-                            className={styles.error}
-                        >
-                            {e.message}
-                        </li>
-                    );
-                })}
-            </ul>
+            {errors ? (
+                <ul className={styles.errors}>
+                    {errors.map((e, i) => {
+                        return (
+                            <li
+                                key={i}
+                                className={styles.error}
+                            >
+                                {e.message}
+                            </li>
+                        );
+                    })}
+                </ul>
+            ) : null}
         </section>
     );
 }

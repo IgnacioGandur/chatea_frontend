@@ -16,7 +16,7 @@ const { getSession, commitSession, destroySession } =
             maxAge: 60 * 60 * 24 * 7, // 7 Das6y cookie
             path: "/",
             sameSite: "lax",
-            secrets: [import.meta.env.VITE_COOKIE_SECRET || "Default secret"],
+            secrets: [import.meta.env.COOKIE_SECRET || "Default secret"],
             secure: true,
         },
     });

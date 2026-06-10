@@ -18,15 +18,7 @@ export default [
         route("logout", "./routes/logout.tsx"),
 
         // Dashboard
-        route("dashboard", "./routes/dashboard/dashboard.tsx", [
-            index(
-                "./routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
-            ),
-            route(
-                "settings",
-                "./routes/dashboard/outlets/settings/settings.tsx",
-            ),
-        ]),
+        route("dashboard", "./routes/dashboard/Dashboard.tsx"),
 
         // Conversations
         layout("./layouts/conversations-layout/conversations.layout.tsx", [

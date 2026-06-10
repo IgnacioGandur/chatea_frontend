@@ -1,6 +1,9 @@
 interface ImportMetaEnv {
+    readonly VITE_SUPABASE_PUBLISHABLE_KEY: string;
+    readonly VITE_SUPABASE_URL: string;
     readonly DATABASE_URL: string;
-    readonly VITE_COOKIE_SECRET: string;
+    readonly COOKIE_SECRET: string;
+    readonly SUPABASE_SECRET_KEY: string;
 }
 
 interface ImportMeta {

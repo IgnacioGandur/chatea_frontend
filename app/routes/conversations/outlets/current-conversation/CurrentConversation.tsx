@@ -47,6 +47,8 @@ import groupsModel from "~/db/groups.model";
 import ConversationInfo from "./conversation-info/ConversationInfo";
 import { validateGroupParticipantDeletion } from "~/validators/validateGroupParticipantDeletion";
 import { validateGroupParticipantRoleUpdate } from "~/validators/validateGroupParticipantRoleUpdate";
+import { deleteFolderFromSupabaseBucket } from "~/supabase/deleteBucketFolder";
+import { supabaseAdmin } from "~/supabase/supabase.server";
 import { validateConversationById } from "~/validators/validateConversationById";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -121,6 +123,7 @@ const validIntents = [
     "edit-group",
     "remove-user",
     "update-participant-role",
+    "upload-profile-picture",
 ] as const;
 
 type ValidIntent = (typeof validIntents)[number];
@@ -134,9 +137,11 @@ type FormValues = {
     description: string;
     participantId: string;
     role: "ADMIN" | "USER";
+    file: File;
 };
 
 export async function action({ request, params }: Route.ActionArgs) {
+    await new Promise((r) => setTimeout(r, 3000));
     const session = await getSession(request.headers.get("Cookie"));
     const loggedUserId = session.get("userId");
 
@@ -312,6 +317,73 @@ export async function action({ request, params }: Route.ActionArgs) {
             return {
                 success: true,
                 message: "Participant role updated.",
+            };
+        }
+
+        case "upload-profile-picture": {
+            const errorMessage = "Profile picture update failed.";
+            const file = formData.get("file") as File;
+
+            const validation =
+                await validateGroupUpdate.uploadProfilePicture(file);
+
+            if (!validation.success) {
+                return {
+                    success: false,
+                    message: "Profile picture update failed.",
+                    errors: validation.error.issues,
+                };
+            }
+
+            try {
+                const folderPath = `${conversationId}`;
+                await deleteFolderFromSupabaseBucket(
+                    "group_profile_pictures",
+                    folderPath,
+                );
+            } catch (error: any) {
+                console.error(
+                    "Error while trying to delete Supabase's group folder.",
+                );
+                return {
+                    success: false,
+                    message: errorMessage,
+                };
+            }
+
+            const filePath = `${conversationId}/${Date.now()}-${validation.data.file.sanitizedName}`;
+
+            const { data: uploadData, error: uploadError } =
+                await supabaseAdmin.storage
+                    .from("group_profile_pictures")
+                    .upload(filePath, file);
+
+            if (uploadError) {
+                console.error(
+                    "Error while uploading profile picture to Supabase's group_profile_pictures bucket.",
+                );
+
+                return {
+                    success: false,
+                    message: errorMessage,
+                };
+            }
+
+            const { data } = supabaseAdmin.storage
+                .from("group_profile_pictures")
+                .getPublicUrl(uploadData.path);
+
+            const cId = validateConversation.data.conversationId;
+
+            await groupsModel.updateGroup(
+                cId,
+                "profilePicture",
+                data.publicUrl,
+            );
+
+            return {
+                success: true,
+                message: "Profile picture updated!",
             };
         }
     }

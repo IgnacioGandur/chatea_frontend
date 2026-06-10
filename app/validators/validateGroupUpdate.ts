@@ -1,21 +1,6 @@
 import * as z from "zod";
-
-async function checkIfLinkPointsToImage(url: string): Promise<boolean> {
-    try {
-        const response = await fetch(url, { method: "HEAD" });
-
-        if (!response) {
-            return false;
-        }
-
-        const contentType = response.headers.get("Content-Type");
-
-        return contentType ? contentType.startsWith("image/") : false;
-    } catch (error) {
-        console.error("Network or CORS error fetching image headers: ", error);
-        return false;
-    }
-}
+import { checkIfUrlPointsToImage } from "./custom-validators/checkIfUrlPointsToImage";
+import { imageFileSchema } from "./custom-validators/validateImageFile";
 
 function minLengthError(field: string, length: number): string {
     return length === 1
@@ -49,10 +34,18 @@ export const validateGroupUpdate = {
                     .string()
                     .min(1, minLengthError("profile picture", 1))
                     .refine(
-                        checkIfLinkPointsToImage,
+                        checkIfUrlPointsToImage,
                         "Invalid profile picture URL.",
                     ),
             })
             .safeParseAsync({ profilePicture });
+    },
+
+    uploadProfilePicture: async (file: File) => {
+        return z
+            .object({
+                file: imageFileSchema,
+            })
+            .safeParseAsync({ file });
     },
 };

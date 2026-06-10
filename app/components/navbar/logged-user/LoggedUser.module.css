@@ -22,10 +22,6 @@
 
     .ppf {
         grid-area: ppf;
-        width: 35px;
-        height: 35px;
-        aspect-ratio: 1/1;
-        border-radius: var(--radius-total);
         align-self: center;
     }
 }

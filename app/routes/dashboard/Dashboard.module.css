@@ -1,0 +1,77 @@
+.dashboard,
+.skeleton {
+    display: flex;
+    flex-direction: column;
+    max-width: 1420px;
+}
+
+.dashboard {
+    .profile {
+        flex: 1;
+        display: grid;
+        grid-template-areas:
+            "user user password"
+            "user user password"
+            "stats stats stats";
+        grid-template-columns: 1fr 1fr auto;
+        grid-template-rows: 1fr 1fr 1fr;
+
+        .user {
+            border-bottom: 1px solid var(--color-line);
+            border-right: 1px solid var(--color-line);
+            grid-area: user;
+
+            .info {
+                flex: 1;
+
+                .ppfWrapper {
+                    position: relative;
+
+                    .ppf {
+                    }
+
+                    .uploadPpf {
+                        border: 2px solid red;
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                    }
+
+                    .editButton {
+                        transform: translate(-50%, -50%);
+                        position: absolute;
+                        right: 0;
+                        bottom: 0;
+                    }
+                }
+            }
+        }
+
+        .stats {
+            grid-area: stats;
+
+            .statsContainer {
+                flex: 1;
+
+                .stat {
+                    flex: 1;
+                    border-right: 1px solid var(--color-line);
+
+                    .header {
+                        gap: var(--size-2);
+                        border-bottom: 1px solid var(--color-line);
+
+                        .icon {
+                            font-size: var(--icon-size-4);
+                        }
+                    }
+                }
+            }
+        }
+
+        .password {
+            grid-area: password;
+            border-bottom: 1px solid var(--color-line);
+        }
+    }
+}

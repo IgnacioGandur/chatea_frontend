@@ -17,7 +17,6 @@
         height: fit-content;
         position: relative;
         border-radius: var(--radius-total);
-        background-color: red;
         display: grid;
         place-items: center;
 
@@ -29,6 +28,13 @@
             border-radius: var(--radius-total);
             padding: var(--size-1);
             border: 2px solid var(--color-line);
+        }
+
+        .uploadPpf {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
         }
     }
 

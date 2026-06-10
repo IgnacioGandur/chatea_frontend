@@ -1,4 +1,5 @@
 import styles from "./LoggedUser.module.css";
+import classes from "~/css/classes.module.css";
 import { NavLink, useFetcher } from "react-router";
 import Popover from "~/components/popover/Popover";
 
@@ -24,7 +25,7 @@ export default function LoggedUser({
             </h4>
             <span className={styles.username}>@{username}</span>
             <img
-                className={styles.ppf}
+                className={`${classes.profilePictureRound} ${classes.pictureMedium} ${styles.ppf}`}
                 src={profilePictureUrl}
                 alt={`${firstName} ${lastName}`}
             />
@@ -37,6 +38,7 @@ export default function LoggedUser({
             popoverTarget="links"
             buttonContent={userInfo}
             altPopoverClass={styles.altPopover}
+            anchorButtonAriaLabel="Show profile options"
         >
             <div className={styles.links}>
                 <NavLink
