@@ -1,3 +1,4 @@
+/* Update grid when conversation 'showInfo' is enabled */
 .infoVisible {
     grid-template-areas:
         "validationErrors info"
@@ -7,6 +8,7 @@
     grid-template-columns: 1fr 250px;
 }
 
+/* Update grid when conversation 'showInfo' is disabled */
 .infoHidden {
     grid-template-areas:
         "validationErrors"
@@ -20,6 +22,7 @@
     width: 100%;
     display: grid;
     grid-template-rows: auto auto 1fr auto;
+    height: 94dvh;
 
     .validationErrors {
         grid-area: validationErrors;
@@ -99,12 +102,17 @@
         flex-direction: column-reverse;
         gap: var(--size-2);
         padding: var(--size-2);
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex-grow: 1;
+        min-height: 0;
     }
 
     .messageLoader,
     .sendMessageForm {
         grid-area: sendMessage;
         border-top: 1px solid var(--color-line);
+        flex-grow: 0;
     }
 
     .messageLoader {

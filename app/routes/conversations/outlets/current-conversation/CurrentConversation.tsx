@@ -50,6 +50,11 @@ import { validateGroupParticipantRoleUpdate } from "~/validators/validateGroupPa
 import { deleteFolderFromSupabaseBucket } from "~/supabase/deleteBucketFolder";
 import { supabaseAdmin } from "~/supabase/supabase.server";
 import { validateConversationById } from "~/validators/validateConversationById";
+import { sanitizeFilename } from "~/validators/custom-validators/sanitizeFilename";
+import { validateMessageAttachment } from "~/validators/validateMessageAttachment";
+import { uploadConversationAttachment } from "~/supabase/uploadConversationAttachment";
+import messageModel from "~/db/message.model";
+import { MessagesList } from "./messages-list/MessagesList";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
     const { id: conversationId } = params;
@@ -141,7 +146,6 @@ type FormValues = {
 };
 
 export async function action({ request, params }: Route.ActionArgs) {
-    await new Promise((r) => setTimeout(r, 3000));
     const session = await getSession(request.headers.get("Cookie"));
     const loggedUserId = session.get("userId");
 
@@ -186,19 +190,79 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     switch (values.intent) {
         case "send-message": {
-            const validation = validateMessageInConversation({
-                message: values.message,
+            const file = formData.get("file") as File;
+            const { message } = values;
+
+            const hasFile = file && file.size > 0 && file.name !== "";
+
+            const validateMessage = validateMessageInConversation({
+                message,
             });
 
-            if (!validation.success) {
+            if (!validateMessage.success) {
                 return {
                     success: false,
                     message: "Error while sending your message.",
-                    errors: validation.error.issues,
+                    errors: validateMessage.error.issues,
                 };
             }
 
-            const message = await messagesModel.create(
+            if (hasFile) {
+                const attachmentValidation =
+                    await validateMessageAttachment(file);
+
+                if (!attachmentValidation.success) {
+                    return {
+                        success: false,
+                        message: "Unable to send attachment.",
+                        errors: attachmentValidation.error.issues,
+                    };
+                }
+
+                try {
+                    const {
+                        data: {
+                            file: { filename },
+                        },
+                    } = attachmentValidation;
+
+                    const {
+                        data: { conversationId: cId, loggedUserId: uId },
+                    } = validateConversation;
+
+                    const supabaseFilename = `${cId}/${uId}-${Date.now()}-${filename}`;
+
+                    const attachmentUrl = await uploadConversationAttachment(
+                        "conversation_attachments",
+                        supabaseFilename,
+                        file,
+                    );
+
+                    await messageModel.createWithAttachment(
+                        validateConversation.data.conversationId,
+                        validateMessage.data.message,
+                        validateConversation.data.loggedUserId,
+                        filename,
+                        attachmentUrl,
+                        file.type,
+                    );
+
+                    return {
+                        success: true,
+                    };
+                } catch (error: any) {
+                    console.error(
+                        "Supabase error. File upload failed: ",
+                        error,
+                    );
+                    return {
+                        success: false,
+                        message: "We were unable to send your attachment.",
+                    };
+                }
+            }
+
+            await messagesModel.create(
                 conversationId,
                 values.message,
                 loggedUserId,
@@ -206,7 +270,6 @@ export async function action({ request, params }: Route.ActionArgs) {
 
             return {
                 success: true,
-                message,
             };
         }
 
@@ -509,25 +572,7 @@ export default function CurrentConversation({
                                     </span>
                                 </button>
                             </header>
-                            {messages?.length === 0 || !messages ? (
-                                <EmptySection
-                                    className={styles.emptyMessages}
-                                    message="No messages in this conversation."
-                                    icon="chat_dashed"
-                                    linkPath="/"
-                                />
-                            ) : (
-                                <ul className={styles.messages}>
-                                    {messages.map((m) => {
-                                        return (
-                                            <SingleMessage
-                                                key={m.id}
-                                                message={m}
-                                            />
-                                        );
-                                    })}
-                                </ul>
-                            )}
+                            <MessagesList messages={messages} />
                             {isSendingMessage ? (
                                 <div className={styles.messageLoader}>
                                     <p className={styles.message}>
@@ -540,9 +585,14 @@ export default function CurrentConversation({
                                 </div>
                             ) : (
                                 <fetcher.Form
+                                    encType="multipart/form-data"
                                     className={styles.sendMessageForm}
                                     method="post"
                                 >
+                                    <input
+                                        type="file"
+                                        name="file"
+                                    />
                                     <input
                                         type="hidden"
                                         name="intent"

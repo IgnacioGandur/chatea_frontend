@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { checkIfUrlPointsToImage } from "./custom-validators/checkIfUrlPointsToImage";
-import { imageFileSchema } from "./custom-validators/validateImageFile";
+import { imageFileSchema } from "./custom-validators/imageFileSchema";
 
 function minLengthError(field: string, length: number): string {
     return length === 1

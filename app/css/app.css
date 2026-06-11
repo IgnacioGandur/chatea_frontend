@@ -29,6 +29,10 @@ body {
     }
 }
 
+input[type="file"] {
+    color: var(--color-text);
+}
+
 a,
 p,
 h1,

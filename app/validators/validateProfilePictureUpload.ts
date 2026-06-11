@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { imageFileSchema } from "./custom-validators/validateImageFile";
+import { imageFileSchema } from "./custom-validators/imageFileSchema";
 
 export async function validateProfilePictureUpload(
     loggedUserId: number,

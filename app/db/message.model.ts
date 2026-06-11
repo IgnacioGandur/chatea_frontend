@@ -44,6 +44,30 @@ class Message {
 
         return message;
     }
+
+    async createWithAttachment(
+        conversationId: number,
+        content: string,
+        senderId: number,
+        fileName: string,
+        fileUrl: string,
+        fileType: string,
+    ): Promise<void> {
+        await this.prisma.message.create({
+            data: {
+                conversationId,
+                content,
+                senderId,
+                attachments: {
+                    create: {
+                        fileName,
+                        fileType,
+                        fileUrl,
+                    },
+                },
+            },
+        });
+    }
 }
 
 export default new Message(prisma);

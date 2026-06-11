@@ -1,26 +1,71 @@
 .message {
     display: flex;
     flex-direction: column;
-    gap: var(--size-1);
+    gap: var(--size-2);
     height: max-content;
-    width: fit-content;
+    align-items: flex-start;
 
-    .content {
-        padding: var(--size-2) calc(var(--size-2) * 2);
-        border-radius: var(--radius-2xl);
-        background-color: var(--color-main-dark);
+    .header {
+        gap: var(--size-2);
+        .name {
+            font-size: var(--font-size-2);
+        }
+
+        .ppf {
+            width: 35px;
+            height: 35px;
+        }
     }
 
     .date {
+        align-self: center;
         font-size: var(--font-size-1);
         color: var(--color-text-dimmed);
         font-style: italic;
     }
-}
-
-.you {
-    align-self: flex-end;
 
     .content {
+        padding: var(--size-3) calc(var(--size-2) * 2);
+        text-align: end;
+        width: fit-content;
+    }
+
+    .content,
+    .attachment {
+        border-radius: 0 var(--radius-3xl) var(--radius-3xl) var(--radius-3xl);
+        background-color: var(--color-secondary-dark);
+    }
+
+    .attachment {
+        padding: var(--size-2);
+
+        .image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+        }
+    }
+}
+
+.message.nextMessage {
+    .name,
+    .ppf,
+    .date {
+        display: none;
+    }
+}
+
+.message.you {
+    position: relative;
+    align-items: flex-end;
+
+    .header {
+        flex-direction: row-reverse;
+    }
+
+    .content,
+    .attachment {
+        background-color: var(--color-main-dark);
+        border-radius: var(--radius-3xl) 0 var(--radius-3xl) var(--radius-3xl);
     }
 }
