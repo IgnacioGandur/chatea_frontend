@@ -1,4 +1,7 @@
-import type { PrismaClient } from "../../generated/prisma/client";
+import type {
+    PrismaClient,
+    Message as MessageType,
+} from "../../generated/prisma/client";
 import { createMessageInclude } from "./message.includes";
 import type { CreateMessage } from "./message.types";
 import prisma from "./prisma";
@@ -65,6 +68,25 @@ class Message {
                         fileUrl,
                     },
                 },
+            },
+        });
+    }
+
+    async deleteById(id: number): Promise<void> {
+        await this.prisma.message.update({
+            where: {
+                id,
+            },
+            data: {
+                deleted: true,
+            },
+        });
+    }
+
+    async getMessageById(id: number): Promise<MessageType | null> {
+        return await this.prisma.message.findUnique({
+            where: {
+                id,
             },
         });
     }

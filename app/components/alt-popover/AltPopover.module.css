@@ -7,10 +7,11 @@
     }
 
     .content {
+        border-radius: var(--radius-xl);
         background-color: var(--color-background);
         position: absolute;
-        bottom: 0;
-        right: 0;
+        /* bottom: 0; */
+        /* right: 0; */
         z-index: 1000;
     }
 

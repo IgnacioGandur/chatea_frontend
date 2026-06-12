@@ -8,6 +8,7 @@ interface AltPopoverProps {
     className?: string;
     buttonClassName?: string;
     icon?: MaterialSymbols;
+    popoverContentClass?: string;
     children: React.ReactNode;
 }
 
@@ -16,6 +17,7 @@ export default function AltPopover({
     className,
     buttonClassName,
     icon = "more_horiz",
+    popoverContentClass,
     children,
 }: AltPopoverProps) {
     const popoverRef = useRef<HTMLDivElement>(null);
@@ -40,7 +42,7 @@ export default function AltPopover({
             {showPopover ? (
                 <div
                     ref={popoverRef}
-                    className={`${styles.content} ${styles[popoverPosition]}`}
+                    className={`${styles.content} ${styles[popoverPosition]} ${popoverContentClass}`}
                 >
                     {children}
                 </div>

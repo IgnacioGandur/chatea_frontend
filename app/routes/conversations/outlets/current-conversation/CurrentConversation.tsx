@@ -29,19 +29,17 @@ import * as z from "zod";
 
 // Components
 import ValidationErrors from "~/components/validation-errors/ValidationErrors";
-import SingleMessage from "./single-message/SingleMessage";
 import CustomPageLoader from "~/components/custom-page-loader/CustomPageLoader";
 import EmptySection from "~/components/empty-section/EmptySection";
 
 // Types
 import type { Route } from "./+types/CurrentConversation";
-import type { ValidationErrorsType } from "~/types/ValidationErrorsType";
 
 // Validators
 import { CustomErrorBoundary } from "~/components/custom-error-boundary/CustomErrorBoundary";
 import type { RootLoaderData } from "~/types/RootLoaderData";
 import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { validateGroupUpdate } from "~/validators/validateGroupUpdate";
 import groupsModel from "~/db/groups.model";
 import ConversationInfo from "./conversation-info/ConversationInfo";
@@ -50,11 +48,13 @@ import { validateGroupParticipantRoleUpdate } from "~/validators/validateGroupPa
 import { deleteFolderFromSupabaseBucket } from "~/supabase/deleteBucketFolder";
 import { supabaseAdmin } from "~/supabase/supabase.server";
 import { validateConversationById } from "~/validators/validateConversationById";
-import { sanitizeFilename } from "~/validators/custom-validators/sanitizeFilename";
 import { validateMessageAttachment } from "~/validators/validateMessageAttachment";
 import { uploadConversationAttachment } from "~/supabase/uploadConversationAttachment";
 import messageModel from "~/db/message.model";
 import { MessagesList } from "./messages-list/MessagesList";
+import { validateGroupMessageDeletion } from "~/validators/validateGroupMessageDeletion";
+import { validateOwnMessageDeletion } from "~/validators/validateOwnMessageDeletion";
+import { useFetcherToast } from "~/hooks/useFetcherToast";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
     const { id: conversationId } = params;
@@ -108,12 +108,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
         });
     }
 
-    // const conversationPromise = new Promise((r) => {
-    //     setTimeout(() => {
-    //         r(conversationsModel.getConversationById(userId, conversationId));
-    //     }, 3000);
-    // });
-
     const conversationPromise = conversationsModel.getConversationById(
         userId,
         conversationId,
@@ -129,6 +123,8 @@ const validIntents = [
     "remove-user",
     "update-participant-role",
     "upload-profile-picture",
+    "delete-group-message",
+    "delete-own-message",
 ] as const;
 
 type ValidIntent = (typeof validIntents)[number];
@@ -143,6 +139,8 @@ type FormValues = {
     participantId: string;
     role: "ADMIN" | "USER";
     file: File;
+    messageId: string;
+    senderId: string;
 };
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -449,6 +447,57 @@ export async function action({ request, params }: Route.ActionArgs) {
                 message: "Profile picture updated!",
             };
         }
+
+        case "delete-group-message": {
+            const { messageId, senderId } = values;
+            const sId = Number(senderId);
+            const mId = Number(messageId);
+
+            const validation = await validateGroupMessageDeletion(
+                sId,
+                cId,
+                mId,
+                uId,
+            );
+
+            if (!validation.success) {
+                return {
+                    success: false,
+                    message: "Group message deletion failed:",
+                    errors: validation.error.issues,
+                };
+            }
+
+            await messageModel.deleteById(validation.data.messageId);
+
+            return {
+                success: true,
+                message: "Message deleted!",
+            };
+        }
+
+        case "delete-own-message": {
+            const { messageId } = values;
+            const mId = Number(messageId);
+            const luId = Number(loggedUserId);
+
+            const validation = await validateOwnMessageDeletion(mId, luId);
+
+            if (!validation.success) {
+                return {
+                    success: false,
+                    message: "Unable to delete your message:",
+                    errors: validation.error.issues,
+                };
+            }
+
+            await messageModel.deleteById(mId);
+
+            return {
+                success: true,
+                message: "Message deleted!",
+            };
+        }
     }
 }
 
@@ -466,12 +515,30 @@ export default function CurrentConversation({
         setShowInfo((prev) => !prev);
     }
 
-    const fetcher = useFetcher<ValidationErrorsType>();
+    const fetcher = useFetcher({ key: "current-conversation" });
 
     const showValidationErrors = checkForValidationErrors(fetcher);
 
-    // Notifications //FIX: Handle the loading properly.
-    const isSendingMessage = fetcher.state !== "idle";
+    const isNotIdle = fetcher.state !== "idle";
+    const currentIntent = fetcher.formData?.get("intent");
+
+    const isSendingMessage = isNotIdle && currentIntent === "send-message";
+
+    const setToastData = useFetcherToast(fetcher);
+
+    useEffect(() => {
+        const isDeletingMessage =
+            currentIntent === "delete-message" ||
+            currentIntent === "delete-group-message";
+
+        if (isDeletingMessage) {
+            setToastData({
+                failMessage: "Message deletiong failed.",
+                loadingMessage: "Deleting message...",
+                toastId: "delete-message",
+            });
+        }
+    }, [fetcher.data]);
 
     return (
         <Suspense
@@ -572,7 +639,11 @@ export default function CurrentConversation({
                                     </span>
                                 </button>
                             </header>
-                            <MessagesList messages={messages} />
+                            <MessagesList
+                                conversationIsGroup={isGroup}
+                                participants={conversation.participants}
+                                messages={messages}
+                            />
                             {isSendingMessage ? (
                                 <div className={styles.messageLoader}>
                                     <p className={styles.message}>

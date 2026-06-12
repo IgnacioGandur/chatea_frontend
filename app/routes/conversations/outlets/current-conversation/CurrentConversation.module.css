@@ -100,7 +100,7 @@
     .messages {
         display: flex;
         flex-direction: column-reverse;
-        gap: var(--size-2);
+        gap: var(--size-1);
         padding: var(--size-2);
         overflow-y: auto;
         overflow-x: hidden;

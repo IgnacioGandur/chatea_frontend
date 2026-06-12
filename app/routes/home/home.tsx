@@ -1,7 +1,5 @@
 import styles from "./home.module.css";
 import type { Route } from "./+types/home";
-import React from "react";
-import { Await } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -10,17 +8,9 @@ export function meta({}: Route.MetaArgs) {
     ];
 }
 
-export function loader({}: Route.LoaderArgs) {
-    const promise = new Promise((res) =>
-        setTimeout(() => res("Data from the promise"), 1000),
-    );
+export function loader({}: Route.LoaderArgs) {}
 
-    return { promise };
-}
-
-export default function Home({ loaderData }: Route.ComponentProps) {
-    const loader = <div className={styles.loader}>Loading data...</div>;
-
+export default function Home({}: Route.ComponentProps) {
     return (
         <main className={styles.home}>
             <h1 className={styles.title}>Chateá!</h1>
@@ -30,13 +20,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 impedit, architecto amet obcaecati sapiente et, ipsam modi
                 voluptates. Sint aliquid voluptas temporibus.
             </p>
-            <React.Suspense fallback={loader}>
-                <Await resolve={loaderData.promise}>
-                    {(value) => (
-                        <h1>This is the content of the promise: {value}</h1>
-                    )}
-                </Await>
-            </React.Suspense>
         </main>
     );
 }

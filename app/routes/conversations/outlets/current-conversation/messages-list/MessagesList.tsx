@@ -1,10 +1,13 @@
 import styles from "./MessagesList.module.css";
 import SingleMessage from "../single-message/SingleMessage";
 import EmptySection from "~/components/empty-section/EmptySection";
-import type { Prisma } from "../../../../../../generated/prisma/client";
+import type { Participant, Prisma } from "~/../generated/prisma/client";
 import parentStyles from "../CurrentConversation.module.css";
+import type { FetcherWithComponents } from "react-router";
 
 interface MessagesListProps {
+    conversationIsGroup: boolean;
+    participants: Participant[];
     messages: Prisma.MessageGetPayload<{
         include: {
             attachments: true;
@@ -13,7 +16,11 @@ interface MessagesListProps {
     }>[];
 }
 
-export function MessagesList({ messages }: MessagesListProps) {
+export function MessagesList({
+    conversationIsGroup,
+    messages,
+    participants,
+}: MessagesListProps) {
     return messages.length === 0 || !messages ? (
         <EmptySection
             className={parentStyles.emptyMessages}
@@ -29,6 +36,8 @@ export function MessagesList({ messages }: MessagesListProps) {
 
                 return (
                     <SingleMessage
+                        conversationIsGroup={conversationIsGroup}
+                        participants={participants}
                         nextMessageIsFromSameUser={nextMessageIsFromSameUser}
                         key={m.id}
                         message={m}

@@ -6,7 +6,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--size-2);
-    padding: var(--size-1) calc(var(--size-2) * 2);
+    padding: var(--size-2);
     border-radius: var(--radius-full);
     border: 2px solid var(--color-line);
     font-weight: 700;
@@ -19,4 +19,8 @@
 .button:focus {
     border: 2px solid var(--color-main);
     background-color: var(--color-main-transparent);
+}
+
+.button.centerButtonContent {
+    justify-content: center;
 }

@@ -2,7 +2,7 @@ import type { Fetcher } from "react-router";
 import type { ValidationErrorsType } from "~/types/ValidationErrorsType";
 
 export function checkForValidationErrors(
-    fetcher: Fetcher<Partial<ValidationErrorsType>>,
+    fetcher: Fetcher<ValidationErrorsType>,
 ): boolean {
     const data = fetcher.data;
 

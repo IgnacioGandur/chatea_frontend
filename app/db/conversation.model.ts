@@ -221,7 +221,11 @@ class Conversation {
                         },
                         include: {
                             attachments: true,
-                            sender: true,
+                            sender: {
+                                omit: {
+                                    password: true,
+                                },
+                            },
                         },
                         orderBy: {
                             createdAt: "desc",

@@ -1,7 +1,10 @@
+/* 'message' styles are applied to messages that are NOT sent by the logged user. */
 .message {
+    --ppf-size: 35px;
+
     display: flex;
     flex-direction: column;
-    gap: var(--size-2);
+    gap: var(--size-1);
     height: max-content;
     align-items: flex-start;
 
@@ -12,8 +15,8 @@
         }
 
         .ppf {
-            width: 35px;
-            height: 35px;
+            width: var(--ppf-size);
+            height: var(--ppf-size);
         }
     }
 
@@ -24,34 +27,85 @@
         font-style: italic;
     }
 
-    .content {
-        padding: var(--size-3) calc(var(--size-2) * 2);
-        text-align: end;
-        width: fit-content;
+    .contentWrapper {
+        display: grid;
+        grid-template-areas:
+            "deleteButton message"
+            "empty attachment";
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto 1fr;
+        gap: var(--size-1) var(--size-2);
+
+        .deleteMessageButtonPlaceholder,
+        .deletePopover {
+            grid-area: deleteButton;
+        }
+
+        .deleteMessageButtonPlaceholder {
+            width: var(--ppf-size);
+            height: var(--ppf-size);
+        }
+
+        .deletePopover {
+            place-self: center;
+            transition: var(--transition-1);
+
+            .popoverContent {
+                margin-right: var(--size-2);
+            }
+
+            .deleteMessageButton {
+                opacity: 0;
+            }
+        }
+
+        .content {
+            grid-area: message;
+            padding: var(--size-3) calc(var(--size-2) * 2);
+            text-align: end;
+            width: fit-content;
+        }
+
+        .content,
+        .attachment {
+            border-radius: 4px var(--radius-3xl) var(--radius-3xl)
+                var(--radius-3xl);
+            background-color: var(--color-secondary-dark);
+        }
+
+        .attachment {
+            grid-area: attachment;
+            padding: var(--size-2);
+
+            .image {
+                width: 100%;
+                max-width: 300px;
+                height: auto;
+            }
+        }
     }
+}
 
-    .content,
-    .attachment {
-        border-radius: 0 var(--radius-3xl) var(--radius-3xl) var(--radius-3xl);
-        background-color: var(--color-secondary-dark);
-    }
-
-    .attachment {
-        padding: var(--size-2);
-
-        .image {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
+.message:hover {
+    .contentWrapper {
+        .deletePopover {
+        }
+        .deleteMessageButton {
+            opacity: 1;
         }
     }
 }
 
 .message.nextMessage {
-    .name,
-    .ppf,
+    .header,
     .date {
         display: none;
+    }
+
+    .contentWrapper {
+        .content,
+        .attachment {
+        }
     }
 }
 
@@ -63,9 +117,23 @@
         flex-direction: row-reverse;
     }
 
-    .content,
-    .attachment {
-        background-color: var(--color-main-dark);
-        border-radius: var(--radius-3xl) 0 var(--radius-3xl) var(--radius-3xl);
+    .contentWrapper {
+        grid-template-areas:
+            "message deleteButton"
+            "attachment empty";
+        justify-items: flex-end;
+
+        .content,
+        .attachment {
+            background-color: var(--color-main-dark);
+            border-radius: var(--radius-3xl) 4px var(--radius-3xl)
+                var(--radius-3xl);
+        }
+
+        .content {
+        }
+
+        .attachment {
+        }
     }
 }

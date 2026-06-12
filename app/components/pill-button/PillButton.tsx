@@ -33,7 +33,7 @@ export default function PillButton({
             aria-label={buttonAriaLabel}
             type={type}
             title={buttonTitle}
-            className={`${styles.button} ${altButtonClassName ? altButtonClassName : ""}`}
+            className={`${styles.button} ${altButtonClassName ? altButtonClassName : ""} ${!includeEmptySpace && !includeIcon ? styles.centerButtonContent : ""}`}
         >
             {includeEmptySpace && <div className="empty"></div>}
             {buttonText ? (
