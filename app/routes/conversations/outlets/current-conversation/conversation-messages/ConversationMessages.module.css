@@ -1,0 +1,216 @@
+.messages {
+    gap: var(--size-1);
+
+    .message {
+        --ppf-size: 32px;
+
+        gap: var(--size-1);
+
+        > * {
+            gap: inherit;
+        }
+
+        .dayDate {
+            align-self: center;
+            font-size: var(--font-size-1);
+            color: var(--color-text-dimmed);
+        }
+
+        .wrapper {
+            align-items: flex-start;
+
+            .showDeleteMessageFormButton {
+                opacity: 0;
+                transition: var(--transition-1);
+            }
+
+            .deleteMessageForm {
+                padding: var(--size-2);
+                gap: var(--size-3);
+            }
+
+            .contentWrapper {
+                padding: var(--size-2);
+                border-radius: var(--radius-xl);
+                gap: inherit;
+
+                .imageAttachment {
+                    border-radius: var(--radius-xl);
+                    aspect-ratio: 16/9;
+                    max-width: 600px;
+                }
+
+                .textContent {
+                    padding: var(--size-1) var(--size-2);
+                    font-size: var(--font-size-2);
+                }
+
+                .hourDate {
+                    font-size: var(--font-size-1);
+                    color: var(--color-text-dimmed);
+                    font-weight: var(--font-thickness-3);
+                }
+
+                .fileAttachment {
+                    gap: inherit;
+                    min-width: 300px;
+                    width: 100%;
+                    padding: var(--size-2);
+                    border-radius: var(--radius-lg);
+                    background-color: var(--color-background);
+
+                    .attachmentTitle {
+                        font-size: var(--font-size-1);
+                        color: var(--color-text-dimmed);
+                    }
+
+                    .iconAndName {
+                        border-radius: inherit;
+                        gap: var(--size-2);
+                        border: 1px solid var(--color-text-dimmed);
+                        padding: var(--size-2);
+
+                        .icon {
+                            font-size: var(--icon-size-3);
+                        }
+
+                        .dotSeparator {
+                            background-image: var(--gradient-main-colors);
+                            min-height: 0.25rem;
+                            min-width: 0.25rem;
+                            border-radius: var(--radius-total);
+                            aspect-ratio: 1/1;
+                        }
+
+                        .filename {
+                        }
+                    }
+
+                    .extensionAndDownload {
+                        .fileExtension,
+                        .downloadText {
+                            font-size: var(--font-size-1);
+                        }
+
+                        .fileExtension {
+                        }
+
+                        .fileExtension::first-letter {
+                            text-transform: capitalize;
+                        }
+
+                        .downloadText {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+
+            .padding {
+                width: var(--ppf-size);
+                height: var(--ppf-size);
+            }
+        }
+
+        .sender {
+            gap: var(--size-2);
+
+            .name {
+                font-size: var(--font-size-1);
+            }
+
+            .profilePicture {
+                width: var(--ppf-size);
+                height: var(--ppf-size);
+            }
+        }
+    }
+
+    .message:hover {
+        .wrapper {
+            .showDeleteMessageFormButton {
+                opacity: 1;
+            }
+        }
+    }
+
+    .message.loggedUserMessage {
+        align-items: flex-end;
+
+        .wrapper {
+            .delete {
+            }
+
+            .contentWrapper {
+                background-color: var(--color-main-dark);
+                align-items: flex-end;
+                border-bottom-right-radius: 0;
+            }
+        }
+
+        .sender {
+            flex-direction: row-reverse;
+
+            .profilePicture {
+                border-top-left-radius: 0;
+                border: 2px solid var(--color-main-dark);
+                background-color: var(--color-main-dark);
+            }
+        }
+    }
+
+    .message.userBMessage {
+        align-items: flex-start;
+
+        .wrapper {
+            flex-direction: row-reverse;
+        }
+
+        .wrapper {
+            .delete {
+            }
+
+            .contentWrapper {
+                background-color: var(--color-secondary-light);
+                border-bottom-left-radius: 0;
+            }
+        }
+
+        .sender {
+            flex-direction: row;
+
+            .profilePicture {
+                border-top-right-radius: 0;
+                border: 2px solid var(--color-secondary-light);
+                background-color: var(--color-secondary-light);
+            }
+        }
+    }
+
+    .message.deleted {
+        .wrapper {
+            .contentWrapper {
+                background-color: var(--color-error-bright);
+            }
+        }
+    }
+
+    .bottomMargin {
+        margin-bottom: 1rem;
+    }
+
+    .optimisticMessage {
+        border: 2px solid hotpink;
+    }
+
+    .scrollToBottomAnchor {
+        min-height: 50px;
+        width: 100%;
+    }
+}
+
+.sendMessage {
+    .input {
+        flex: 1;
+    }
+}

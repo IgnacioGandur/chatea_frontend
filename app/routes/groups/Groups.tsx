@@ -196,6 +196,7 @@ interface ActionResponse {
 export default function Groups({ loaderData }: Route.ComponentProps) {
     const fetcher = useFetcher<ActionResponse>();
     const { groupsPromise } = loaderData;
+
     const { user } = useRouteLoaderData("root") as RootLoaderData;
 
     // Validation errors
@@ -309,6 +310,7 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                     }
                 >
                     {(groups) => {
+                        console.log("The content of groups is: ", groups);
                         return groups.length === 0 ? (
                             <EmptySection
                                 icon="group_off"

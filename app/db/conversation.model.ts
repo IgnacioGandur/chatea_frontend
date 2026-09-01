@@ -179,7 +179,12 @@ class Conversation {
     async getConversationById(
         userId: number | string,
         conversationId: number | string,
-    ): Promise<GetConversationByIdMessagesInclude | null> {
+        take: number = 2,
+    ): Promise<{
+        conversation: GetConversationByIdMessagesInclude | null;
+        hasMoreMessages: boolean;
+        nextCursor: number | null;
+    } | null> {
         return await this.prisma.$transaction(async (tx) => {
             const uId = Number(userId);
             const cId = Number(conversationId);
@@ -199,7 +204,7 @@ class Conversation {
 
             const boundaryDate = participant.lastDeletedAt || new Date(0);
 
-            return await tx.conversation.findUnique({
+            const conversation = await tx.conversation.findUnique({
                 where: {
                     id: cId,
                 },
@@ -230,10 +235,33 @@ class Conversation {
                         orderBy: {
                             createdAt: "desc",
                         },
-                        take: 15 + 1,
+                        take: take + 1,
                     },
                 },
             });
+
+            if (!conversation) {
+                return null;
+            }
+
+            // Replace the content of deleted messages.
+            conversation.messages = conversation.messages.map((m) =>
+                m.deleted ? { ...m, content: "Message deleted." } : m,
+            );
+
+            const hasMoreMessages = conversation.messages.length > take;
+            let nextCursor: number | null = null;
+
+            if (hasMoreMessages) {
+                const extraMessage = conversation.messages.pop();
+                nextCursor = extraMessage ? Number(extraMessage.id) : null;
+            }
+
+            return {
+                nextCursor,
+                hasMoreMessages,
+                conversation,
+            };
         });
     }
 }

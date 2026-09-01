@@ -71,6 +71,12 @@
     --font-size-8: 6rem;
     --font-size-button: 0.9rem;
 
+    /* Font Thickness */
+    --font-thickness-1: 200;
+    --font-thickness-2: 400;
+    --font-thickness-3: 600;
+    --font-thickness-4: 800;
+
     /* Icon Sizes */
     --icon-size-1: 1rem;
     --icon-size-2: 1.5rem;

@@ -60,7 +60,7 @@ span {
 }
 
 button {
-    border: 1px solid var(--color-line);
+    border: none;
     outline: none;
     color: var(--color-text);
     background-color: var(--color-background);

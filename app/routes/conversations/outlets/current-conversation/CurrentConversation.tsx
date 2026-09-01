@@ -17,7 +17,6 @@ import conversationsModel from "~/db/conversation.model";
 import participantModel from "~/db/participant.model";
 
 // Packages
-import { BeatLoader } from "react-spinners";
 import {
     Await,
     NavLink,
@@ -39,7 +38,7 @@ import type { Route } from "./+types/CurrentConversation";
 import { CustomErrorBoundary } from "~/components/custom-error-boundary/CustomErrorBoundary";
 import type { RootLoaderData } from "~/types/RootLoaderData";
 import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { validateGroupUpdate } from "~/validators/validateGroupUpdate";
 import groupsModel from "~/db/groups.model";
 import ConversationInfo from "./conversation-info/ConversationInfo";
@@ -51,10 +50,12 @@ import { validateConversationById } from "~/validators/validateConversationById"
 import { validateMessageAttachment } from "~/validators/validateMessageAttachment";
 import { uploadConversationAttachment } from "~/supabase/uploadConversationAttachment";
 import messageModel from "~/db/message.model";
-import { MessagesList } from "./messages-list/MessagesList";
 import { validateGroupMessageDeletion } from "~/validators/validateGroupMessageDeletion";
 import { validateOwnMessageDeletion } from "~/validators/validateOwnMessageDeletion";
 import { useFetcherToast } from "~/hooks/useFetcherToast";
+import type { Message } from "../../../../../generated/prisma/client";
+import ConversationMessages from "./conversation-messages/ConversationMessages";
+import type { ValidationErrorsType } from "~/types/ValidationErrorsType";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
     const { id: conversationId } = params;
@@ -111,6 +112,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const conversationPromise = conversationsModel.getConversationById(
         userId,
         conversationId,
+        10,
     );
 
     return { conversationPromise };
@@ -187,7 +189,16 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
 
     switch (values.intent) {
+        // TODO: Remove this switch case because messages are being sent through the api endpoint: '/api/conversations/id/messages'.
+
         case "send-message": {
+            console.log("Message sent through the route's action function.");
+
+            return {
+                success: false,
+                message: "Not sent.",
+            };
+
             const file = formData.get("file") as File;
             const { message } = values;
 
@@ -488,6 +499,7 @@ export async function action({ request, params }: Route.ActionArgs) {
                     success: false,
                     message: "Unable to delete your message:",
                     errors: validation.error.issues,
+                    messageId: mId,
                 };
             }
 
@@ -516,13 +528,15 @@ export default function CurrentConversation({
     }
 
     const fetcher = useFetcher({ key: "current-conversation" });
+    const sendMessageFetcher = useFetcher<{
+        success: boolean;
+        createdMessage: Message;
+    }>({ key: "send-message" });
 
     const showValidationErrors = checkForValidationErrors(fetcher);
 
-    const isNotIdle = fetcher.state !== "idle";
+    // const isNotIdle = fetcher.state !== "idle";
     const currentIntent = fetcher.formData?.get("intent");
-
-    const isSendingMessage = isNotIdle && currentIntent === "send-message";
 
     const setToastData = useFetcherToast(fetcher);
 
@@ -540,13 +554,49 @@ export default function CurrentConversation({
         }
     }, [fetcher.data]);
 
+    // Clear the message input fields after the user sends a message.
+    const sendMessageFormRef = useRef<HTMLFormElement | null>(null);
+
+    useEffect(() => {
+        if (
+            sendMessageFormRef.current &&
+            sendMessageFetcher.state === "submitting"
+        ) {
+            sendMessageFormRef.current.reset();
+        }
+    }, [sendMessageFetcher.data]);
+    // ==============================================================
+
+    // If the message fails due to validation reasons, show the errors this
+    // way since I'm not using react router's fetcher.
+    const [sendMessageValidationErrors, setSendMessageValidationErrors] =
+        useState<ValidationErrorsType | null>(null);
+
+    useEffect(() => {
+        function handleSendMessageErrors(event: Event) {
+            const customEvent = event as CustomEvent<ValidationErrorsType>;
+            setSendMessageValidationErrors(customEvent.detail || null);
+        }
+
+        window.addEventListener("chat:send-message", handleSendMessageErrors);
+
+        return () =>
+            window.removeEventListener(
+                "chat:send-message",
+                handleSendMessageErrors,
+            );
+    }, []);
+    // ==============================================================
+
     return (
         <Suspense
             key={conversationId}
             fallback={<CustomPageLoader message="Loading conversation..." />}
         >
             <Await resolve={conversationPromise}>
-                {(conversation) => {
+                {(promise) => {
+                    const conversation = promise?.conversation;
+
                     if (!conversation) {
                         return (
                             <EmptySection
@@ -557,26 +607,30 @@ export default function CurrentConversation({
                     }
 
                     const isGroup = conversation?.isGroup;
+                    const participants = conversation.participants;
 
+                    // User B info
                     const userB = conversation?.participants.find(
                         (p) => p.userId !== rootData!.id,
                     )?.user;
 
-                    const name = userB
+                    const userBName = userB
                         ? `${userB.firstName} ${userB.lastName}`
                         : null;
 
-                    const username = userB ? userB.username : null;
+                    const userBUsername = userB ? userB.username : null;
 
-                    const title = isGroup ? conversation.title : name;
-
-                    const ppf = isGroup
+                    const userBProfilePicture = isGroup
                         ? conversation.profilePicture
                         : userB?.profilePictureUrl;
 
-                    const messages = conversation?.messages;
+                    const userBProfileLink = userB
+                        ? `/users/${userB.username}`
+                        : "";
 
-                    const toLink = userB ? `/users/${userB.username}` : "";
+                    const headerTitle = isGroup
+                        ? conversation.title
+                        : userBName;
 
                     return (
                         <section
@@ -585,6 +639,14 @@ export default function CurrentConversation({
                             ${showInfo ? styles.infoVisible : styles.infoHidden}
                             `}
                         >
+                            {sendMessageValidationErrors ? (
+                                <ValidationErrors
+                                    roundBorders={false}
+                                    className={styles.validationErrors}
+                                    errors={sendMessageValidationErrors.errors}
+                                    title={sendMessageValidationErrors.message}
+                                />
+                            ) : null}
                             {showValidationErrors ? (
                                 <ValidationErrors
                                     roundBorders={false}
@@ -595,8 +657,8 @@ export default function CurrentConversation({
                             ) : null}
                             <title>
                                 {isGroup
-                                    ? `${title} group conversation | Chateá!`
-                                    : `Conversation with ${title} | Chateá!`}
+                                    ? `${headerTitle} group conversation | Chateá!`
+                                    : `Conversation with ${headerTitle} | Chateá!`}
                             </title>
                             <header className={`${styles.header}`}>
                                 <NavLink
@@ -606,20 +668,20 @@ export default function CurrentConversation({
                                         ${isGroup ? classes.disabledLink : ""}
                                         ${isGroup ? classes.flexRowStartCenter : ""}
                                         `}
-                                    to={isGroup ? "/groups" : toLink}
+                                    to={isGroup ? "/groups" : userBProfileLink}
                                 >
                                     <img
-                                        src={ppf || avatar}
-                                        alt={title || "Profile picture"}
+                                        src={userBProfilePicture || avatar}
+                                        alt={headerTitle || "Profile picture"}
                                         className={`${classes.profilePictureRound} ${styles.headerPpf}`}
                                     />
                                     <div className={styles.names}>
                                         <h1 className={styles.title}>
-                                            {title}
+                                            {headerTitle}
                                         </h1>
                                         {isGroup ? null : (
                                             <p className={styles.username}>
-                                                @{username}
+                                                @{userBUsername}
                                             </p>
                                         )}
                                     </div>
@@ -639,56 +701,15 @@ export default function CurrentConversation({
                                     </span>
                                 </button>
                             </header>
-                            <MessagesList
+                            <ConversationMessages
+                                initialData={{
+                                    messages: conversation.messages,
+                                    hasMoreMessages: promise.hasMoreMessages,
+                                    nextCursor: promise.nextCursor,
+                                }}
+                                conversationParticipants={participants}
                                 conversationIsGroup={isGroup}
-                                participants={conversation.participants}
-                                messages={messages}
                             />
-                            {isSendingMessage ? (
-                                <div className={styles.messageLoader}>
-                                    <p className={styles.message}>
-                                        Sending message...
-                                    </p>
-                                    <BeatLoader
-                                        size="9px"
-                                        color="var(--color-secondary)"
-                                    />
-                                </div>
-                            ) : (
-                                <fetcher.Form
-                                    encType="multipart/form-data"
-                                    className={styles.sendMessageForm}
-                                    method="post"
-                                >
-                                    <input
-                                        type="file"
-                                        name="file"
-                                    />
-                                    <input
-                                        type="hidden"
-                                        name="intent"
-                                        value="send-message"
-                                    />
-                                    <input
-                                        className={styles.input}
-                                        type="text"
-                                        name="message"
-                                        id="message"
-                                        placeholder={`Hello ${isGroup ? "Guys" : userB ? userB.firstName : ""}, how are you doing today?`}
-                                    />
-                                    <button
-                                        title="Send your message!"
-                                        className={styles.sendMessageButton}
-                                        type="submit"
-                                    >
-                                        <span
-                                            className={`material-symbols-rounded ${styles.icon}`}
-                                        >
-                                            arrow_warm_up
-                                        </span>
-                                    </button>
-                                </fetcher.Form>
-                            )}
                             {showInfo ? (
                                 <ConversationInfo
                                     className={styles.conversationInfo}
@@ -705,3 +726,52 @@ export default function CurrentConversation({
 }
 
 export const ErrorBoundary = CustomErrorBoundary;
+
+// <MessagesList
+//     initialData={{
+//         messages: conversation.messages,
+//         hasMoreMessages: promise.hasMoreMessages,
+//         nextCursor: promise.nextCursor,
+//     }}
+// />
+// <sendMessageFetcher.Form
+//     ref={sendMessageFormRef}
+//     encType="multipart/form-data"
+//     className={styles.sendMessageForm}
+//     method="post"
+//     action={`/api/conversations/${conversationId}/messages`}
+// >
+//     <input
+//         type="hidden"
+//         name="temporaryId"
+//         value={temporaryId}
+//     />
+//     <input
+//         type="file"
+//         name="file"
+//     />
+//     <input
+//         type="hidden"
+//         name="intent"
+//         value="send-message"
+//     />
+//     <input
+//         className={styles.input}
+//         type="text"
+//         name="message"
+//         id="message"
+//         placeholder={`Hello ${isGroup ? "Guys" : userB ? userB.firstName : ""}, how are you doing today?`}
+//     />
+//     <button
+//         id="send-message-button"
+//         title="Send your message!"
+//         className={styles.sendMessageButton}
+//         type="submit"
+//     >
+//         <span
+//             className={`material-symbols-rounded ${styles.icon}`}
+//         >
+//             arrow_warm_up
+//         </span>
+//     </button>
+// </sendMessageFetcher.Form>

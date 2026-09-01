@@ -64,6 +64,21 @@
             padding: var(--size-3) calc(var(--size-2) * 2);
             text-align: end;
             width: fit-content;
+            position: relative;
+
+            .ago {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                left: 107%;
+                opacity: 0;
+                font-size: var(--font-size-1);
+                transition: all 200ms ease-in;
+            }
+
+            .ago::first-letter {
+                text-transform: capitalize;
+            }
         }
 
         .content,
@@ -76,11 +91,15 @@
         .attachment {
             grid-area: attachment;
             padding: var(--size-2);
+            max-width: 300px;
+            height: auto;
 
             .image {
+                border-radius: inherit;
                 width: 100%;
-                max-width: 300px;
-                height: auto;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
             }
         }
     }
@@ -88,6 +107,11 @@
 
 .message:hover {
     .contentWrapper {
+        .content {
+            .ago {
+                opacity: 0.55;
+            }
+        }
         .deletePopover {
         }
         .deleteMessageButton {
@@ -97,8 +121,7 @@
 }
 
 .message.nextMessage {
-    .header,
-    .date {
+    .header {
         display: none;
     }
 
@@ -131,9 +154,29 @@
         }
 
         .content {
+            .ago {
+                left: initial;
+                right: 107%;
+            }
         }
 
         .attachment {
         }
+    }
+}
+
+.message.you:hover {
+    .contentWrapper {
+        .content {
+            .ago {
+            }
+        }
+    }
+}
+
+.message.deletedMessage,
+.message.you.deletedMessage {
+    .content {
+        background-color: var(--color-error);
     }
 }

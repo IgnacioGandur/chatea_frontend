@@ -65,7 +65,10 @@ export default function ConversationPreview({
                         <div className={styles.titleAndDate}>
                             {isGroup ? (
                                 <div
-                                    className={`${styles.groupTitle} ${classes.flexRowStartCenter}`}
+                                    className={`
+                                        ${styles.groupTitle}
+                                        ${classes.flexRowStartCenter}
+                                    `}
                                 >
                                     <span
                                         title="Group conversation"
@@ -116,9 +119,10 @@ export default function ConversationPreview({
                                             </span>
                                         ) : null}
                                         <p
-                                            className={
-                                                classes.ellipsisOnOverflowingText
-                                            }
+                                            className={`
+                                                ${styles.content}
+                                                ${classes.ellipsisOnOverflowingText}
+                                            `}
                                         >
                                             {m.content}
                                         </p>

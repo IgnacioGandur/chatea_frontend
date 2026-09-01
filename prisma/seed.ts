@@ -1,121 +1,82 @@
+import type {
+    Conversation,
+    Participant,
+    Prisma,
+    User,
+} from "~/../generated/prisma/client";
 import prisma from "~/db/prisma";
 import bcrypt from "bcryptjs";
+import { rollupVersion } from "vite";
 
 const password = await bcrypt.hash("bla", 10);
-const ppfBase = "https://ui-avatars.com/api/?background=random&name=";
+
+function createPpf(firstName: string, lastName?: string): string {
+    return `https://ui-avatars.com/api/?background=random&name=${firstName}+${lastName}`;
+}
+
+async function createUsersData(amount: number) {
+    const usersData = Array.from({ length: amount }).map(
+        (_, i): Prisma.UserCreateInput => {
+            const firstName = "User";
+            const lastName = `${i}`;
+            const username = `User.${i}`;
+            const ppf = createPpf("j", `${i}`);
+
+            return {
+                firstName,
+                lastName,
+                username,
+                password,
+                profilePictureUrl: ppf,
+            };
+        },
+    );
+
+    return await prisma.user.createManyAndReturn({
+        data: [
+            {
+                firstName: "Ignacio",
+                lastName: "Gandur",
+                username: "ignacio",
+                profilePictureUrl: createPpf("j", "g"),
+                password,
+            },
+            {
+                firstName: "John",
+                lastName: "Doe",
+                username: "john",
+                profilePictureUrl: createPpf("j", "d"),
+                password,
+            },
+            {
+                firstName: "Jane",
+                lastName: "Doe",
+                username: "jane",
+                profilePictureUrl: createPpf("j", "d"),
+                password,
+            },
+            {
+                firstName: "Jill",
+                lastName: "Doe",
+                username: "jill",
+                profilePictureUrl: createPpf("j", "d"),
+                password,
+            },
+        ],
+    });
+}
 
 async function main() {
-    // Users
-    const johnDoe = await prisma.user.create({
-        data: {
-            username: "john",
-            firstName: "John",
-            lastName: "Doe",
-            password,
-            profilePictureUrl: `${ppfBase}john+doe`,
-        },
-    });
+    // Clean the database before seeding...
+    console.log("Cleaning database before seeding...");
+    await prisma.user.deleteMany();
+    await prisma.conversation.deleteMany();
+    await prisma.participant.deleteMany();
+    console.log("Database cleaned! Ready for seeding.");
 
-    const janeDoe = await prisma.user.create({
-        data: {
-            username: "jane",
-            firstName: "Jane",
-            lastName: "Doe",
-            password,
-            profilePictureUrl: `${ppfBase}jane+doe`,
-        },
-    });
-
-    const jillDoe = await prisma.user.create({
-        data: {
-            username: "jill",
-            firstName: "Jill",
-            lastName: "Doe",
-            password,
-            profilePictureUrl: `${ppfBase}jill+doe`,
-        },
-    });
-
-    const ignacio = await prisma.user.create({
-        data: {
-            username: "ignacio",
-            firstName: "Ignacio",
-            lastName: "Doe",
-            password,
-            profilePictureUrl: `${ppfBase}ignacio+doe`,
-        },
-    });
-
-    // Conversations
-    const conversation1 = await prisma.conversation.create({
-        data: {
-            isGroup: false,
-            ownerId: johnDoe.id,
-            messages: {
-                createMany: {
-                    data: [
-                        {
-                            content: "Hello from John Doe to Jane Doe!",
-                            senderId: johnDoe.id,
-                        },
-                        {
-                            content: "Hello from Jane Doe to John Doe!",
-                            senderId: janeDoe.id,
-                        },
-                    ],
-                },
-            },
-            participants: {
-                createMany: {
-                    data: [
-                        {
-                            userId: johnDoe.id,
-                            joinedAt: new Date(),
-                        },
-                        {
-                            userId: janeDoe.id,
-                            joinedAt: new Date(),
-                        },
-                    ],
-                },
-            },
-        },
-    });
-
-    const conversation2 = await prisma.conversation.create({
-        data: {
-            isGroup: false,
-            ownerId: jillDoe.id,
-            messages: {
-                createMany: {
-                    data: [
-                        {
-                            content: "Hello from Ignacio Gandur to Jane Doe!",
-                            senderId: ignacio.id,
-                        },
-                        {
-                            content: "Hello from Jill Doe to Ignacio Gandur!",
-                            senderId: jillDoe.id,
-                        },
-                    ],
-                },
-            },
-            participants: {
-                createMany: {
-                    data: [
-                        {
-                            userId: jillDoe.id,
-                            joinedAt: new Date(),
-                        },
-                        {
-                            userId: ignacio.id,
-                            joinedAt: new Date(),
-                        },
-                    ],
-                },
-            },
-        },
-    });
+    console.log("Seeding users...");
+    await createUsersData(50);
+    console.log("Users seeded!");
 }
 
 main()
@@ -123,7 +84,8 @@ main()
         await prisma.$disconnect();
     })
     .catch(async (e) => {
-        console.error(e);
+        console.error("Seed error: ", e);
         await prisma.$disconnect();
         process.exit(1);
-    });
+    })
+    .finally(() => console.log("Database seeded!"));

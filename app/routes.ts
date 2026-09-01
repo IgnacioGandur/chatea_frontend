@@ -42,6 +42,12 @@ export default [
             "respond-friendship-request",
             "./actions/respond-friendship-request.ts",
         ),
+
+        // Load more messages
+        route(
+            "api/conversations/:id/messages",
+            "./routes/api.conversations.$id.messages/route.ts",
+        ),
     ]),
     route("about", "./routes/about/About.tsx"),
 ] satisfies RouteConfig;

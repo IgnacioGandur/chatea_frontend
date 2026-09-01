@@ -1,0 +1,186 @@
+import styles from "./MessagesList.module.css";
+import SingleMessage from "../single-message/SingleMessage";
+import EmptySection from "~/components/empty-section/EmptySection";
+import type {
+    Message,
+    Participant,
+    Prisma,
+} from "~/../generated/prisma/client";
+import parentStyles from "../CurrentConversation.module.css";
+import { useInView } from "react-intersection-observer";
+import { useEffect, useRef, useState } from "react";
+import {
+    useFetcher,
+    useFetchers,
+    useParams,
+    useRouteLoaderData,
+} from "react-router";
+import type { loader as MoreMessagesLoader } from "~/routes/api.conversations.$id.messages/route";
+import type { RootLoaderData } from "~/types/RootLoaderData";
+
+type Messages = Prisma.MessageGetPayload<{
+    include: {
+        attachments: true;
+        sender: true;
+    };
+}>[];
+
+interface InitialData {
+    hasMoreMessages: boolean;
+    cursor: number | null;
+    messages: Messages;
+}
+
+interface MessagesListProps {
+    initialData: InitialData;
+    conversationIsGroup: boolean;
+    participants: Participant[];
+}
+
+export function MessagesList({
+    initialData,
+    conversationIsGroup,
+    participants,
+}: MessagesListProps) {
+    const params = useParams();
+    const { user } = useRouteLoaderData("root") as RootLoaderData;
+    const [cursor, setCursor] = useState(initialData.cursor);
+    const [messages, setMessages] = useState<Message[]>(
+        [...initialData.messages].reverse(),
+    );
+
+    // Handle optimistic message.
+    const fetchers = useFetchers();
+    const optimisticMessages = fetchers
+        .filter((f) => f.formData?.get("intent") === "send-message")
+        .map((f) => ({
+            id: `temp-${f.key}`,
+            content: f.formData?.get("message") as string,
+            deleted: false,
+            attachments: [],
+            sender: user!,
+            senderId: user?.id ?? 0,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            conversationId: 10,
+            isRead: false,
+            isOptimistic: true,
+        }));
+
+    const [hasMoreMessages, setHasMoreMessages] = useState(
+        initialData.hasMoreMessages,
+    );
+
+    // Scroll to bottom of messages container when the page loads.
+    const anchorRef = useRef<HTMLDivElement | null>(null);
+    function scrollToBottom() {
+        if (anchorRef && anchorRef.current) {
+            anchorRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }
+    useEffect(() => {
+        scrollToBottom();
+    }, [anchorRef]);
+
+    const messagesContainerRef = useRef<HTMLUListElement | null>(null);
+    const { ref, inView } = useInView({
+        threshold: 0.5,
+    });
+
+    // Handle older messages.
+    const loadMoreMessagesFetcher = useFetcher<typeof MoreMessagesLoader>();
+
+    function loadMoreMessages() {
+        if (hasMoreMessages) {
+            loadMoreMessagesFetcher.load(
+                `/api/conversations/${params.id}/messages?cursor=${cursor}`,
+            );
+        }
+    }
+
+    const displayedMessages = [...messages, ...optimisticMessages];
+
+    useEffect(() => {
+        if (
+            loadMoreMessagesFetcher.data &&
+            "messages" in loadMoreMessagesFetcher.data &&
+            "nextCursor" in loadMoreMessagesFetcher.data &&
+            "hasMoreMessages" in loadMoreMessagesFetcher.data
+        ) {
+            const olderMessages = loadMoreMessagesFetcher.data.messages;
+            setMessages((prev) => [...olderMessages, ...prev]);
+
+            setCursor(loadMoreMessagesFetcher.data.nextCursor);
+            setHasMoreMessages(loadMoreMessagesFetcher.data.hasMoreMessages);
+        }
+    }, [loadMoreMessagesFetcher.data]);
+
+    useEffect(() => {
+        setMessages((prev) => {
+            const existingIds = new Set(
+                prev.map((m) => {
+                    return m.id;
+                }),
+            );
+
+            const newMessages = initialData.messages.filter((m) => {
+                return !existingIds.has(m.id);
+            });
+
+            return [...prev, ...newMessages];
+        });
+    }, [initialData.messages]);
+
+    return displayedMessages.length === 0 || !displayedMessages ? (
+        <EmptySection
+            className={parentStyles.emptyMessages}
+            message="No messages in this conversation."
+            icon="chat_dashed"
+            linkPath="/"
+        />
+    ) : (
+        <ul
+            ref={messagesContainerRef}
+            className={`${parentStyles.messages}`}
+        >
+            <div
+                ref={ref}
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    backgroundColor: "red",
+                    minHeight: "100px",
+                }}
+            >
+                <button onClick={loadMoreMessages}>Load more message</button>
+                <p>trigger</p>
+                <button onClick={() => scrollToBottom()}>
+                    Back to latest message
+                </button>
+            </div>
+            {displayedMessages.map((m, i) => {
+                /*
+                Since the 'messages' array is reversed 'i - i' is next message and 'i + i' is the previous message.
+                 */
+
+                const nextMessage = displayedMessages[i - 1];
+                const previousMessage = displayedMessages[i + 1];
+
+                return (
+                    <SingleMessage
+                        key={m.id}
+                        conversationIsGroup={conversationIsGroup}
+                        participants={participants}
+                        previousMessage={previousMessage}
+                        nextMessage={nextMessage}
+                        message={m}
+                    />
+                );
+            })}
+            <div
+                ref={anchorRef}
+                className="anchor"
+            ></div>
+        </ul>
+    );
+}

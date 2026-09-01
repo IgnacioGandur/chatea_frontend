@@ -2,8 +2,8 @@ import type { GetUserConversations } from "~/db/conversation.types";
 import ConversationPreview from "./conversation-preview/ConversationPreview";
 import styles from "./ConversationsSidebar.module.css";
 import classes from "~/css/classes.module.css";
-import { Await, NavLink } from "react-router";
-import { Suspense } from "react";
+import { Await, NavLink, useParams } from "react-router";
+import { Suspense, useEffect } from "react";
 
 function Skeleton() {
     return (
@@ -58,6 +58,8 @@ interface ConversationsSidebarProps {
 export default function ConversationsSidebar({
     conversationsPromise,
 }: ConversationsSidebarProps) {
+    //TODO: Update the conversation preview when a message is sent.
+
     return (
         <aside className={styles.conversationsSidebar}>
             <header

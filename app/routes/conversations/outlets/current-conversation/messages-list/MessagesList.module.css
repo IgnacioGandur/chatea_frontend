@@ -1,0 +1,7 @@
+.messages {
+    border: 2px solid red;
+
+    .optimistic {
+        border: 2px solid lime;
+    }
+}

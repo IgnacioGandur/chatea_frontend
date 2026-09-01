@@ -4,28 +4,33 @@ import type {
     Prisma,
 } from "../../../../../../generated/prisma/client";
 import styles from "./SingleMessage.module.css";
-import { formatDistanceToNow } from "date-fns";
 import type { RootLoaderData } from "~/types/RootLoaderData";
 import classes from "~/css/classes.module.css";
 import AltPopover from "~/components/alt-popover/AltPopover";
 import PillButton from "~/components/pill-button/PillButton";
+import { differenceInMinutes, formatDistanceToNow } from "date-fns";
+import { formatMessageDate } from "~/utils/formatDate";
+
+type Message = Prisma.MessageGetPayload<{
+    include: {
+        attachments: true;
+        sender: true;
+    };
+}>;
 
 interface SingleMessageProps {
     conversationIsGroup: boolean;
     participants: Participant[];
-    nextMessageIsFromSameUser: boolean;
-    message: Prisma.MessageGetPayload<{
-        include: {
-            attachments: true;
-            sender: true;
-        };
-    }>;
+    nextMessage?: Message;
+    previousMessage?: Message;
+    message: Message;
 }
 
 export default function SingleMessage({
     conversationIsGroup,
     participants,
-    nextMessageIsFromSameUser,
+    previousMessage,
+    nextMessage,
     message,
 }: SingleMessageProps) {
     const fetcher = useFetcher({ key: "current-conversation" });
@@ -39,6 +44,7 @@ export default function SingleMessage({
     );
 
     const isYourMessage = message.senderId === rootData!.id;
+    const isDeleted = message.deleted;
 
     const loggedUserCanDeleteMessage =
         isYourMessage ||
@@ -49,16 +55,25 @@ export default function SingleMessage({
     const attachment = message.attachments[0];
     const name = `${message.sender.firstName} ${message.sender.lastName}`;
 
+    const nextMessageIsFromSameUser =
+        message.senderId === nextMessage?.senderId;
+
+    const showDate =
+        !nextMessage ||
+        (nextMessage &&
+            differenceInMinutes(message.createdAt, nextMessage.createdAt) > 5);
+
     // TODO: Add a linear background that spreads along the chain of messages that are from the same user.
 
     return (
         <li
-            key={message.id}
-            className={`${styles.message} ${isYourMessage ? styles.you : null} ${nextMessageIsFromSameUser ? styles.nextMessage : ""}`}
+            className={`${styles.message} ${isYourMessage ? styles.you : null} ${nextMessageIsFromSameUser ? styles.nextMessage : ""} ${isDeleted ? styles.deletedMessage : ""}`}
         >
-            <span className={styles.date}>
-                {formatDistanceToNow(message.createdAt, { addSuffix: true })}
-            </span>
+            {showDate ? (
+                <time className={styles.date}>
+                    {formatMessageDate(message.createdAt)}
+                </time>
+            ) : null}
             <div className={`${styles.header} ${classes.flexRowStartCenter}`}>
                 <img
                     className={`${classes.profilePictureRound} ${classes.pictureSmall} ${styles.ppf}`}
@@ -70,7 +85,7 @@ export default function SingleMessage({
                 </h3>
             </div>
             <div className={styles.contentWrapper}>
-                {loggedUserCanDeleteMessage ? (
+                {loggedUserCanDeleteMessage && !isDeleted ? (
                     <AltPopover
                         className={styles.deletePopover}
                         icon="delete"
@@ -124,8 +139,17 @@ export default function SingleMessage({
                         className={`${styles.deleteMessageButtonPlaceholder}`}
                     ></div>
                 )}
-                <p className={styles.content}>{message.content}</p>
-                {attachment ? (
+                <p className={styles.content}>
+                    <span>{message.content}</span>
+                    <time
+                        className={`${classes.textSmallSecondary} ${styles.ago} ${classes.noWrap}`}
+                    >
+                        {formatDistanceToNow(message.createdAt, {
+                            includeSeconds: true,
+                        })}
+                    </time>
+                </p>
+                {attachment && !isDeleted ? (
                     <div className={styles.attachment}>
                         {attachment.fileType.startsWith("image/") ? (
                             <img
