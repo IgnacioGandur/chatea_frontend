@@ -278,6 +278,43 @@
     background-color: var(--color-main-dark);
 }
 
+/* Positions */
+
+.positionAbsoluteCenter {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+}
+
+.positionAbsoluteCenterWithTransform {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ========== */
+
+/* Text Styles */
+
+.textBoldSmall {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-thickness-3);
+}
+
+/* =========== */
+
+/* Outline styles */
+
+.outline1 {
+}
+
+.outline1:focus-visible {
+    border: 3px solid var(--color-outline);
+}
+
+/* ============== */
+
 @keyframes animateLoaderBackground {
     to {
         background-position: center right;

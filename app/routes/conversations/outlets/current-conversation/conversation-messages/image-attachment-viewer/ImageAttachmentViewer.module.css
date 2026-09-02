@@ -1,0 +1,64 @@
+.imageAttachmentViewer {
+    .previewButton {
+        position: relative;
+        background-color: transparent;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        border: none;
+        outline: none;
+
+        .previewImage {
+        }
+    }
+
+    .previewButton:hover,
+    .previewButton:focus-visible {
+        .textOverlay {
+            background-color: rgba(0, 0, 0, 0.3);
+
+            .text {
+                opacity: 1;
+            }
+        }
+    }
+
+    .previewButton:focus-visible {
+        outline: 3px solid var(--color-outline);
+    }
+
+    .textOverlay {
+        background-color: rgba(0, 0, 0, 0);
+        transition: var(--transition-1);
+
+        .text {
+            text-decoration: underline;
+            opacity: 0;
+        }
+    }
+
+    .openedImageViewer {
+        .dialogContent {
+            position: relative;
+
+            .fullSizeImage {
+                max-width: 1024px;
+                height: auto;
+            }
+
+            .closeDialogButton {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background-color: transparent;
+                padding: var(--size-1);
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+
+            .filename {
+                padding: var(--size-1);
+                font-size: var(--font-size-2);
+                background-color: rgba(0, 0, 0, 0.8);
+            }
+        }
+    }
+}

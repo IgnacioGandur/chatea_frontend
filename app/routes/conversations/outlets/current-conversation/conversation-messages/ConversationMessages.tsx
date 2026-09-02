@@ -11,6 +11,7 @@ import type { MaterialSymbols } from "material-design-icons-literal-types";
 import Popover from "~/components/popover/Popover";
 import toast from "react-hot-toast";
 import getErrorMessage from "~/utils/getErrorMessage";
+import ImageAttachmentViewer from "./image-attachment-viewer/ImageAttachmentViewer";
 
 type ParticipantWithUser = Prisma.ParticipantGetPayload<{
     include: {
@@ -592,14 +593,15 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
                                     >
                                         {hasAttachments ? (
                                             attachmentIsImage ? (
-                                                <img
-                                                    className={`
-                                                        ${styles.imageAttachment}
-                                                        ${classes.correctImage}
-                                                    `}
-                                                    src={attachmentUrl}
-                                                    alt={attachmentFilename}
-                                                />
+                                                <>
+                                                    <ImageAttachmentViewer
+                                                        imageClassName={
+                                                            styles.imageAttachment
+                                                        }
+                                                        src={attachmentUrl}
+                                                        alt={attachmentFilename}
+                                                    />
+                                                </>
                                             ) : (
                                                 <div
                                                     className={`
