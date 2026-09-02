@@ -2,8 +2,8 @@ import type { GetUserConversations } from "~/db/conversation.types";
 import ConversationPreview from "./conversation-preview/ConversationPreview";
 import styles from "./ConversationsSidebar.module.css";
 import classes from "~/css/classes.module.css";
-import { Await, NavLink, useParams } from "react-router";
-import { Suspense, useEffect } from "react";
+import { Await, NavLink } from "react-router";
+import { Suspense } from "react";
 
 function Skeleton() {
     return (
@@ -81,7 +81,6 @@ export default function ConversationsSidebar({
                 <Await resolve={conversationsPromise}>
                     {({ conversations }) => {
                         return conversations.length === 0 ? (
-                            // return true ? (
                             <div
                                 className={`
                                 ${styles.noConversations}

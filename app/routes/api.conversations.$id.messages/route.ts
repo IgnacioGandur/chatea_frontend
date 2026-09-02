@@ -31,9 +31,6 @@ type FormValues = {
 };
 
 export async function action({ request, params }: Route.ActionArgs) {
-    console.log("Message sent through api endpoint.");
-    await new Promise((r) => setTimeout(r, 3000));
-
     const { loggedUserId } = await getLoggedUserId(request);
     const { id: conversationId } = params;
     const uId = Number(loggedUserId);

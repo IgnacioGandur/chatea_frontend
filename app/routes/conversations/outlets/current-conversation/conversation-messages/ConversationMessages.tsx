@@ -1,6 +1,11 @@
 import styles from "./ConversationMessages.module.css";
 import currentConversationStyles from "../CurrentConversation.module.css";
-import { useFetcher, useParams, useRouteLoaderData } from "react-router";
+import {
+    useFetcher,
+    useParams,
+    useRevalidator,
+    useRouteLoaderData,
+} from "react-router";
 import { v4 as uuid } from "uuid";
 import type { Prisma } from "../../../../../../generated/prisma/client";
 import { useEffect, useRef, useState } from "react";
@@ -80,6 +85,7 @@ function SendMessageForm({
 }: SendMessageFormProps) {
     const { id } = useParams();
     const { user } = useRouteLoaderData("root") as RootLoaderData;
+    const revalidator = useRevalidator();
 
     const sendMessageFetcher = useFetcher<SendMessageFetcherResponse>({
         key: "send-message",
@@ -155,15 +161,22 @@ function SendMessageForm({
 
             const data: SendMessageFetcherResponse = await response.json();
 
-            console.log("The content of data is: ", data);
-
             const { success, createdMessage, temporaryId } = data;
 
             if (success) {
                 onMessageConfirmed(createdMessage, temporaryId);
+
+                //PERF: Since this is a small scale project, it's okay to
+                //revalidate the loader function for the
+                //'currentConversation' component every time a new message is sent to
+                //keep the sidebar's latest message in sync.
+
+                revalidator.revalidate();
+
                 const event = new CustomEvent("chat:send-message", {
                     detail: null,
                 });
+
                 window.dispatchEvent(event);
                 return;
             } else {
@@ -370,8 +383,7 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
     // =====================================
 
     const displayedMessages: (
-        | MessageWithAttachmentAndSender
-        | OptimisticMessage
+        MessageWithAttachmentAndSender | OptimisticMessage
     )[] = [...[...messages].reverse(), ...optimisticMessages];
 
     return (

@@ -17,12 +17,6 @@ export async function loader({ request }: Route.LoaderArgs) {
         });
     }
 
-    // const conversationsPromise = new Promise((r) => {
-    //     setTimeout(() => {
-    //         r(conversationsModel.getUserConversations(userId, null));
-    //     }, 3000);
-    // });
-
     const conversationsPromise = conversationsModel.getUserConversations(
         userId,
         null,

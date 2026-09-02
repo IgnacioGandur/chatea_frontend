@@ -112,7 +112,12 @@ export default function ImageAttachmentViewer({
                             ${styles.closeDialogButton}
                         `}
                     >
-                        <span className="material-symbols-rounded">close</span>
+                        <span
+                            aria-hidden
+                            className="material-symbols-rounded"
+                        >
+                            close
+                        </span>
                     </button>
                 </div>
             </dialog>
