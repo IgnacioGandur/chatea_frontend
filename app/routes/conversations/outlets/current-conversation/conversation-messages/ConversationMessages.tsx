@@ -11,7 +11,13 @@ import type { Prisma } from "../../../../../../generated/prisma/client";
 import { useEffect, useRef, useState } from "react";
 import classes from "~/css/classes.module.css";
 import type { RootLoaderData } from "~/types/RootLoaderData";
-import { differenceInHours, format } from "date-fns";
+import {
+    differenceInHours,
+    format,
+    isSameDay,
+    isToday,
+    isYesterday,
+} from "date-fns";
 import type { MaterialSymbols } from "material-design-icons-literal-types";
 import Popover from "~/components/popover/Popover";
 import toast from "react-hot-toast";
@@ -241,6 +247,17 @@ function SendMessageForm({
     );
 }
 
+function formatMessageDate(dateString: string | Date): string {
+    const date = new Date(dateString);
+    const dateFormat = "MMMM dd, yyyy — EEEE";
+    const formattedDate = format(dateString, dateFormat);
+
+    if (isToday(date)) return `Today — ${formattedDate}`;
+    if (isYesterday(date)) return `Yesterday — ${formattedDate}`;
+
+    return formattedDate;
+}
+
 export default function ConversationMessages(props: ConversationMessagesProps) {
     const { id } = useParams();
     const { user } = useRouteLoaderData("root") as RootLoaderData;
@@ -249,7 +266,7 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
     const loadMoreMessagesFetcher =
         useFetcher<LoadMoreMessageFetcherResponse>();
 
-    const { conversationParticipants } = props;
+    const { conversationParticipants, conversationIsGroup } = props;
 
     const loggedUserRoleInConversation = conversationParticipants.find(
         (p) => p.userId === user!.id,
@@ -410,10 +427,7 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
                         <button onClick={loadMoreMessage}>Load more</button>
                     ) : null}
                     {displayedMessages.map((m, i) => {
-                        const dayDate = format(
-                            m.createdAt,
-                            "MMMM dd, yyyy — EEEE",
-                        );
+                        const dayDateFormat = formatMessageDate(m.createdAt);
 
                         const previousMessage =
                             i > 0 ? displayedMessages[i - 1] : null;
@@ -478,18 +492,25 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
                         // '23:59' at the bottom of the message bubble on
                         // every message.
 
-                        const hoursSincePreviousMessages = previousMessage
-                            ? Math.abs(
-                                  differenceInHours(
-                                      m.createdAt,
-                                      previousMessage.createdAt,
-                                  ),
-                              )
-                            : 0;
+                        // const hoursSincePreviousMessages = previousMessage
+                        //     ? Math.abs(
+                        //           differenceInHours(
+                        //               m.createdAt,
+                        //               previousMessage.createdAt,
+                        //           ),
+                        //       )
+                        //     : 0;
+
+                        // const showDayDate =
+                        //     !previousMessage ||
+                        //     hoursSincePreviousMessages >= 24;
 
                         const showDayDate =
                             !previousMessage ||
-                            hoursSincePreviousMessages >= 24;
+                            !isSameDay(
+                                new Date(m.createdAt),
+                                new Date(previousMessage.createdAt),
+                            );
 
                         // NOTE: Sender display conditions:
                         // 1. Display the message sender in the current
@@ -500,6 +521,18 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
                             m.senderId === nextMessage?.senderId;
 
                         const showSender = !nextMessageIsFromSameuser;
+
+                        // NOTE: Display a role icon next to the sender's name if the conversation is a group, the sender is a group owner/admin and the sender is NOT the logged user.
+
+                        const showRoleIconInSender =
+                            !loggedUserIsSender &&
+                            messageSenderRoleInConversation !== "USER" &&
+                            conversationIsGroup;
+
+                        const roleIcon: MaterialSymbols =
+                            messageSenderRoleInConversation === "OWNER"
+                                ? "crown"
+                                : "shield_person";
 
                         // NOTE: Attachments display conditions:
                         // 1. If the attachment filetype contains
@@ -521,7 +554,7 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
                             >
                                 {showDayDate ? (
                                     <time className={styles.dayDate}>
-                                        {dayDate}
+                                        {dayDateFormat}
                                     </time>
                                 ) : null}
                                 <div
@@ -706,9 +739,28 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
                                             src={senderProfilePicture}
                                             alt={senderName}
                                         />
-                                        <h4 className={styles.name}>
-                                            {senderName}
-                                        </h4>
+                                        <div
+                                            className={`
+                                            ${classes.flexRowStartCenter}
+                                            ${styles.nameAndRoleIcon}
+                                        `}
+                                        >
+                                            <h4 className={styles.name}>
+                                                {senderName}
+                                            </h4>
+                                            {showRoleIconInSender ? (
+                                                <span
+                                                    title={`Group ${messageSenderRoleInConversation.toLowerCase()}`}
+                                                    className={`
+                                                        material-symbols-rounded
+                                                        ${classes.iconWithGradientColors}
+                                                        ${styles.roleIcon}
+                                                    `}
+                                                >
+                                                    {roleIcon}
+                                                </span>
+                                            ) : null}
+                                        </div>
                                     </div>
                                 ) : null}
                             </li>

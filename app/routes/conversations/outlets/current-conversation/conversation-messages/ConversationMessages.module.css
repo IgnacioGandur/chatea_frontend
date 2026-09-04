@@ -115,8 +115,16 @@
         .sender {
             gap: var(--size-2);
 
-            .name {
-                font-size: var(--font-size-1);
+            .nameAndRoleIcon {
+                gap: var(--size-1);
+
+                .name {
+                    font-size: var(--font-size-1);
+                }
+
+                .roleIcon {
+                    font-size: var(--icon-size-2);
+                }
             }
 
             .profilePicture {
