@@ -1,21 +1,65 @@
 .home {
-    .title {
-        width: fit-content;
-        padding: var(--size-2);
-        font-family: var(--font-special);
-        font-size: 7rem;
+    padding: calc(var(--size-8) * 2);
+    gap: var(--size-2);
+
+    .title,
+    .paragraph {
         font-weight: 100;
-        background-image: linear-gradient(
-            65deg,
-            var(--color-main),
-            var(--color-secondary)
-        );
-        background-clip: text;
-        color: transparent;
+        text-align: center;
+        font-family: var(--font-secondary);
     }
 
-    .para {
-        color: var(--color-text-dimmed);
-        font-family: var(--font-secondary);
+    .title {
+        font-size: var(--font-size-8);
+    }
+
+    .logoContainer {
+        flex: 1;
+        width: 100%;
+        position: relative;
+
+        .blobBackground,
+        .blobWrapper {
+            position: absolute;
+            inset: 0;
+            margin: auto;
+        }
+
+        .blobBackground {
+            background-image:
+                radial-gradient(
+                    circle at center,
+                    transparent,
+                    var(--color-background),
+                    var(--color-background),
+                    var(--color-background),
+                    var(--color-background)
+                ),
+                url("../../../public/patterns/wiggle_colored.png");
+        }
+
+        .blobWrapper {
+            flex: inherit;
+            width: clamp(200px, 100%, 425px);
+
+            .blob {
+                flex: 1;
+
+                .iconInsideBlob {
+                    width: 47%;
+                    height: auto;
+                    aspect-ratio: 1/1;
+                    background-image: url("../../../public/images/icon_light.svg");
+                    background-position: center;
+                    background-size: 100%;
+                    background-repeat: no-repeat;
+                }
+            }
+        }
+    }
+
+    .paragraph {
+        font-size: var(--font-size-6);
+        width: 90%;
     }
 }

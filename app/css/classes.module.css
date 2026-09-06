@@ -315,6 +315,21 @@
 
 /* ============== */
 
+/* Text Styles */
+
+.textWithMainColorsGradient {
+    color: transparent;
+    background-image: linear-gradient(
+        to right,
+        var(--color-main),
+        var(--color-secondary)
+    );
+    background-position: center;
+    background-clip: text;
+}
+
+/* ===========*/
+
 @keyframes animateLoaderBackground {
     to {
         background-position: center right;
