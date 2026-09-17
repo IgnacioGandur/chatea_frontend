@@ -20,9 +20,10 @@ export default function Blob({
             ${styles.blobContainer}
         `}
         >
-            <div className={styles.children}>{children}</div>
+            {children && <div className={styles.children}>{children}</div>}
             <div className={styles.blob}>
                 <svg
+                    className={styles.svg}
                     viewBox="0 0 500 500"
                     xmlns="http://www.w3.org/2000/svg"
                     xmlnsXlink="http://www.w3.org/1999/xlink"

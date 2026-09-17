@@ -1,3 +1,5 @@
+/* Animation Styles */
+
 .suspenseBackgroundAnimation {
     --bg-color: rgba(0, 0, 0, 0.1);
 
@@ -22,10 +24,17 @@
     }
 }
 
-.iconWithGradientColors {
-    background-image: var(--gradient-main-colors);
-    color: transparent;
-    background-clip: text;
+.spinIcon {
+    animation: spinIcon 1s ease-in-out infinite;
+}
+
+/* ================ */
+
+/* Display Styles */
+
+.gridCenter {
+    display: grid;
+    place-items: center;
 }
 
 .flexRowJustifySpaceBetween {
@@ -72,6 +81,42 @@
     align-items: center;
 }
 
+/* ============== */
+
+/* Icon Styles */
+
+.iconWithGradientColors {
+    background-image: var(--gradient-main-colors);
+    color: transparent;
+    background-clip: text;
+}
+
+.defaultIcon {
+    font-size: 1.75rem;
+}
+
+.loaderIcon {
+    font-size: 1.75rem;
+    color: transparent;
+}
+
+/* =========== */
+
+/* Button Styles */
+
+.button1 {
+    padding: var(--size-1);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
+    transition: var(--transition-1);
+}
+
+.button1:hover,
+.button1:focus,
+.button1:focus-visible {
+    background-color: var(--color-main-dark);
+}
+
 .buttonHoverStyleMainColor {
     border: 2px solid var(--color-line);
     background-color: var(--color-background);
@@ -84,8 +129,146 @@
     background-color: var(--color-main-transparent);
 }
 
-.spinIcon {
-    animation: spinIcon 1s ease-in-out infinite;
+.roundDefaultButton {
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--color-line) !important;
+    padding: var(--size-1);
+    border-radius: var(--radius-total);
+    transition: var(--transition-1);
+}
+
+.roundDefaultButton:hover,
+.roundDefaultButton:focus {
+    background-color: var(--color-main-transparent);
+    border: 1px solid var(--color-main);
+}
+
+/* ============= */
+
+/* Images Style */
+
+.pictureSmall {
+    width: 30px;
+    height: 30px;
+}
+
+.pictureMedium {
+    width: 40px;
+    height: 40px;
+}
+
+.pictureBig {
+    width: 150px;
+    height: 150px;
+}
+
+.pictureGiant {
+    width: 250px;
+    height: 250px;
+}
+
+.profilePictureRound {
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    object-position: center;
+    border-radius: var(--radius-total);
+    border: 2px solid var(--color-line);
+    background-color: var(--color-background);
+}
+
+.correctImage {
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* ============ */
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.noWrap {
+    text-wrap: nowrap;
+}
+
+.floatingForm {
+    gap: var(--size-4);
+    padding: var(--size-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line);
+}
+
+/* Separator / Divider styles */
+
+.separator {
+    align-self: stretch;
+    min-height: 2px;
+    border-radius: 10px;
+    background-image: var(--gradient-main-colors);
+}
+
+.ballSeparator {
+    min-width: 6px;
+    min-height: 6px;
+    aspect-ratio: 1/1;
+    background-image: var(--gradient-main-colors);
+    border-radius: var(--radius-total);
+}
+
+/* ========================== */
+
+/* Utilities */
+
+.disabledLink {
+    text-decoration: none;
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.ellipsisOnOverflowingText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.noBorderNoOutline {
+    border: none;
+    outline: none;
+}
+
+/* ========= */
+
+/* Positions */
+
+.positionAbsoluteCenter {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+}
+
+.positionAbsoluteCenterWithTransform {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ========== */
+
+/* Text Styles */
+
+.textAlignCenter {
+    text-align: center;
 }
 
 .subText {
@@ -125,87 +308,26 @@
     font-style: italic;
 }
 
-.roundDefaultButton {
-    display: grid;
-    place-items: center;
-    border: 2px solid var(--color-line) !important;
-    padding: var(--size-1);
-    border-radius: var(--radius-total);
-    transition: var(--transition-1);
+.textBoldSmall {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-thickness-3);
 }
 
-.roundDefaultButton:hover,
-.roundDefaultButton:focus {
-    background-color: var(--color-main-transparent);
-    border: 1px solid var(--color-main);
+.textSlimCenterSecondaryFont {
+    font-weight: 100;
+    text-align: center;
+    font-family: var(--font-secondary);
 }
 
-.defaultIcon {
-    font-size: 1.75rem;
-}
-
-.loaderIcon {
-    font-size: 1.75rem;
+.textWithMainColorsGradient {
     color: transparent;
-}
-
-.pictureSmall {
-    width: 30px;
-    height: 30px;
-}
-
-.pictureMedium {
-    width: 40px;
-    height: 40px;
-}
-
-.pictureBig {
-    width: 150px;
-    height: 150px;
-}
-
-.pictureGiant {
-    width: 250px;
-    height: 250px;
-}
-
-.profilePictureRound {
-    aspect-ratio: 1/1;
-    object-fit: cover;
-    object-position: center;
-    border-radius: var(--radius-total);
-    border: 2px solid var(--color-line);
-    background-color: var(--color-background);
-}
-
-.srOnly {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-}
-
-.noWrap {
-    text-wrap: nowrap;
-}
-
-.floatingForm {
-    gap: var(--size-4);
-    padding: var(--size-4);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-line);
-}
-
-.separator {
-    align-self: stretch;
-    min-height: 2px;
-    border-radius: 10px;
-    background-image: var(--gradient-main-colors);
+    background-image: linear-gradient(
+        to right,
+        var(--color-main),
+        var(--color-secondary)
+    );
+    background-position: center;
+    background-clip: text;
 }
 
 .textSmallSecondary {
@@ -225,83 +347,6 @@
     text-transform: capitalize;
 }
 
-.disabledLink {
-    text-decoration: none;
-    pointer-events: none;
-    cursor: pointer;
-}
-
-.ellipsisOnOverflowingText {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.ballSeparator {
-    min-width: 6px;
-    min-height: 6px;
-    aspect-ratio: 1/1;
-    background-image: var(--gradient-main-colors);
-    border-radius: var(--radius-total);
-}
-
-.textAlignCenter {
-    text-align: center;
-}
-
-.noBorderNoOutline {
-    border: none;
-    outline: none;
-}
-
-.correctImage {
-    width: 100%;
-    object-fit: cover;
-    object-position: center;
-}
-
-.gridCenter {
-    display: grid;
-    place-items: center;
-}
-
-.button1 {
-    padding: var(--size-1);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-line);
-    transition: var(--transition-1);
-}
-
-.button1:hover,
-.button1:focus,
-.button1:focus-visible {
-    background-color: var(--color-main-dark);
-}
-
-/* Positions */
-
-.positionAbsoluteCenter {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-}
-
-.positionAbsoluteCenterWithTransform {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* ========== */
-
-/* Text Styles */
-
-.textBoldSmall {
-    font-size: var(--font-size-1);
-    font-weight: var(--font-thickness-3);
-}
-
 /* =========== */
 
 /* Outline styles */
@@ -310,25 +355,40 @@
 }
 
 .outline1:focus-visible {
-    border: 3px solid var(--color-outline);
+    outline: 3px solid var(--color-outline);
 }
 
 /* ============== */
 
-/* Text Styles */
+/* Backgrounds */
 
-.textWithMainColorsGradient {
-    color: transparent;
-    background-image: linear-gradient(
-        to right,
-        var(--color-main),
-        var(--color-secondary)
-    );
-    background-position: center;
-    background-clip: text;
+.radialWiggleBackground {
+    background-image:
+        radial-gradient(
+            circle at center,
+            transparent,
+            var(--color-background),
+            var(--color-background),
+            var(--color-background),
+            var(--color-background)
+        ),
+        url("../../public/patterns/wiggle_colored.png");
 }
 
-/* ===========*/
+.radialGradientWithMainColors {
+    background-image: radial-gradient(
+        circle at center,
+        var(--color-main),
+        var(--color-main),
+        var(--color-secondary),
+        var(--color-secondary),
+        transparent
+    );
+}
+
+/* ======= */
+
+/* Animation definitions */
 
 @keyframes animateLoaderBackground {
     to {
@@ -341,3 +401,5 @@
         transform: rotate(360deg);
     }
 }
+
+/* ===================== */

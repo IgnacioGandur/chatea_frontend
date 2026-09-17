@@ -1,0 +1,60 @@
+.buttonWrapper {
+    height: 2.25rem;
+    position: relative;
+
+    .button,
+    .glow {
+        border-radius: var(--radius-full);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+    }
+
+    .button {
+        z-index: 1;
+        background-image: linear-gradient(
+            to right,
+            var(--color-main),
+            var(--color-secondary),
+            transparent,
+            transparent,
+            transparent
+        );
+        background-size: 300%;
+        background-repeat: no-repeat;
+        background-position: right bottom;
+        transition: background-position 400ms ease-in-out;
+        border: 1px solid var(--color-line);
+        font-weight: 500;
+    }
+
+    .button:focus-visible {
+        outline: 3px solid var(--color-outline);
+    }
+
+    .glow {
+        --size: 6px;
+
+        width: calc(100% + var(--size));
+        height: calc(100% + var(--size));
+        background-color: transparent;
+        background-image: var(--gradient-main-colors);
+        z-index: 0;
+        filter: blur(4px);
+        opacity: 0;
+        transition: opacity 250ms ease-out;
+    }
+}
+
+.buttonWrapper:hover {
+    .button {
+        border: none;
+        background-position: left top;
+    }
+    .glow {
+        opacity: 1;
+    }
+}

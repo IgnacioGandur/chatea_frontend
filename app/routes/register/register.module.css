@@ -1,15 +1,211 @@
-.register {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--size-5);
+.submittingLoader {
+    gap: var(--size-4);
+    flex: 1;
 
-    .form {
-        display: flex;
-        flex-direction: column;
-        gap: var(--size-5);
-        padding: var(--size-5);
+    .loaderTitle {
+        font-family: var(--font-main);
+    }
+
+    .loaderPara {
+    }
+}
+
+.register,
+.login {
+    .content {
+        gap: var(--size-4);
+        border-radius: var(--radius-xl);
         border: 1px solid var(--color-line);
+        min-height: 700px;
+        min-width: 1600px;
+
+        .leftSide,
+        .rightSide {
+            flex: 1;
+            padding: var(--size-4);
+        }
+
+        .leftSide {
+            position: relative;
+            overflow: hidden;
+
+            > * {
+                flex: 1;
+            }
+
+            .title {
+                font-size: var(--font-size-7);
+            }
+
+            .blobWrapper {
+                background-image:
+                    radial-gradient(
+                        circle at center,
+                        transparent,
+                        transparent,
+                        transparent,
+                        var(--color-background),
+                        var(--color-background),
+                        var(--color-background)
+                    ),
+                    url("../../../public/patterns/wiggle_colored.png");
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                bottom: -60%;
+                left: 0;
+            }
+        }
+
+        .verticalSeparator {
+            flex: 0 0 1px;
+            border-radius: var(--radius-2xl);
+            opacity: 0.2;
+        }
+
+        .rightSide {
+            padding: var(--size-4);
+            gap: var(--size-4);
+            overflow: hidden;
+
+            .loaderWrapper {
+                flex: 1;
+                display: flex;
+            }
+
+            .formWrapper {
+                flex: 1;
+                gap: inherit;
+
+                .form {
+                    flex: inherit;
+                    gap: var(--size-6);
+                    display: grid;
+                    grid-template-areas:
+                        "formTitle formTitle"
+                        "firstName lastName"
+                        "username username"
+                        "password confirmPassword"
+                        "passwordTester passwordTester"
+                        "registerButton registerButton";
+                    align-content: space-between;
+
+                    .formTitle {
+                        grid-area: formTitle;
+                        font-size: var(--font-size-5);
+                        text-align: start;
+                    }
+
+                    .firstName {
+                        grid-area: firstName;
+                    }
+
+                    .lastName {
+                        grid-area: lastName;
+                    }
+
+                    .username {
+                        grid-area: username;
+                    }
+
+                    .password {
+                        grid-area: password;
+                    }
+
+                    .confirmPassword {
+                        grid-area: confirmPassword;
+                    }
+
+                    .passwordTester {
+                        grid-area: passwordTester;
+                        border: 1px solid white;
+                        padding: var(--size-2);
+                        border-radius: var(--radius-xl);
+                        text-align: center;
+                    }
+
+                    .passwordTester.match {
+                        background-color: var(--color-success-dimmed);
+                        border: 1px solid var(--color-success);
+                    }
+                    .passwordTester.dontMatch {
+                        background-color: var(--color-error-dimmed);
+                        border: 1px solid var(--color-error-bright);
+                    }
+
+                    .registerButton {
+                        grid-area: registerButton;
+                    }
+                }
+            }
+
+            .horizontalSeparator {
+                position: relative;
+                display: flex;
+                justify-content: center;
+
+                .text {
+                    color: var(--color-text-dimmed);
+                    text-align: center;
+                    background-color: var(--color-background);
+                    z-index: 5;
+                    padding: 0 var(--size-2);
+                }
+            }
+
+            .horizontalSeparator::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                margin: auto;
+                width: 100%;
+                height: 1px;
+                opacity: 0.5;
+                background-image: radial-gradient(
+                    circle at center,
+                    var(--color-main),
+                    var(--color-secondary),
+                    transparent
+                );
+            }
+        }
+    }
+}
+
+.login {
+    .content {
+        .leftSide,
+        .rightSide {
+            padding: var(--size-4);
+        }
+
+        .leftSide {
+            justify-content: flex-end;
+
+            .title {
+                flex: initial;
+            }
+
+            .blobWrapper {
+                bottom: initial;
+                top: -60%;
+            }
+        }
+
+        .rightSide {
+            .loaderWrapper {
+            }
+
+            .formWrapper {
+                .loginForm {
+                    flex: 1;
+                    gap: var(--size-6);
+
+                    .loginFormButton {
+                        margin-top: auto;
+                    }
+                }
+            }
+        }
     }
 }

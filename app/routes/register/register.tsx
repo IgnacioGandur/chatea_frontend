@@ -1,5 +1,6 @@
 // CSS
 import styles from "./register.module.css";
+import classes from "~/css/classes.module.css";
 
 // Types
 import type { Route } from "./+types/register";
@@ -10,8 +11,9 @@ import {
     useFetcher,
     type ActionFunctionArgs,
     data,
+    NavLink,
 } from "react-router";
-import { MoonLoader } from "react-spinners";
+import { BarLoader } from "react-spinners";
 import bcrypt from "bcryptjs";
 
 // Components
@@ -21,9 +23,12 @@ import CustomInput from "~/components/custom-input/CustomInput";
 import { useState, type ChangeEvent } from "react";
 import type { $ZodIssue } from "zod/v4/core";
 import { getSession, commitSession } from "~/session.server";
+import { AnimatePresence, motion } from "motion/react";
 
 // Db
 import userModel from "~/db/user.model";
+import Blob from "~/components/blob/Blob";
+import GradientButton from "~/components/gradient-button/GradientButton";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -64,6 +69,7 @@ type FormValues = {
 };
 
 export async function action({ request }: ActionFunctionArgs) {
+    await new Promise((r) => setTimeout(r, 3000));
     const session = await getSession(request.headers.get("Cookie"));
     const formData = await request.formData();
     const values = Object.fromEntries(formData) as FormValues;
@@ -101,6 +107,43 @@ export async function action({ request }: ActionFunctionArgs) {
     );
 }
 
+interface SubmittingLoaderProps {
+    mainText: string;
+    secondaryText: string;
+}
+
+export function SubmittingLoader({
+    mainText,
+    secondaryText,
+}: SubmittingLoaderProps) {
+    return (
+        <div
+            className={`
+            ${styles.submittingLoader}
+            ${classes.flexColumnCenter}
+        `}
+        >
+            <h2
+                className={`
+                ${styles.loaderTitle}
+                ${classes.textSlimCenterSecondaryFont}
+            `}
+            >
+                {mainText}
+            </h2>
+            <BarLoader color="var(--color-main)" />
+            <p
+                className={`
+                ${styles.loaderPara}
+                ${classes.smallText}
+                `}
+            >
+                {secondaryText}
+            </p>
+        </div>
+    );
+}
+
 export default function Register() {
     const fetcher = useFetcher<RegisterActionResponse>();
     const [inputs, setInputs] = useState({
@@ -135,104 +178,219 @@ export default function Register() {
     const passwordsMatch = inputs.password === inputs.confirm;
 
     return (
-        <main className={styles.register}>
-            <h1>Register page</h1>
-            {showErrors ? (
-                <ValidationErrors
-                    title={validationErrorsMessage}
-                    errors={validationErrors}
-                />
-            ) : null}
-            {isSubmitting ? (
-                <div className="loader">
-                    <h2>Submitting...</h2>
-                    <MoonLoader
-                        size="36px"
-                        color="var(--color-main)"
-                    />
-                </div>
-            ) : (
-                <fetcher.Form
-                    className={styles.form}
-                    method="post"
+        <main
+            className={`
+                ${styles.register}
+                ${classes.flexRowCenter}
+            `}
+        >
+            <section
+                className={`
+                    ${styles.content}
+                    ${classes.flexRow}
+                `}
+            >
+                <section
+                    className={`
+                    ${classes.flexColumnStartCenter}
+                    ${styles.leftSide}
+                `}
                 >
-                    <CustomInput
-                        type="text"
-                        labelText="first name"
-                        id="first-name"
-                        icon="badge"
-                        placeholder="John"
-                        clarification="First name must only contain letters and be 30 characters max."
-                        required={false}
-                        name="firstName"
-                        value={inputs.firstName}
-                        onChange={handleInputs}
-                    />
-                    <CustomInput
-                        type="text"
-                        labelText="last name"
-                        id="last-name"
-                        icon="signature"
-                        placeholder="Doe"
-                        clarification="Last name must only contain letters and be 30 characters max."
-                        required={false}
-                        name="lastName"
-                        value={inputs.lastName}
-                        onChange={handleInputs}
-                    />
-                    <CustomInput
-                        type="text"
-                        labelText="username"
-                        id="username"
-                        icon="face"
-                        placeholder="john_doe"
-                        clarification="Username must be between 3 and 30 characters, can only contain alphanumeric characters, dots and hyphens."
-                        required={false}
-                        name="username"
-                        value={inputs.username}
-                        onChange={handleInputs}
-                    />
-                    <CustomInput
-                        type="password"
-                        labelText="password"
-                        id="password"
-                        icon="lock"
-                        placeholder=""
-                        clarification=""
-                        required={false}
-                        name="password"
-                        value={inputs.password}
-                        onChange={handleInputs}
-                    />
-                    <CustomInput
-                        type="password"
-                        labelText="confirm password"
-                        id="confirm"
-                        icon="lock_reset"
-                        placeholder=""
-                        clarification="Repeat your password"
-                        required={false}
-                        name="confirm"
-                        value={inputs.confirm}
-                        onChange={handleInputs}
-                    />
-                    {!passwordsAreEmpty ? (
-                        <p
-                            className={`${styles.password} ${passwordsMatch ? styles.match : styles.dontMatch}`}
-                        >
-                            {passwordsMatch
-                                ? "The passwords match!"
-                                : "The passwords don't match."}
-                        </p>
-                    ) : null}
-                    <button
-                        type="submit"
-                        className={styles.registerButton}
+                    <h1
+                        className={`
+                        ${styles.title}
+                        ${classes.textWithMainColorsGradient}
+                        ${classes.textSlimCenterSecondaryFont}
+                    `}
                     >
-                        Register
-                    </button>
-                </fetcher.Form>
-            )}
+                        Create your account now!
+                    </h1>
+                    <div className={styles.blobWrapper}>
+                        <Blob />
+                    </div>
+                </section>
+                <div
+                    className={`
+                    ${styles.verticalSeparator}
+                    ${classes.radialGradientWithMainColors}
+                    `}
+                ></div>
+                <section
+                    className={`
+                    ${styles.rightSide}
+                    ${classes.flexColumn}
+                `}
+                >
+                    <AnimatePresence mode="wait">
+                        {isSubmitting ? (
+                            <motion.div
+                                key="submitting-loader"
+                                className={styles.loaderWrapper}
+                                initial={{
+                                    opacity: 0,
+                                }}
+                                animate={{
+                                    opacity: 1,
+                                }}
+                                exit={{
+                                    opacity: 0,
+                                }}
+                            >
+                                <SubmittingLoader
+                                    mainText="Please wait..."
+                                    secondaryText="We are creating your account..."
+                                />
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="form-wrapper"
+                                className={`
+                                    ${styles.formWrapper}
+                                    ${classes.flexColumn}
+                                `}
+                                initial={{
+                                    opacity: 0,
+                                }}
+                                animate={{
+                                    opacity: 1,
+                                }}
+                                exit={{
+                                    opacity: 0,
+                                }}
+                            >
+                                {showErrors ? (
+                                    <ValidationErrors
+                                        title={validationErrorsMessage}
+                                        errors={validationErrors}
+                                        roundBorders
+                                    />
+                                ) : null}
+                                <fetcher.Form
+                                    className={styles.form}
+                                    method="post"
+                                >
+                                    <h2
+                                        className={`
+                                            ${styles.formTitle}
+                                            ${classes.textSlimCenterSecondaryFont}
+                                        `}
+                                    >
+                                        Complete your profile details below
+                                    </h2>
+                                    <CustomInput
+                                        className={styles.firstName}
+                                        type="text"
+                                        labelText="first name"
+                                        id="first-name"
+                                        icon="badge"
+                                        placeholder="John"
+                                        clarification="First name must only contain letters and be 30 characters max."
+                                        required
+                                        name="firstName"
+                                        value={inputs.firstName}
+                                        onChange={handleInputs}
+                                    />
+                                    <CustomInput
+                                        className={styles.lastName}
+                                        type="text"
+                                        labelText="last name"
+                                        id="last-name"
+                                        icon="signature"
+                                        placeholder="Doe"
+                                        clarification="Last name must only contain letters and be 30 characters max."
+                                        required
+                                        name="lastName"
+                                        value={inputs.lastName}
+                                        onChange={handleInputs}
+                                    />
+                                    <CustomInput
+                                        className={styles.username}
+                                        type="text"
+                                        labelText="username"
+                                        id="username"
+                                        icon="face"
+                                        placeholder="john_doe"
+                                        clarification="Username must be between 3 and 30 characters, can only contain alphanumeric characters, dots and hyphens."
+                                        required
+                                        name="username"
+                                        value={inputs.username}
+                                        onChange={handleInputs}
+                                    />
+                                    <CustomInput
+                                        className={styles.password}
+                                        type="password"
+                                        labelText="password"
+                                        id="password"
+                                        icon="lock"
+                                        placeholder=""
+                                        clarification="Choose a strong password."
+                                        required
+                                        name="password"
+                                        value={inputs.password}
+                                        onChange={handleInputs}
+                                    />
+                                    <CustomInput
+                                        className={styles.confirmPassword}
+                                        type="password"
+                                        labelText="confirm password"
+                                        id="confirm"
+                                        icon="lock_reset"
+                                        placeholder=""
+                                        clarification="Repeat your password"
+                                        required
+                                        name="confirm"
+                                        value={inputs.confirm}
+                                        onChange={handleInputs}
+                                    />
+                                    {!passwordsAreEmpty ? (
+                                        <p
+                                            className={`
+                                        ${classes.textMainDimmedItalic} 
+                                        ${styles.passwordTester} 
+                                        ${passwordsMatch ? styles.match : styles.dontMatch}
+                                    `}
+                                        >
+                                            {passwordsMatch
+                                                ? "The passwords match!"
+                                                : "The passwords don't match."}
+                                        </p>
+                                    ) : null}
+                                    <GradientButton
+                                        className={`
+                                    ${classes.outline1}
+                                    ${styles.registerButton}
+                                `}
+                                        type="submit"
+                                        glow
+                                    >
+                                        Register
+                                    </GradientButton>
+                                </fetcher.Form>
+                                <div className={styles.horizontalSeparator}>
+                                    <span
+                                        className={`
+                                            ${styles.text}
+                                            ${classes.textSmallSecondary}
+                                        `}
+                                    >
+                                        Or
+                                    </span>
+                                </div>
+                                <NavLink
+                                    className={`
+                                        ${classes.textSmallSecondary}
+                                        ${classes.textAlignCenter}
+                                        ${styles.registerLink}
+                                        `}
+                                    to="/login"
+                                >
+                                    Login if you already have an account.
+                                </NavLink>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </section>
+            </section>
         </main>
     );
 }

@@ -1,8 +1,7 @@
 import type { Route } from "./+types/home";
-import Blob from "./blob/Blob";
+import Blob from "~/components/blob/Blob";
 import styles from "./home.module.css";
 import classes from "~/css/classes.module.css";
-import LogoSmall from "~/components/logo-small/LogoSmall";
 
 export function meta({}: Route.MetaArgs) {
     return [

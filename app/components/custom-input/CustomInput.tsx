@@ -3,6 +3,7 @@ import styles from "./CustomInput.module.css";
 import { useState, type ChangeEvent } from "react";
 
 interface CustomInput {
+    className?: string;
     type?: "text" | "password";
     labelText: string;
     id: string;
@@ -16,6 +17,7 @@ interface CustomInput {
 }
 
 export default function CustomInput({
+    className,
     type = "text",
     labelText,
     icon,
@@ -34,7 +36,12 @@ export default function CustomInput({
     }
 
     return (
-        <div className={styles.customInput}>
+        <div
+            className={`
+            ${styles.customInput}
+            ${className ?? ""}
+        `}
+        >
             <label
                 className={styles.label}
                 htmlFor={id}
