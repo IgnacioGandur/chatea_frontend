@@ -40,7 +40,68 @@
     max-width: 1420px;
 }
 
-.dashboard {
+.skeleton {
+    flex: 1;
+
+    .profile {
+        .user {
+            .info {
+                .titleMain {
+                    height: var(--font-size-6);
+                    width: 30%;
+                }
+
+                .ppfWrapper {
+                    .ppf {
+                    }
+                }
+
+                .username,
+                .joinDate {
+                    height: var(--font-size-2);
+                }
+
+                .username {
+                    width: 15%;
+                }
+
+                .joinDate {
+                    width: 30%;
+                }
+            }
+        }
+
+        .password {
+            display: flex;
+
+            .updatePasswordForm {
+                .fakeInput {
+                    gap: var(--size-2);
+
+                    .title {
+                        width: 25%;
+                        height: var(--font-size-2);
+                    }
+                    .input {
+                        height: var(--size-12);
+                    }
+                    .clarification {
+                        width: 65%;
+                        height: var(--font-size-1);
+                    }
+                }
+
+                .fakeButton {
+                    height: var(--font-size-6);
+                    margin-top: auto;
+                }
+            }
+        }
+    }
+}
+
+.dashboard,
+.skeleton {
     .profile {
         flex: 1;
         display: grid;

@@ -23,13 +23,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     const { loggedUserId } = await getLoggedUserId(request);
     const id = Number(loggedUserId);
 
-    // const profileStatsPromise = new Promise((r, _) => {
-    //     setTimeout(() => {
-    //         r(userModel.getUserProfileStats(id));
-    //     }, 4000);
-    // });
+    const profileStatsPromise = new Promise((r, _) => {
+        setTimeout(() => {
+            r(userModel.getUserProfileStats(id));
+        }, 4000);
+    });
 
-    const profileStatsPromise = userModel.getUserProfileStats(id);
+    // const profileStatsPromise = userModel.getUserProfileStats(id);
 
     return {
         profileStatsPromise,
@@ -173,10 +173,224 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 function Skeleton() {
+    const fakeStats: Stat[] = [
+        {
+            icon: "send",
+            className: styles.sentMessages,
+            number: 0,
+            title: "Sent messages",
+        },
+        {
+            icon: "diversity_2",
+            className: styles.totalFriends,
+            number: 0,
+            title: "Friends",
+        },
+        {
+            icon: "conversation",
+            className: styles.conversations,
+            number: 0,
+            title: "Conversations",
+        },
+        {
+            icon: "domino_mask",
+            className: styles.privateConversations,
+            number: 0,
+            title: "Private conversations",
+        },
+        {
+            icon: "groups_3",
+            className: styles.groupConversations,
+            number: 0,
+            title: "Group conversations",
+        },
+        {
+            icon: "graph_5",
+            className: styles.ownedGroups,
+            number: 0,
+            title: "Your groups",
+        },
+    ];
+
+    const fakeInput = (
+        <div
+            className={`
+            ${styles.fakeInput}
+            ${classes.flexColumn}
+        `}
+        >
+            <div
+                className={`
+                ${styles.title}
+                ${classes.suspenseBackgroundAnimation}
+            `}
+            ></div>
+            <div
+                className={`
+                ${styles.input}
+                ${classes.suspenseBackgroundAnimation}
+                `}
+            ></div>
+            <div
+                className={`
+                ${styles.clarification}
+                ${classes.suspenseBackgroundAnimation}
+                `}
+            ></div>
+        </div>
+    );
+
     return (
-        <article className={styles.skeleton}>
-            <p>loading...</p>
-        </article>
+        <main className={styles.skeleton}>
+            <title>Dashboard | Chateá!</title>
+            <div className={styles.profile}>
+                <div
+                    className={`
+                    ${styles.user}
+                    ${classes.flexColumn}
+                `}
+                >
+                    <PageHeader
+                        icon="account_circle"
+                        title="Current Profile"
+                    />
+                    <div
+                        className={`
+                            ${styles.info}
+                            ${classes.flexColumnCenter}
+                        `}
+                    >
+                        <h1
+                            className={`
+                            ${styles.titleMain}
+                            ${classes.suspenseBackgroundAnimation}
+                        `}
+                        ></h1>
+                        <div
+                            className={`
+                                ${styles.ppfWrapper}
+                                ${classes.profilePictureRound}
+                                ${classes.pictureGiant}
+                                ${classes.flexRowAlignCenterJustifyCenter}
+                            `}
+                        >
+                            <div
+                                style={{ border: "none" }}
+                                className={`
+                                    ${classes.profilePictureRound}
+                                    ${classes.pictureGiant}
+                                    ${classes.suspenseBackgroundAnimation}
+                                `}
+                            ></div>
+                        </div>
+                        <p
+                            className={`
+                                    ${styles.username}
+                                    ${classes.subText}
+                                    ${classes.suspenseBackgroundAnimation}
+                                `}
+                        ></p>
+                        <p
+                            className={`
+                            ${styles.joinDate}
+                            ${classes.textMainDimmedItalic}
+                            ${classes.suspenseBackgroundAnimation}
+                        `}
+                        ></p>
+                    </div>
+                </div>
+                <div
+                    className={`
+                    ${styles.stats}
+                    ${classes.flexColumn}
+                `}
+                >
+                    <PageHeader
+                        icon="bar_chart_4_bars"
+                        title="Stats"
+                    />
+                    <div
+                        className={`
+                            ${classes.flexRow}
+                            ${styles.statsContainer}
+                        `}
+                    >
+                        {fakeStats.map((s, i) => {
+                            return (
+                                <section
+                                    key={i}
+                                    className={`
+                                        ${styles.stat}
+                                        ${classes.flexColumn}
+                                        ${s.className}
+                                    `}
+                                >
+                                    <header
+                                        className={`
+                                            ${classes.flexRowStartCenter}
+                                            ${styles.header}
+                                        `}
+                                    >
+                                        <span
+                                            className={`${classes.iconWithGradientColors} ${styles.icon} material-symbols-rounded`}
+                                        >
+                                            {s.icon}
+                                        </span>
+                                        <div
+                                            className={`${classes.ballSeparator} ${styles.ballSeparator}`}
+                                        ></div>
+                                        <h2
+                                            className={`${classes.titleSmallMainFont}`}
+                                        >
+                                            {s.title}
+                                        </h2>
+                                    </header>
+                                    <div className={styles.numberWrapper}>
+                                        <p
+                                            style={{
+                                                color: "transparent",
+                                            }}
+                                            className={`
+                                                ${styles.number}
+                                                ${classes.suspenseBackgroundAnimation}
+                                            `}
+                                        >
+                                            {s.number}
+                                        </p>
+                                    </div>
+                                </section>
+                            );
+                        })}
+                    </div>
+                </div>
+                <div
+                    className={`
+                    ${styles.password}
+                    ${classes.flexColumn}
+                `}
+                >
+                    <PageHeader
+                        icon="key"
+                        title="Password"
+                    />
+                    <div
+                        className={`
+                            ${styles.updatePasswordForm}
+                            ${classes.flexColumn}
+                        `}
+                    >
+                        {fakeInput}
+                        {fakeInput}
+                        <div
+                            className={`
+                            ${styles.fakeButton}
+                            ${classes.suspenseBackgroundAnimation}
+                        `}
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </main>
     );
 }
 

@@ -13,6 +13,7 @@
     background-size: 300%;
     background-position: center left;
     animation: animateLoaderBackground 1s linear infinite reverse;
+    border-radius: var(--radius-md);
 
     @media (prefers-color-scheme: dark) {
         --bg-color: rgba(255, 255, 255, 0.2);
