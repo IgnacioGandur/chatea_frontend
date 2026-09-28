@@ -1,3 +1,38 @@
+.updatePpfPopover {
+    .button {
+        border-radius: 50%;
+        padding: var(--size-1);
+        background-color: var(--color-background);
+        border: 2px solid var(--color-line);
+        display: grid;
+        place-items: center;
+        transition: var(--transition-1);
+
+        .icon {
+            font-size: var(--icon-size-2);
+        }
+    }
+
+    .button:hover {
+        background-color: var(--color-main-transparent);
+        border: 2px solid var(--color-main);
+    }
+
+    .button:focus-visible {
+        outline: 2px solid var(--color-outline);
+    }
+
+    .childrenContainer {
+        position: absolute;
+        position-area: top span-all;
+        margin-bottom: var(--size-2);
+        border: 2px solid var(--color-line);
+        border-radius: var(--radius-xl);
+        background-color: var(--color-background);
+        color: var(--color-text);
+    }
+}
+
 .dashboard,
 .skeleton {
     display: flex;
@@ -13,8 +48,15 @@
             "user user password"
             "user user password"
             "stats stats stats";
-        grid-template-columns: 1fr 1fr auto;
+        grid-template-columns: 1fr 1fr minmax(400px, auto);
         grid-template-rows: 1fr 1fr 1fr;
+
+        .user > .info,
+        .stats > .statsContainer > .stat > .number,
+        .password > .updatePasswordForm {
+            padding: var(--size-4);
+            gap: var(--size-4);
+        }
 
         .user {
             border-bottom: 1px solid var(--color-line);
@@ -23,25 +65,64 @@
 
             .info {
                 flex: 1;
+                gap: var(--size-4);
 
                 .ppfWrapper {
                     position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
 
                     .ppf {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
                     }
 
-                    .uploadPpf {
-                        border: 2px solid red;
+                    .updatePpfButton {
                         position: absolute;
                         bottom: 0;
+
+                        .updateProfilePictureForm {
+                            padding: var(--size-3);
+                            gap: var(--size-3);
+
+                            .horizontalSeparator {
+                                min-height: 1px;
+                                opacity: 0.5;
+                            }
+
+                            .fileInput {
+                                border: 2px solid var(--color-line);
+                                border-radius: var(--radius-lg);
+                                padding: var(--size-1);
+                            }
+
+                            .fileInput::file-selector-button {
+                                border: 2px solid var(--color-line);
+                                padding: var(--size-1) calc(var(--size-1) * 2);
+                                padding: inherit;
+                                cursor: pointer;
+                                background-color: var(--color-background);
+                                color: var(--color-text);
+                                border-radius: inherit;
+                            }
+
+                            .updateButton {
+                                padding: var(--size-2);
+                                border-radius: var(--radius-full);
+                                transition: var(--transition-1);
+                            }
+                        }
+                    }
+
+                    .uploadFileImage {
                         left: 0;
                     }
 
-                    .editButton {
-                        transform: translate(-50%, -50%);
-                        position: absolute;
+                    .useLinkImage {
                         right: 0;
-                        bottom: 0;
                     }
                 }
             }
@@ -60,11 +141,32 @@
                     .header {
                         gap: var(--size-2);
                         border-bottom: 1px solid var(--color-line);
+                        padding: var(--size-1);
 
                         .icon {
                             font-size: var(--icon-size-4);
                         }
                     }
+
+                    .numberWrapper {
+                        flex: 1;
+                        display: flex;
+                        align-items: flex-end;
+                        justify-content: flex-end;
+                        padding: var(--size-3);
+
+                        .number {
+                            flex: 1;
+                            font-size: var(--font-size-7);
+                            font-family: var(--font-secondary);
+                            font-weight: 100;
+                            text-align: end;
+                        }
+                    }
+                }
+
+                .stat:last-of-type {
+                    border-right: none;
                 }
             }
         }
@@ -72,6 +174,16 @@
         .password {
             grid-area: password;
             border-bottom: 1px solid var(--color-line);
+
+            .updatePasswordForm {
+                flex: 1;
+            }
+
+            .updatePasswordButton {
+                padding: var(--size-2);
+                border-radius: var(--radius-full);
+                margin-top: auto;
+            }
         }
     }
 }

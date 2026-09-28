@@ -1,6 +1,5 @@
 import prisma from "./prisma";
 import {
-    Prisma,
     PrismaClient,
     type User as UserType,
 } from "../../generated/prisma/client";
@@ -138,7 +137,7 @@ class User {
 
     async updateUser(
         id: number,
-        field: "profilePictureUrl",
+        field: "profilePictureUrl" | "password",
         value: string,
     ): Promise<UserType> {
         return await this.prisma.user.update({

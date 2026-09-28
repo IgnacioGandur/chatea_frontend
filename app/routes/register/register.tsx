@@ -357,9 +357,9 @@ export default function Register() {
                                     ) : null}
                                     <GradientButton
                                         className={`
-                                    ${classes.outline1}
-                                    ${styles.registerButton}
-                                `}
+                                            ${classes.outline1}
+                                            ${styles.registerButton}
+                                        `}
                                         type="submit"
                                         glow
                                     >

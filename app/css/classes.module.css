@@ -81,6 +81,20 @@
     align-items: center;
 }
 
+.flexColumnAlignCenterSpaceBetween {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flexRowAlignCenterJustifyCenter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ============== */
 
 /* Icon Styles */
@@ -123,8 +137,7 @@
     transition: var(--transition-1);
 }
 
-.buttonHoverStyleMainColor:hover,
-.buttonHoverStyleMainColor:focus {
+.buttonHoverStyleMainColor:hover {
     border: 2px solid var(--color-main);
     background-color: var(--color-main-transparent);
 }
@@ -387,6 +400,20 @@
 }
 
 /* ======= */
+
+/* Hover Effects */
+
+.hoverBackgroundMainColorWithBorder {
+    background-color: var(--color-background);
+    border: 2px solid var(--color-line);
+}
+
+.hoverBackgroundMainColorWithBorder:hover {
+    background-color: var(--color-main-transparent);
+    border: 2px solid var(--color-main);
+}
+
+/* ============= */
 
 /* Animation definitions */
 

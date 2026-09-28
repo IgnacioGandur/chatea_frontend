@@ -4,10 +4,9 @@ import classes from "~/css/classes.module.css";
 import type { Route } from "./+types/Dashboard";
 import { getLoggedUserId } from "~/utils/getLoggedUserId";
 import userModel from "~/db/user.model";
-import { Suspense } from "react";
+import { Suspense, useId, type ReactNode } from "react";
 import { Await, useFetcher } from "react-router";
 import { customFormatDate } from "~/utils/formatDate";
-import EditFieldButton from "~/components/edit-field-button/EditFieldButton";
 import validateUserUpdate from "~/validators/validateUserUpdate";
 import { useFetcherToast } from "~/hooks/useFetcherToast";
 import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
@@ -17,7 +16,8 @@ import type { MaterialSymbols } from "material-design-icons-literal-types";
 import { supabaseAdmin } from "~/supabase/supabase.server";
 import { deleteFolderFromSupabaseBucket } from "~/supabase/deleteBucketFolder";
 import { validateProfilePictureUpload } from "~/validators/validateProfilePictureUpload";
-import AltPopover from "~/components/alt-popover/AltPopover";
+import validatePasswordUpdate from "~/validators/validatePasswordUpdate";
+import bcrypt from "bcryptjs";
 
 export async function loader({ request }: Route.LoaderArgs) {
     const { loggedUserId } = await getLoggedUserId(request);
@@ -39,6 +39,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 const validIntents = [
     "update-profile-picture",
     "upload-profile-picture",
+    "update-password",
 ] as const;
 
 type ValidIntent = (typeof validIntents)[number];
@@ -139,6 +140,35 @@ export async function action({ request }: Route.ActionArgs) {
                 message: "Profile picture updated.",
             };
         }
+
+        case "update-password": {
+            const newPassword = formData.get("password") as string;
+            const confirmPassword = formData.get("confirmPassword") as string;
+
+            const validation = await validatePasswordUpdate(
+                newPassword,
+                confirmPassword,
+            );
+
+            if (!validation.success) {
+                return {
+                    success: false,
+                    message: "Password update failed: ",
+                    errors: validation.error.issues,
+                };
+            }
+
+            const { password: validatedPassword } = validation.data;
+
+            const hashedPassword = await bcrypt.hash(validatedPassword, 10);
+
+            await userModel.updateUser(uId, "password", hashedPassword);
+
+            return {
+                success: true,
+                message: "Password updated",
+            };
+        }
     }
 }
 
@@ -165,17 +195,81 @@ interface Stat {
     className: string;
 }
 
+interface UpdatePpfPopoverProps {
+    title?: string;
+    className?: string;
+    buttonIcon: MaterialSymbols;
+    children: ReactNode;
+}
+
+function UpdatePpfPopover({
+    title = "Open form",
+    className,
+    buttonIcon,
+    children,
+}: UpdatePpfPopoverProps) {
+    const id = useId();
+    const anchorName = `--${id}`;
+
+    return (
+        <div
+            className={`
+            ${className ?? ""}
+            ${styles.updatePpfPopover}
+        `}
+        >
+            <button
+                title={title}
+                popoverTarget={id}
+                style={{
+                    anchorName,
+                }}
+                className={`
+                    ${styles.button}
+                `}
+            >
+                <span
+                    className={`
+                        ${styles.icon}
+                        material-symbols-rounded
+                    `}
+                >
+                    {buttonIcon}
+                </span>
+            </button>
+            <div
+                id={id}
+                popover="auto"
+                style={{
+                    positionAnchor: anchorName,
+                }}
+                className={styles.childrenContainer}
+            >
+                {children}
+            </div>
+        </div>
+    );
+}
+
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
     const fetcher = useFetcher();
     const { profileStatsPromise } = loaderData;
 
     const setToastData = useFetcherToast(fetcher);
 
-    function onSubmit() {
+    function onUpdateProfilePictureSubmit() {
         setToastData({
             failMessage: "Error while updating profile picture.",
             loadingMessage: "Updating profile, please wait...",
             toastId: "update-profile",
+        });
+    }
+
+    function onUpdatePasswordSubmit() {
+        setToastData({
+            failMessage: "Error while updating your password.",
+            loadingMessage: "Updating password, please wait...",
+            toastId: "update-password",
         });
     }
 
@@ -271,82 +365,188 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                             },
                         ];
 
+                        const pageTitle = `${name}'s Dashboard | Chateá!`;
+                        const updateProfilePictureHeader = (
+                            <h4>Update your profile picture</h4>
+                        );
+                        const submitProfilePictureUpdateFormButton = (
+                            <button
+                                className={`
+                                    ${styles.updateButton}
+                                    ${classes.outline1}
+                                    ${classes.hoverBackgroundMainColorWithBorder}
+                                `}
+                                type="submit"
+                            >
+                                Update
+                            </button>
+                        );
+
+                        const formHorizontalSeparator = (
+                            <div
+                                className={`
+                                    ${styles.horizontalSeparator}
+                                    ${classes.radialGradientWithMainColors}
+                                `}
+                            ></div>
+                        );
+
                         return (
                             <div className={styles.profile}>
+                                <title>{pageTitle}</title>
                                 <article
-                                    className={`${styles.user} ${classes.flexColumn}`}
+                                    className={`
+                                        ${styles.user}
+                                        ${classes.flexColumn}
+                                    `}
                                 >
                                     <PageHeader
                                         icon="account_circle"
                                         title="Current Profile"
                                     />
                                     <div
-                                        className={`${styles.info} ${classes.flexColumnCenter}`}
+                                        className={`
+                                            ${styles.info}
+                                            ${classes.flexColumnCenter}
+                                        `}
                                     >
+                                        <h1
+                                            className={`
+                                            ${classes.titleMain}
+                                        `}
+                                        >
+                                            {name}
+                                        </h1>
                                         <div
-                                            className={`${styles.ppfWrapper} ${classes.profilePictureRound} ${classes.pictureGiant}`}
+                                            className={`
+                                                ${styles.ppfWrapper}
+                                                ${classes.profilePictureRound}
+                                                ${classes.pictureGiant}
+                                                ${classes.flexRowAlignCenterJustifyCenter}
+                                            `}
                                         >
                                             {isUpdatingProfilePicture ||
                                             isUploadingProfilePicture ? (
                                                 <div
-                                                    className={`${classes.profilePictureRound} ${classes.pictureGiant} ${classes.suspenseBackgroundAnimation}`}
+                                                    className={`
+                                                        ${classes.profilePictureRound}
+                                                        ${classes.pictureGiant}
+                                                        ${classes.suspenseBackgroundAnimation}
+                                                    `}
                                                 ></div>
                                             ) : (
                                                 <>
                                                     <img
-                                                        className={`${classes.profilePictureRound} ${classes.pictureGiant} ${styles.ppf}`}
+                                                        className={`
+                                                            ${classes.profilePictureRound}
+                                                            ${classes.pictureGiant}
+                                                            ${styles.ppf}
+                                                        `}
                                                         src={profilePictureUrl}
                                                         alt={name}
                                                     />
-                                                    <EditFieldButton
-                                                        anchorButtonClass={
-                                                            styles.editButton
-                                                        }
-                                                        fetcher={fetcher}
-                                                        fieldId="update-ppf"
-                                                        labelText="Update profile picture URL"
-                                                        inputIcon="edit"
-                                                        buttonIcon="edit"
-                                                        placeholder="https://placehold.co/600x400.png"
-                                                        inputName="profilePictureUrl"
-                                                        intentValue="update-profile-picture"
-                                                        inputClarification="The URL should point to an image."
-                                                        onSubmit={onSubmit}
-                                                    />
-                                                    <AltPopover
-                                                        className={
-                                                            styles.uploadPpf
-                                                        }
-                                                        icon="upload"
-                                                        popoverPosition="bottom"
+                                                    <UpdatePpfPopover
+                                                        title="Update your profile picture by uploading an image file"
+                                                        className={`
+                                                            ${classes.gridCenter}
+                                                            ${styles.updatePpfButton}
+                                                            ${styles.uploadFileImage}
+                                                        `}
+                                                        buttonIcon="person_edit"
                                                     >
                                                         <fetcher.Form
-                                                            onSubmit={onSubmit}
-                                                            method="post"
+                                                            onSubmit={
+                                                                onUpdateProfilePictureSubmit
+                                                            }
                                                             encType="multipart/form-data"
+                                                            method="post"
+                                                            className={`
+                                                                ${styles.updateProfilePictureForm}
+                                                                ${classes.flexColumn}
+                                                            `}
                                                         >
+                                                            {
+                                                                updateProfilePictureHeader
+                                                            }
+                                                            {
+                                                                formHorizontalSeparator
+                                                            }
                                                             <input
                                                                 type="hidden"
                                                                 name="intent"
                                                                 value="upload-profile-picture"
                                                             />
+                                                            <label htmlFor="profile-picture-file">
+                                                                Upload a profile
+                                                                picture
+                                                            </label>
                                                             <input
+                                                                className={
+                                                                    styles.fileInput
+                                                                }
                                                                 type="file"
-                                                                name="file"
                                                                 accept="image/*"
-                                                                required
+                                                                name="file"
+                                                                id="profile-picture-file"
                                                             />
-                                                            <button type="submit">
-                                                                Update
-                                                            </button>
+                                                            <p
+                                                                className={
+                                                                    styles.clarification
+                                                                }
+                                                            ></p>
+                                                            {
+                                                                submitProfilePictureUpdateFormButton
+                                                            }
                                                         </fetcher.Form>
-                                                    </AltPopover>
+                                                    </UpdatePpfPopover>
+                                                    <UpdatePpfPopover
+                                                        title="Update your profile picture by using an image link"
+                                                        className={`
+                                                            ${classes.gridCenter}
+                                                            ${styles.updatePpfButton}
+                                                            ${styles.useLinkImage}
+                                                        `}
+                                                        buttonIcon="image_arrow_up"
+                                                    >
+                                                        <fetcher.Form
+                                                            onSubmit={
+                                                                onUpdateProfilePictureSubmit
+                                                            }
+                                                            method="post"
+                                                            className={`
+                                                                ${styles.updateProfilePictureForm}
+                                                                ${classes.flexColumn}
+                                                            `}
+                                                        >
+                                                            {
+                                                                updateProfilePictureHeader
+                                                            }
+                                                            {
+                                                                formHorizontalSeparator
+                                                            }
+                                                            <input
+                                                                type="hidden"
+                                                                name="intent"
+                                                                value="update-profile-picture"
+                                                            />
+                                                            <CustomInput
+                                                                type="text"
+                                                                labelText="Image URL"
+                                                                id="image-url"
+                                                                icon="link_2"
+                                                                placeholder="https://www.images.com/sample.png"
+                                                                clarification="The URL should point to an image."
+                                                                required
+                                                                name="profilePictureUrl"
+                                                            />
+                                                            {
+                                                                submitProfilePictureUpdateFormButton
+                                                            }
+                                                        </fetcher.Form>
+                                                    </UpdatePpfPopover>
                                                 </>
                                             )}
                                         </div>
-                                        <h1 className={`${classes.titleMain}`}>
-                                            {name}
-                                        </h1>
                                         <p
                                             className={`${styles.username} ${classes.subText} `}
                                         >
@@ -361,23 +561,36 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                                     </div>
                                 </article>
                                 <div
-                                    className={`${styles.stats} ${classes.flexColumn}`}
+                                    className={`
+                                        ${styles.stats}
+                                        ${classes.flexColumn}
+                                    `}
                                 >
                                     <PageHeader
                                         icon="bar_chart_4_bars"
                                         title="Stats"
                                     />
                                     <div
-                                        className={`${classes.flexRow} ${styles.statsContainer}`}
+                                        className={`
+                                            ${classes.flexRow}
+                                            ${styles.statsContainer}
+                                        `}
                                     >
                                         {stats.map((s, i) => {
                                             return (
                                                 <section
                                                     key={i}
-                                                    className={`${styles.stat} ${s.className}`}
+                                                    className={`
+                                                        ${styles.stat}
+                                                        ${classes.flexColumn}
+                                                        ${s.className}
+                                                    `}
                                                 >
                                                     <header
-                                                        className={`${classes.flexRowStartCenter} ${styles.header}`}
+                                                        className={`
+                                                            ${classes.flexRowStartCenter}
+                                                            ${styles.header}
+                                                        `}
                                                     >
                                                         <span
                                                             className={`${classes.iconWithGradientColors} ${styles.icon} material-symbols-rounded`}
@@ -393,41 +606,78 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
                                                             {s.title}
                                                         </h2>
                                                     </header>
-                                                    <p
+                                                    <div
                                                         className={
-                                                            styles.number
+                                                            styles.numberWrapper
                                                         }
                                                     >
-                                                        {s.number}
-                                                    </p>
+                                                        <p
+                                                            className={`
+                                                                ${styles.number}
+                                                            `}
+                                                        >
+                                                            {s.number}
+                                                        </p>
+                                                    </div>
                                                 </section>
                                             );
                                         })}
                                     </div>
                                 </div>
-                                <section className={styles.password}>
+                                <section
+                                    className={`
+                                        ${styles.password}
+                                        ${classes.flexColumn}
+                                    `}
+                                >
                                     <PageHeader
                                         icon="key"
                                         title="Password"
                                     />
-                                    <CustomInput
-                                        labelText="Update your password"
-                                        id="password"
-                                        icon="lock"
-                                        clarification="Use a strong password."
-                                        required
-                                        name="password"
-                                        placeholder="******"
-                                    />
-                                    <CustomInput
-                                        labelText="Confirm your password"
-                                        id="confirm-password"
-                                        icon="lock_reset"
-                                        clarification="Repeat your password."
-                                        required
-                                        name="confirmPassword"
-                                        placeholder="******"
-                                    />
+                                    <fetcher.Form
+                                        onSubmit={onUpdatePasswordSubmit}
+                                        method="post"
+                                        className={`
+                                            ${styles.updatePasswordForm}
+                                            ${classes.flexColumn}
+                                        `}
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="intent"
+                                            value="update-password"
+                                        />
+                                        <CustomInput
+                                            type="password"
+                                            labelText="Update your password"
+                                            id="password"
+                                            icon="lock"
+                                            clarification="Use a strong password."
+                                            required
+                                            name="password"
+                                            placeholder="******"
+                                        />
+                                        <CustomInput
+                                            type="password"
+                                            labelText="Confirm your password"
+                                            id="confirm-password"
+                                            icon="lock_reset"
+                                            clarification="Repeat your password."
+                                            required
+                                            name="confirmPassword"
+                                            placeholder="******"
+                                        />
+                                        <button
+                                            type="submit"
+                                            className={`
+                                                ${styles.updatePasswordButton}
+                                                ${classes.outline1}
+                                                ${classes.buttonHoverStyleMainColor}
+                                            `}
+                                        >
+                                            Update password
+                                        </button>
+                                    </fetcher.Form>
                                 </section>
                             </div>
                         );
