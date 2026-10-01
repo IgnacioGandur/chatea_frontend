@@ -7,7 +7,7 @@
     color: var(--color-text);
     padding: var(--size-2);
 
-    .iconSection {
+    .iconsSection {
         display: flex;
         align-items: center;
         gap: var(--size-2);
@@ -15,6 +15,99 @@
         .title {
             font-size: var(--font-size-3);
             font-family: var(--font-special);
+        }
+    }
+
+    .loggedLinks,
+    .unloggedLinks {
+        .link {
+            text-decoration: none;
+
+            .text {
+                transition: var(--transition-1);
+            }
+        }
+    }
+
+    .loggedLinks {
+        gap: var(--size-2);
+
+        .link {
+            position: relative;
+            border-radius: var(--radius-md);
+            border: 2px solid transparent;
+            transition: var(--transition-1);
+            padding: var(--size-1);
+
+            .text {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                background-color: var(--color-background);
+                padding: var(--size-1) calc(var(--size-1) * 2);
+                border-radius: var(--radius-md);
+                opacity: 0;
+                border: 2px solid var(--color-line);
+            }
+
+            .icon {
+                font-size: var(--icon-size-3);
+            }
+        }
+
+        .link:hover,
+        .link:focus-visible {
+            .text {
+                transform: translate(-50%, 100%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .link:hover {
+            border: 2px solid var(--color-line);
+        }
+
+        .link:focus-visible {
+            .text {
+                outline: 2px solid var(--color-outline);
+            }
+        }
+    }
+
+    .unloggedLinks {
+        gap: var(--size-1);
+
+        .link {
+            position: relative;
+            gap: var(--size-2);
+
+            .text {
+                font-weight: var(--font-thickness-3);
+                font-size: var(--font-size-1);
+            }
+        }
+
+        .link.active::before {
+            width: 6px;
+            height: 6px;
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            background-image: linear-gradient(
+                to bottom,
+                var(--color-main),
+                var(--color-secondary)
+            );
+            border-radius: var(--radius-total);
+        }
+
+        .link:hover {
+            .text {
+                color: var(--color-secondary);
+            }
         }
     }
 

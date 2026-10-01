@@ -344,6 +344,17 @@
     background-clip: text;
 }
 
+.textWithMainColorsDarkGradient {
+    color: transparent;
+    background-image: linear-gradient(
+        to right,
+        var(--color-main-dark),
+        var(--color-secondary-dark)
+    );
+    background-position: center;
+    background-clip: text;
+}
+
 .textSmallSecondary {
     font-family: var(--font-secondary);
     font-size: 0.8rem;
