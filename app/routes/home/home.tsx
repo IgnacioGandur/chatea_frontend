@@ -2,6 +2,8 @@ import type { Route } from "./+types/home";
 import Blob from "~/components/blob/Blob";
 import styles from "./home.module.css";
 import classes from "~/css/classes.module.css";
+import { getSession } from "~/session.server";
+import { redirect } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -10,7 +12,15 @@ export function meta({}: Route.MetaArgs) {
     ];
 }
 
-export function loader({}: Route.LoaderArgs) {}
+export async function loader({ request }: Route.LoaderArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
+
+    if (session.has("userId")) {
+        throw redirect("/dashboard");
+    }
+
+    return null;
+}
 
 export default function Home({}: Route.ComponentProps) {
     return (
