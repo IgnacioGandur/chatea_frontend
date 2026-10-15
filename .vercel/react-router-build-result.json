@@ -12,11 +12,21 @@
     "routeIdToServerBundleId": {
       "routes/home/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/users/Users": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/user-profile/UserProfile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/register/register": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/login/Login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/groups/Groups": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/dashboard/outlets/dashboard-index/dashboardIndex": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/dashboard/outlets/settings/settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/dashboard/Dashboard": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/conversations/outlets/conversations-index/ConversationsIndex": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/conversations/outlets/current-conversation/CurrentConversation": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/friends/Friends": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "actions/send-message": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "actions/respond-friendship-request": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.conversations/route": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.conversations.$id/route": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.conversations.$id.messages/route": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/about/About": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -43,6 +53,15 @@
           "runtime": "nodejs"
         }
       },
+      "routes/user-profile/UserProfile": {
+        "id": "routes/user-profile/UserProfile",
+        "parentId": "root",
+        "file": "app/routes/user-profile/UserProfile.tsx",
+        "path": "users/:username",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
       "routes/register/register": {
         "id": "routes/register/register",
         "parentId": "root",
@@ -61,11 +80,11 @@
           "runtime": "nodejs"
         }
       },
-      "routes/logout": {
-        "id": "routes/logout",
+      "routes/groups/Groups": {
+        "id": "routes/groups/Groups",
         "parentId": "root",
-        "file": "app/routes/logout.tsx",
-        "path": "logout",
+        "file": "app/routes/groups/Groups.tsx",
+        "path": "groups",
         "config": {
           "runtime": "nodejs"
         }
@@ -76,27 +95,114 @@
         "file": "app/layouts/only-logged-users.tsx",
         "config": {}
       },
-      "routes/dashboard/dashboard": {
-        "id": "routes/dashboard/dashboard",
+      "routes/logout": {
+        "id": "routes/logout",
         "parentId": "layouts/only-logged-users",
-        "file": "app/routes/dashboard/dashboard.tsx",
+        "file": "app/routes/logout.tsx",
+        "path": "logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/dashboard/Dashboard": {
+        "id": "routes/dashboard/Dashboard",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/routes/dashboard/Dashboard.tsx",
         "path": "dashboard",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "layouts/conversations-layout/conversations.layout": {
+        "id": "layouts/conversations-layout/conversations.layout",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/layouts/conversations-layout/conversations.layout.tsx",
         "config": {}
       },
-      "routes/dashboard/outlets/dashboard-index/dashboardIndex": {
-        "id": "routes/dashboard/outlets/dashboard-index/dashboardIndex",
-        "parentId": "routes/dashboard/dashboard",
-        "file": "app/routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
+      "routes/conversations/Conversations": {
+        "id": "routes/conversations/Conversations",
+        "parentId": "layouts/conversations-layout/conversations.layout",
+        "file": "app/routes/conversations/Conversations.tsx",
+        "path": "conversations",
+        "config": {}
+      },
+      "routes/conversations/outlets/conversations-index/ConversationsIndex": {
+        "id": "routes/conversations/outlets/conversations-index/ConversationsIndex",
+        "parentId": "routes/conversations/Conversations",
+        "file": "app/routes/conversations/outlets/conversations-index/ConversationsIndex.tsx",
         "index": true,
         "config": {
           "runtime": "nodejs"
         }
       },
-      "routes/dashboard/outlets/settings/settings": {
-        "id": "routes/dashboard/outlets/settings/settings",
-        "parentId": "routes/dashboard/dashboard",
-        "file": "app/routes/dashboard/outlets/settings/settings.tsx",
-        "path": "settings",
+      "routes/conversations/outlets/current-conversation/CurrentConversation": {
+        "id": "routes/conversations/outlets/current-conversation/CurrentConversation",
+        "parentId": "routes/conversations/Conversations",
+        "file": "app/routes/conversations/outlets/current-conversation/CurrentConversation.tsx",
+        "path": ":id",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/friends/Friends": {
+        "id": "routes/friends/Friends",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/routes/friends/Friends.tsx",
+        "path": "friends",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "actions/send-message": {
+        "id": "actions/send-message",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/actions/send-message.ts",
+        "path": "send-message",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "actions/respond-friendship-request": {
+        "id": "actions/respond-friendship-request",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/actions/respond-friendship-request.ts",
+        "path": "respond-friendship-request",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.conversations/route": {
+        "id": "routes/api.conversations/route",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/routes/api.conversations/route.ts",
+        "path": "api/conversations",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.conversations.$id/route": {
+        "id": "routes/api.conversations.$id/route",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/routes/api.conversations.$id/route.ts",
+        "path": "/api/conversations/:id",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.conversations.$id.messages/route": {
+        "id": "routes/api.conversations.$id.messages/route",
+        "parentId": "layouts/only-logged-users",
+        "file": "app/routes/api.conversations.$id.messages/route.ts",
+        "path": "api/conversations/:id/messages",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/about/About": {
+        "id": "routes/about/About",
+        "parentId": "root",
+        "file": "app/routes/about/About.tsx",
+        "path": "about",
         "config": {
           "runtime": "nodejs"
         }
@@ -110,7 +216,7 @@
     "future": {
       "unstable_optimizeDeps": false,
       "v8_passThroughRequests": false,
-      "unstable_trailingSlashAwareDataRequests": false,
+      "v8_trailingSlashAwareDataRequests": false,
       "unstable_previewServerPrerendering": false,
       "v8_middleware": false,
       "v8_splitRouteModules": false,
@@ -134,6 +240,12 @@
         "file": "./routes/users/Users.tsx",
         "path": "users"
       },
+      "routes/user-profile/UserProfile": {
+        "id": "routes/user-profile/UserProfile",
+        "parentId": "root",
+        "file": "./routes/user-profile/UserProfile.tsx",
+        "path": "users/:username"
+      },
       "routes/register/register": {
         "id": "routes/register/register",
         "parentId": "root",
@@ -146,34 +258,93 @@
         "file": "./routes/login/Login.tsx",
         "path": "login"
       },
-      "routes/logout": {
-        "id": "routes/logout",
+      "routes/groups/Groups": {
+        "id": "routes/groups/Groups",
         "parentId": "root",
-        "file": "./routes/logout.tsx",
-        "path": "logout"
+        "file": "./routes/groups/Groups.tsx",
+        "path": "groups"
       },
       "layouts/only-logged-users": {
         "id": "layouts/only-logged-users",
         "parentId": "root",
         "file": "./layouts/only-logged-users.tsx"
       },
-      "routes/dashboard/dashboard": {
-        "id": "routes/dashboard/dashboard",
+      "routes/logout": {
+        "id": "routes/logout",
         "parentId": "layouts/only-logged-users",
-        "file": "./routes/dashboard/dashboard.tsx",
+        "file": "./routes/logout.tsx",
+        "path": "logout"
+      },
+      "routes/dashboard/Dashboard": {
+        "id": "routes/dashboard/Dashboard",
+        "parentId": "layouts/only-logged-users",
+        "file": "./routes/dashboard/Dashboard.tsx",
         "path": "dashboard"
       },
-      "routes/dashboard/outlets/dashboard-index/dashboardIndex": {
-        "id": "routes/dashboard/outlets/dashboard-index/dashboardIndex",
-        "parentId": "routes/dashboard/dashboard",
-        "file": "./routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
+      "layouts/conversations-layout/conversations.layout": {
+        "id": "layouts/conversations-layout/conversations.layout",
+        "parentId": "layouts/only-logged-users",
+        "file": "./layouts/conversations-layout/conversations.layout.tsx"
+      },
+      "routes/conversations/Conversations": {
+        "id": "routes/conversations/Conversations",
+        "parentId": "layouts/conversations-layout/conversations.layout",
+        "file": "./routes/conversations/Conversations.tsx",
+        "path": "conversations"
+      },
+      "routes/conversations/outlets/conversations-index/ConversationsIndex": {
+        "id": "routes/conversations/outlets/conversations-index/ConversationsIndex",
+        "parentId": "routes/conversations/Conversations",
+        "file": "./routes/conversations/outlets/conversations-index/ConversationsIndex.tsx",
         "index": true
       },
-      "routes/dashboard/outlets/settings/settings": {
-        "id": "routes/dashboard/outlets/settings/settings",
-        "parentId": "routes/dashboard/dashboard",
-        "file": "./routes/dashboard/outlets/settings/settings.tsx",
-        "path": "settings"
+      "routes/conversations/outlets/current-conversation/CurrentConversation": {
+        "id": "routes/conversations/outlets/current-conversation/CurrentConversation",
+        "parentId": "routes/conversations/Conversations",
+        "file": "./routes/conversations/outlets/current-conversation/CurrentConversation.tsx",
+        "path": ":id"
+      },
+      "routes/friends/Friends": {
+        "id": "routes/friends/Friends",
+        "parentId": "layouts/only-logged-users",
+        "file": "./routes/friends/Friends.tsx",
+        "path": "friends"
+      },
+      "actions/send-message": {
+        "id": "actions/send-message",
+        "parentId": "layouts/only-logged-users",
+        "file": "./actions/send-message.ts",
+        "path": "send-message"
+      },
+      "actions/respond-friendship-request": {
+        "id": "actions/respond-friendship-request",
+        "parentId": "layouts/only-logged-users",
+        "file": "./actions/respond-friendship-request.ts",
+        "path": "respond-friendship-request"
+      },
+      "routes/api.conversations/route": {
+        "id": "routes/api.conversations/route",
+        "parentId": "layouts/only-logged-users",
+        "file": "./routes/api.conversations/route.ts",
+        "path": "api/conversations"
+      },
+      "routes/api.conversations.$id/route": {
+        "id": "routes/api.conversations.$id/route",
+        "parentId": "layouts/only-logged-users",
+        "file": "./routes/api.conversations.$id/route.ts",
+        "path": "/api/conversations/:id"
+      },
+      "routes/api.conversations.$id.messages/route": {
+        "id": "routes/api.conversations.$id.messages/route",
+        "parentId": "layouts/only-logged-users",
+        "file": "./routes/api.conversations.$id.messages/route.ts",
+        "path": "api/conversations/:id/messages"
+      },
+      "routes/about/About": {
+        "id": "routes/about/About",
+        "parentId": "root",
+        "file": "./routes/about/About.tsx",
+        "path": "about"
       }
     },
     "routeDiscovery": {
@@ -200,6 +371,10 @@
             "path": "users"
           },
           {
+            "file": "./routes/user-profile/UserProfile.tsx",
+            "path": "users/:username"
+          },
+          {
             "file": "./routes/register/register.tsx",
             "path": "register"
           },
@@ -208,27 +383,68 @@
             "path": "login"
           },
           {
-            "file": "./routes/logout.tsx",
-            "path": "logout"
+            "file": "./routes/groups/Groups.tsx",
+            "path": "groups"
           },
           {
             "file": "./layouts/only-logged-users.tsx",
             "children": [
               {
-                "file": "./routes/dashboard/dashboard.tsx",
+                "file": "./routes/logout.tsx",
+                "path": "logout"
+              },
+              {
+                "file": "./routes/dashboard/Dashboard.tsx",
+                "path": "dashboard"
+              },
+              {
+                "file": "./layouts/conversations-layout/conversations.layout.tsx",
                 "children": [
                   {
-                    "file": "./routes/dashboard/outlets/dashboard-index/dashboardIndex.tsx",
-                    "index": true
-                  },
-                  {
-                    "file": "./routes/dashboard/outlets/settings/settings.tsx",
-                    "path": "settings"
+                    "file": "./routes/conversations/Conversations.tsx",
+                    "children": [
+                      {
+                        "file": "./routes/conversations/outlets/conversations-index/ConversationsIndex.tsx",
+                        "index": true
+                      },
+                      {
+                        "file": "./routes/conversations/outlets/current-conversation/CurrentConversation.tsx",
+                        "path": ":id"
+                      }
+                    ],
+                    "path": "conversations"
                   }
-                ],
-                "path": "dashboard"
+                ]
+              },
+              {
+                "file": "./routes/friends/Friends.tsx",
+                "path": "friends"
+              },
+              {
+                "file": "./actions/send-message.ts",
+                "path": "send-message"
+              },
+              {
+                "file": "./actions/respond-friendship-request.ts",
+                "path": "respond-friendship-request"
+              },
+              {
+                "file": "./routes/api.conversations/route.ts",
+                "path": "api/conversations"
+              },
+              {
+                "file": "./routes/api.conversations.$id/route.ts",
+                "path": "/api/conversations/:id"
+              },
+              {
+                "file": "./routes/api.conversations.$id.messages/route.ts",
+                "path": "api/conversations/:id/messages"
               }
             ]
+          },
+          {
+            "file": "./routes/about/About.tsx",
+            "path": "about"
           }
         ]
       }
