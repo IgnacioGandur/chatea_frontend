@@ -1,17 +1,14 @@
 import type {
     PrismaClient,
     Message as MessageType,
-    Prisma,
 } from "../../generated/prisma/client";
 import { createMessageInclude } from "./message.includes";
-import type { CreateMessage } from "./message.types";
+import type {
+    CreateMessage,
+    CreateMessageWithAttachmentAndSender,
+    LoadMoreMessages,
+} from "./message.types";
 import prisma from "./prisma";
-
-type MessageWithAttachment = Prisma.MessageGetPayload<{
-    include: {
-        attachments: true;
-    };
-}>;
 
 class Message {
     prisma: PrismaClient;
@@ -62,7 +59,7 @@ class Message {
         fileName: string,
         fileUrl: string,
         fileType: string,
-    ): Promise<MessageType> {
+    ): Promise<CreateMessageWithAttachmentAndSender> {
         return await this.prisma.message.create({
             data: {
                 conversationId,
@@ -78,7 +75,11 @@ class Message {
             },
             include: {
                 attachments: true,
-                sender: true,
+                sender: {
+                    omit: {
+                        password: true,
+                    },
+                },
             },
         });
     }
@@ -107,11 +108,7 @@ class Message {
         userId: number,
         cursorId: number,
         take: number = 2,
-    ): Promise<{
-        messages: any[];
-        hasMoreMessages: boolean;
-        nextCursor: number | null;
-    } | null> {
+    ): Promise<LoadMoreMessages | null> {
         return await this.prisma.$transaction(async (tx) => {
             // Check the boundary till which this user can pull messages.
             const participant = await tx.participant.findUnique({

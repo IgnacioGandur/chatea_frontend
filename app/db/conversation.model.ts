@@ -5,7 +5,7 @@ import type {
     Conversation as ConversationType,
 } from "../../generated/prisma/client";
 import type {
-    GetConversationByIdMessagesInclude,
+    GetConversationById,
     GetUserConversations,
 } from "./conversation.types";
 
@@ -180,14 +180,12 @@ class Conversation {
         userId: number | string,
         conversationId: number | string,
         take: number = 2,
-    ): Promise<{
-        conversation: GetConversationByIdMessagesInclude | null;
-        hasMoreMessages: boolean;
-        nextCursor: number | null;
-    } | null> {
+    ): Promise<GetConversationById | null> {
         return await this.prisma.$transaction(async (tx) => {
             const uId = Number(userId);
             const cId = Number(conversationId);
+
+            // Get logged user as participant in the conversation.
             const participant = await tx.participant.findUnique({
                 where: {
                     userId_conversationId: {
@@ -200,8 +198,10 @@ class Conversation {
                 },
             });
 
+            // If the user is not a participant, return null.
             if (!participant) return null;
 
+            // If the user left the conversation at some point, only retrieve conversation messages using a boundary date.
             const boundaryDate = participant.lastDeletedAt || new Date(0);
 
             const conversation = await tx.conversation.findUnique({
@@ -250,6 +250,7 @@ class Conversation {
             );
 
             const hasMoreMessages = conversation.messages.length > take;
+
             let nextCursor: number | null = null;
 
             if (hasMoreMessages) {

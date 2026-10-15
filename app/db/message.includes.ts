@@ -26,3 +26,21 @@ export const createMessageInclude = {
         },
     },
 } satisfies Prisma.MessageInclude;
+
+export const loadMoreMessagesInclude = {
+    attachments: true,
+    sender: {
+        omit: {
+            password: true,
+        },
+    },
+} satisfies Prisma.MessageInclude;
+
+export const createMessageWithAttachmentAndSenderInclude = {
+    attachments: true,
+    sender: {
+        omit: {
+            password: true,
+        },
+    },
+} satisfies Prisma.MessageInclude;

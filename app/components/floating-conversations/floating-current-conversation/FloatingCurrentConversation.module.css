@@ -1,0 +1,197 @@
+.skeleton,
+.currentConversation {
+    .header {
+        padding: var(--size-2);
+        gap: var(--size-2);
+        border-bottom: 2px solid var(--color-line);
+
+        .userB {
+            flex: 1;
+            gap: var(--size-3);
+
+            .ppf {
+                width: 35px;
+                height: 35px;
+                border: none;
+            }
+
+            .name {
+                font-size: var(--font-size-2);
+                height: var(--font-size-2);
+                width: 60%;
+            }
+        }
+
+        .buttons {
+            gap: var(--size-1);
+            margin-left: auto;
+        }
+    }
+}
+
+.skeleton {
+    .header {
+        padding: var(--size-2);
+        gap: var(--size-2);
+        border-bottom: 2px solid var(--color-line);
+    }
+
+    .messages {
+        height: 400px;
+        gap: var(--size-3);
+        padding: var(--size-3);
+
+        .message {
+            height: var(--font-size-4);
+            width: 65%;
+        }
+
+        .message:nth-of-type(odd) {
+            align-self: flex-end;
+        }
+    }
+
+    .para {
+        padding: var(--size-2);
+    }
+}
+
+.noConversation {
+    .wrapper {
+        height: 400px;
+    }
+}
+
+.currentConversation {
+    gap: var(--size-2);
+
+    .header {
+        .userB {
+            flex: 1;
+            gap: var(--size-1);
+
+            .ppf {
+                width: 35px;
+                height: 35px;
+            }
+
+            .name {
+                font-size: var(--font-size-2);
+            }
+        }
+    }
+
+    .validationErrors {
+        background-color: var(--color-error-dimmed);
+        padding: var(--size-2);
+        gap: var(--size-2);
+        border: 1px solid var(--color-error);
+
+        .title {
+            font-size: var(--font-size-1);
+        }
+
+        .errors {
+            padding-left: var(--size-3);
+
+            .error {
+                font-size: var(--font-size-1);
+            }
+        }
+    }
+
+    .loadMoreMessagesButton {
+        .text {
+            font-size: var(--font-size-1);
+            font-style: italic;
+        }
+
+        .icon {
+            font-size: var(--icon-size-1);
+        }
+    }
+
+    .messages {
+        flex: 1;
+        max-height: 300px;
+        height: 100%;
+        overflow: scroll;
+        gap: var(--size-2);
+        padding: var(--size-2);
+
+        .message {
+            gap: var(--size-1);
+
+            .dayDate {
+                text-align: center;
+            }
+
+            .contentAndTimeWrapper {
+                max-width: 75%;
+                width: fit-content;
+                background-color: var(--color-secondary-dark);
+                border-radius: var(--radius-xl);
+                border-top-left-radius: 0;
+                padding: var(--size-2);
+                gap: var(--size-2);
+                position: relative;
+            }
+
+            .ppf {
+                width: 30px;
+                height: 30px;
+            }
+
+            .dayDate,
+            .contentAndTimeWrapper > .timeDate {
+                color: var(--color-text);
+                font-size: var(--font-size-mini);
+            }
+        }
+
+        .message.loggedUserMessage {
+            .contentAndTimeWrapper {
+                align-self: flex-end;
+                align-items: flex-end;
+                background-color: var(--color-main-dark);
+                border-top-left-radius: var(--radius-xl);
+                border-top-right-radius: 0;
+            }
+        }
+
+        .message.deleted {
+            .contentAndTimeWrapper {
+                background-color: var(--color-error-dimmed);
+            }
+        }
+    }
+
+    .anchor {
+        margin-top: auto;
+        height: 25px;
+    }
+
+    .sendMessageForm {
+        border-top: 2px solid var(--color-line);
+        padding: var(--size-2);
+        gap: var(--size-2);
+
+        .input {
+            flex: 1;
+            background-color: transparent;
+            border: none;
+            color: var(--color-text);
+        }
+
+        .sendMessageButton {
+            background-color: var(--color-main);
+            border-radius: var(--radius-total);
+            padding: var(--size-1);
+
+            .icon {
+                color: #ffffff;
+                font-size: var(--icon-size-1);
+            }
+        }
+    }
+}

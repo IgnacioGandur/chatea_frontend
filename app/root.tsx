@@ -39,6 +39,7 @@ import type { Route } from "./+types/root";
 import notFoundImage from "/images/404.svg";
 import generic400Error from "/images/400.svg";
 import friendshipModel from "./db/friendship.model";
+import FloatingConversations from "./components/floating-conversations/FloatingConversations";
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
@@ -76,6 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {children}
                 <Sidebar />
                 <ScrollRestoration />
+                <FloatingConversations />
                 <Scripts />
             </body>
         </html>

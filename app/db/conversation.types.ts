@@ -1,7 +1,7 @@
 import type { Prisma } from "../../generated/prisma/client";
 import type {
     createConversationInclude,
-    getConversationByIdMessagesInclude,
+    getConversationByIdInclude,
     getUserConversationInclude,
 } from "./conversation.includes";
 
@@ -13,6 +13,10 @@ export type GetUserConversations = Prisma.ConversationGetPayload<{
     include: typeof getUserConversationInclude;
 }>;
 
-export type GetConversationByIdMessagesInclude = Prisma.ConversationGetPayload<{
-    include: typeof getConversationByIdMessagesInclude;
-}>;
+export type GetConversationById = {
+    conversation: Prisma.ConversationGetPayload<{
+        include: typeof getConversationByIdInclude;
+    }>;
+    nextCursor: number | null;
+    hasMoreMessages: boolean;
+};

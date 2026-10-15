@@ -62,7 +62,7 @@
     --font-special: "Dancing Script", cursive;
 
     /* Font Sizes */
-    --font-size-mini: 0.68rem;
+    --font-size-mini: 0.62rem;
     --font-size-1: 0.72rem;
     --font-size-2: 1rem;
     --font-size-3: 1.25rem;
@@ -71,6 +71,7 @@
     --font-size-6: 2.25rem;
     --font-size-7: 4rem;
     --font-size-8: 6rem;
+    --font-size-9: 0.9rem;
     --font-size-button: 0.9rem;
 
     /* Font Thickness */

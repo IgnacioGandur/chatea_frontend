@@ -20,8 +20,6 @@ import validatePasswordUpdate from "~/validators/validatePasswordUpdate";
 import bcrypt from "bcryptjs";
 
 export async function loader({ request }: Route.LoaderArgs) {
-    await new Promise((r) => setTimeout(r, 3000));
-
     const { loggedUserId } = await getLoggedUserId(request);
     const id = Number(loggedUserId);
 

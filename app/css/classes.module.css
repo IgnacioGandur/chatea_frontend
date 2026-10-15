@@ -33,6 +33,11 @@
 
 /* Display Styles */
 
+.flexRowAlignEnd {
+    display: flex;
+    align-items: end;
+}
+
 .gridCenter {
     display: grid;
     place-items: center;
@@ -280,6 +285,14 @@
 /* ========== */
 
 /* Text Styles */
+
+.textSecondarySmallItalicDimmedCentered {
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-1);
+    font-style: italic;
+    color: var(--color-text-dimmed);
+    text-align: center;
+}
 
 .textAlignCenter {
     text-align: center;

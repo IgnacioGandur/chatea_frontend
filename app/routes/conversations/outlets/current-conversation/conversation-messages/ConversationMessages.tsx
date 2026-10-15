@@ -44,7 +44,7 @@ interface ConversationMessagesProps {
     conversationIsGroup: boolean;
 }
 
-type MessageWithAttachmentAndSender = Prisma.MessageGetPayload<{
+export type MessageWithAttachmentAndSender = Prisma.MessageGetPayload<{
     include: {
         attachments: true;
         sender: true;
@@ -275,12 +275,15 @@ export default function ConversationMessages(props: ConversationMessagesProps) {
     const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(
         props.initialData.hasMoreMessages,
     );
+
     const [nextCursor, setNextCursor] = useState<number | null>(
         props.initialData.nextCursor,
     );
+
     const [messages, setMessages] = useState<MessageWithAttachmentAndSender[]>(
         props.initialData.messages,
     );
+
     const [optimisticMessages, setOptimisticMessages] = useState<
         OptimisticMessage[]
     >([]);

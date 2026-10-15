@@ -1,0 +1,31 @@
+.floatingConversationClosed {
+    border: 2px solid var(--color-line);
+    position: absolute;
+    bottom: var(--size-4);
+    right: var(--size-4);
+    max-width: 325px;
+    width: 100%;
+    background-color: var(--color-background);
+    gap: var(--size-2);
+    border-radius: var(--radius-full);
+    padding: var(--size-2);
+    padding-left: var(--size-3);
+    transition: var(--transition-1);
+
+    .icon {
+        font-size: var(--icon-size-3);
+    }
+
+    .separator {
+        width: 8px;
+        height: 8px;
+    }
+
+    .text {
+        font-size: var(--font-size-9);
+    }
+}
+
+.floatingConversationClosed:hover {
+    border: 2px solid var(--color-main);
+}

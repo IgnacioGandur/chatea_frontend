@@ -43,6 +43,16 @@ export default [
             "./actions/respond-friendship-request.ts",
         ),
 
+        // API
+
+        // Load conversations for the 'FloatingConversations' component.
+        route("api/conversations", "./routes/api.conversations/route.ts"),
+
+        route(
+            "/api/conversations/:id",
+            "./routes/api.conversations.$id/route.ts",
+        ),
+
         // Load more messages
         route(
             "api/conversations/:id/messages",

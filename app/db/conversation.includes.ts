@@ -60,3 +60,25 @@ export const getConversationByIdMessagesInclude = {
         take: 15 + 1,
     },
 } satisfies Prisma.ConversationInclude;
+
+export const getConversationByIdInclude = {
+    participants: {
+        include: {
+            user: {
+                omit: {
+                    password: true,
+                },
+            },
+        },
+    },
+    messages: {
+        include: {
+            attachments: true,
+            sender: {
+                omit: {
+                    password: true,
+                },
+            },
+        },
+    },
+} satisfies Prisma.ConversationInclude;

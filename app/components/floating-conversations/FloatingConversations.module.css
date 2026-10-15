@@ -1,0 +1,35 @@
+.positionAbsoluteBottomRight {
+    border: 2px solid var(--color-line);
+    position: absolute;
+    bottom: var(--size-4);
+    right: var(--size-4);
+    max-width: 325px;
+    width: 100%;
+    background-color: var(--color-background);
+    gap: var(--size-2);
+}
+
+.miniButton {
+    background-color: var(--color-background);
+    border: 2px solid var(--color-line);
+    border-radius: var(--radius-total);
+    padding: calc(var(--size-1) / 2);
+    text-decoration: none;
+    transition: var(--transition-1);
+
+    .icon {
+        color: var(--color-text);
+        font-size: var(--icon-size-1);
+    }
+}
+
+.miniButton:hover {
+    border: 2px solid var(--color-main);
+    background-color: var(--color-main-transparent);
+}
+
+.roundedCorners {
+    padding: 0;
+    border-radius: 22px;
+    border: 2px solid var(--color-line);
+}

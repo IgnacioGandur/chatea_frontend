@@ -94,6 +94,7 @@ export default function Navbar() {
             {links.map((l) => {
                 return (
                     <NavLink
+                        key={l.text}
                         to={l.to}
                         className={({ isActive, isPending }) => {
                             const linkState = isActive

@@ -4,6 +4,24 @@ import { getLoggedUserId } from "~/utils/getLoggedUserId";
 import validateMessageInConversation from "~/validators/validateMessageInConversation";
 import { validateMessageAttachment } from "~/validators/validateMessageAttachment";
 import { uploadConversationAttachment } from "~/supabase/uploadConversationAttachment";
+import type { $ZodIssue } from "zod/v4/core";
+import type {
+    CreateMessage,
+    CreateMessageWithAttachmentAndSender,
+} from "~/db/message.types";
+
+export type SendMessageApiActionResponse =
+    | {
+          success: true;
+          message: string;
+          createdMessage: CreateMessage | CreateMessageWithAttachmentAndSender;
+          temporaryId: string;
+      }
+    | {
+          success: false;
+          message: string;
+          errors: $ZodIssue[];
+      };
 
 export async function loader({ params, request, url }: Route.LoaderArgs) {
     const cursorId = Number(url.searchParams.get("cursor"));
@@ -56,11 +74,6 @@ export async function action({ request, params }: Route.ActionArgs) {
     if (hasFile) {
         const attachmentValidation = await validateMessageAttachment(file);
 
-        console.log(
-            "The content of attachmentValidation is: ",
-            attachmentValidation,
-        );
-
         if (!attachmentValidation.success) {
             return {
                 success: false,
@@ -95,6 +108,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
             return {
                 success: true,
+                message: "Message created!",
                 createdMessage,
                 temporaryId,
             };

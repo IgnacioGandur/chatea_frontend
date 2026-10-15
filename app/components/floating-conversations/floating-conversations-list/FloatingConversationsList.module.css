@@ -1,0 +1,116 @@
+.skeleton {
+    border: 2px solid var(--color-line);
+    position: absolute;
+    bottom: var(--size-4);
+    right: var(--size-4);
+    max-width: 325px;
+    width: 100%;
+    background-color: var(--color-background);
+    gap: var(--size-2);
+
+    .conversations {
+        height: 400px;
+
+        .conversation {
+            border-bottom: 1px solid var(--color-line);
+            padding: var(--size-2);
+            display: grid;
+            grid-template-areas:
+                "ppf name date"
+                "ppf username username";
+            grid-template-columns: auto 3fr 1fr;
+            gap: var(--size-2);
+            border-bottom: 1px solid var(--color-line);
+
+            .ppf {
+                border: none;
+                grid-area: ppf;
+            }
+
+            .name,
+            .date {
+                align-self: bottom;
+            }
+
+            .name {
+                width: 84%;
+                grid-area: name;
+            }
+
+            .username {
+                width: 30%;
+                grid-area: username;
+            }
+
+            .date {
+                grid-area: date;
+            }
+        }
+    }
+
+    .para {
+        padding: var(--size-2);
+    }
+}
+
+.conversationsList {
+    border: 2px solid var(--color-line);
+    position: absolute;
+    bottom: var(--size-4);
+    right: var(--size-4);
+    max-width: 325px;
+    width: 100%;
+    background-color: var(--color-background);
+    gap: 0;
+
+    .conversations {
+        height: 400px;
+
+        .conversationPreview {
+            display: grid;
+            grid-template-areas:
+                "ppf name date"
+                "ppf lastMessage lastMessage";
+            grid-template-columns: min-content 1fr min-content;
+            grid-template-rows: min-content min-content;
+            gap: 0 var(--size-1);
+            padding: var(--size-2);
+            border-bottom: 2px solid var(--color-line);
+
+            > * {
+                text-align: start;
+            }
+
+            .name,
+            .date {
+                align-self: flex-end;
+            }
+
+            .ppf {
+                width: 40px;
+                height: 40px;
+                grid-area: ppf;
+            }
+
+            .name {
+                grid-area: name;
+                font-size: var(--font-size-2);
+            }
+
+            .date {
+                grid-area: date;
+                color: var(--color-text);
+                font-size: var(--font-size-1);
+                font-style: italic;
+                white-space: nowrap;
+                text-transform: capitalize;
+            }
+
+            .lastMessage {
+                grid-area: lastMessage;
+                font-size: 0.8rem;
+                align-self: flex-start;
+            }
+        }
+    }
+}

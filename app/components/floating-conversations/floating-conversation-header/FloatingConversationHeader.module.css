@@ -1,0 +1,28 @@
+.header {
+    padding: var(--size-2);
+    gap: var(--size-2);
+    border-bottom: 2px solid var(--color-line);
+
+    .wrapper {
+        gap: var(--size-2);
+
+        .icon {
+            font-size: var(--icon-size-3);
+        }
+
+        .separator {
+            width: 8px;
+            height: 8px;
+        }
+
+        .text {
+            font-size: var(--font-size-9);
+            font-weight: var(--font-thickness-2);
+        }
+    }
+
+    .buttons {
+        gap: var(--size-1);
+        margin-left: auto;
+    }
+}
