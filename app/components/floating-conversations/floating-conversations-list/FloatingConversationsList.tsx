@@ -13,6 +13,11 @@ import { differenceInHours, formatDistanceToNow, format } from "date-fns";
 import { useFetcher, useRouteLoaderData } from "react-router";
 import type { RootLoaderData } from "~/types/RootLoaderData";
 
+type FetcherApiResponse = {
+    conversations: GetUserConversations[];
+    count: number;
+} | null;
+
 interface FloatingConversationsListProps {
     className?: string;
     setState: Dispatch<SetStateAction<FloatingConversationState>>;
@@ -27,15 +32,15 @@ export default function FloatingConversationsList({
     children,
 }: FloatingConversationsListProps) {
     const { user } = useRouteLoaderData("root") as RootLoaderData;
+    const [hasLoaded, setHasLoaded] = useState(false);
     const [conversations, setConversations] = useState<GetUserConversations[]>(
         [],
     );
 
     // Get user conversations
-    const fetcher = useFetcher<{
-        conversations: GetUserConversations[];
-        count: number;
-    }>();
+    const fetcher = useFetcher<FetcherApiResponse>({
+        key: "floating:conversations-list",
+    });
 
     useEffect(() => {
         fetcher.load("api/conversations");
@@ -44,12 +49,13 @@ export default function FloatingConversationsList({
     useEffect(() => {
         if (fetcher && fetcher.data) {
             setConversations(fetcher.data.conversations);
+            setHasLoaded(true);
         }
     }, [fetcher.data]);
 
     if (!user) return;
 
-    if (fetcher.state === "loading") {
+    if (!hasLoaded || fetcher.state === "loading") {
         return (
             <Skeleton className={className}>
                 <FloatingConversationHeader>
@@ -65,67 +71,107 @@ export default function FloatingConversationsList({
                 ${className ?? ""}
                 ${styles.conversationsList}
                 ${classes.flexColumn}
-                ${floatingConversationsStyles.conversationsList}
+                ${floatingConversationsStyles.positionAbsoluteBottomRight}
+                ${floatingConversationsStyles.roundedCorners}
             `}
         >
             <FloatingConversationHeader>{children}</FloatingConversationHeader>
-            <div
-                className={`
+            {conversations.length === 0 ? (
+                <div
+                    className={`
+                        ${styles.emptyConversations}
+                        ${classes.flexColumnCenter}
+                    `}
+                >
+                    <span
+                        className={`
+                            material-symbols-rounded
+                            ${styles.icon}
+                            ${classes.textWithMainColorsGradient}
+                        `}
+                    >
+                        voice_selection_off
+                    </span>
+                    <p
+                        className={`
+                            ${styles.para}
+                            ${classes.textSecondarySmallItalicDimmedCentered}
+                        `}
+                    >
+                        You don't have conversations yet...
+                    </p>
+                </div>
+            ) : (
+                <div
+                    className={`
                     ${styles.conversations}
                     ${classes.flexColumn}
                 `}
-            >
-                {conversations.map((c) => {
-                    const isGroup = c.isGroup;
-                    const userB = c.participants.find(
-                        (p) => p.userId !== user.id,
-                    );
+                >
+                    {conversations.map((c) => {
+                        const isGroup = c.isGroup;
 
-                    if (!isGroup && !userB) return <p>No data.</p>;
+                        const userB = c.participants.find(
+                            (p) => p.userId !== user.id,
+                        );
 
-                    const ppf = isGroup
-                        ? c.profilePicture
-                        : userB!.user.profilePictureUrl;
+                        if (!isGroup && !userB) return <p>No data.</p>;
 
-                    const title = isGroup
-                        ? c.title
-                        : `${userB!.user.firstName} ${userB!.user.lastName}`;
+                        const ppf = isGroup
+                            ? c.profilePicture
+                            : userB!.user.profilePictureUrl;
 
-                    const lastMessage = c.messages[0].content;
+                        const title = isGroup
+                            ? c.title
+                            : `${userB!.user.firstName} ${userB!.user.lastName}`;
 
-                    const lastMessageDate = c.lastMessageAt!;
+                        const lastMessage = c.messages[0].content;
 
-                    const difference = Math.abs(
-                        differenceInHours(lastMessageDate, new Date()),
-                    );
+                        const lastMessageDate = c.lastMessageAt!;
 
-                    const date =
-                        difference > 48
-                            ? formatDistanceToNow(lastMessageDate, {
-                                  addSuffix: true,
-                              })
-                            : format(lastMessageDate, "dd/LLL/yyyy");
+                        const difference = Math.abs(
+                            differenceInHours(lastMessageDate, new Date()),
+                        );
 
-                    return (
-                        <ConversationPreview
-                            key={c.id}
-                            setCurrentConversation={() => {
-                                setState("conversationSelected");
-                                setConversationId(c.id);
-                            }}
-                            date={date}
-                            lastMessage={lastMessage}
-                            name={title || ""}
-                            profilePictureUrl={ppf || ""}
-                        />
-                    );
-                })}
-            </div>
+                        const date =
+                            difference < 48
+                                ? formatDistanceToNow(lastMessageDate, {
+                                      addSuffix: true,
+                                  })
+                                : format(lastMessageDate, "dd/LLL/yyyy");
+
+                        const messageSenderText =
+                            c.messages[0].senderId === user.id
+                                ? "You: "
+                                : isGroup
+                                  ? `${c.messages[0].sender.firstName} ${c.messages[0].sender.lastName}: `
+                                  : null;
+
+                        return (
+                            <ConversationPreview
+                                isGroup={isGroup}
+                                lastMessageSenderText={messageSenderText}
+                                key={c.id}
+                                setCurrentConversation={() => {
+                                    setState("conversationSelected");
+                                    setConversationId(c.id);
+                                }}
+                                date={date}
+                                lastMessage={lastMessage}
+                                name={title || ""}
+                                profilePictureUrl={ppf || ""}
+                            />
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
 
 interface ConversationPreviewProps {
+    isGroup: boolean;
+    lastMessageSenderText: string | null;
     profilePictureUrl: string;
     name: string;
     lastMessage: string;
@@ -134,6 +180,8 @@ interface ConversationPreviewProps {
 }
 
 function ConversationPreview({
+    isGroup,
+    lastMessageSenderText,
     profilePictureUrl,
     name,
     lastMessage,
@@ -143,7 +191,9 @@ function ConversationPreview({
     return (
         <button
             onClick={() => setCurrentConversation()}
-            className={styles.conversationPreview}
+            className={`
+                ${styles.conversationPreview}
+            `}
         >
             <img
                 src={profilePictureUrl}
@@ -155,16 +205,66 @@ function ConversationPreview({
                     ${classes.pictureMedium}
                 `}
             />
-            <h2 className={styles.name}>{name}</h2>
-            <p
+            <div
                 className={`
-                    ${styles.lastMessage}
+                    ${styles.nameWrapper}
+                    ${classes.flexRowStartCenter}
+                `}
+            >
+                {isGroup ? (
+                    <span
+                        title="Group conversation"
+                        className={`
+                            material-symbols-rounded
+                            ${classes.textWithMainColorsGradient}
+                            ${styles.groupIcon}
+                        `}
+                    >
+                        group
+                    </span>
+                ) : null}
+                <h2
+                    className={`
+                    ${styles.name}
+                    ${classes.ellipsisOnOverflowingText}
+                `}
+                >
+                    {name}
+                </h2>
+            </div>
+            <div
+                className={`
+                    ${styles.wrapper}
+                    ${classes.flexRowStartCenter}
+                `}
+            >
+                {lastMessageSenderText ? (
+                    <span
+                        className={`
+                            ${styles.lastMessageSenderText}
+                            ${classes.ellipsisOnOverflowingText}
+                        `}
+                    >
+                        {lastMessageSenderText}
+                    </span>
+                ) : null}
+                <p
+                    className={`
+                        ${styles.lastMessage}
+                        ${classes.ellipsisOnOverflowingText}
+                    `}
+                >
+                    {lastMessage}
+                </p>
+            </div>
+            <span
+                className={`
+                    ${styles.date}
                     ${classes.ellipsisOnOverflowingText}
                 `}
             >
-                {lastMessage}
-            </p>
-            <span className={styles.date}>{date}</span>
+                {date}
+            </span>
         </button>
     );
 }

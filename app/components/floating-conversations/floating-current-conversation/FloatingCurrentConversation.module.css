@@ -59,6 +59,15 @@
 .noConversation {
     .wrapper {
         height: 400px;
+        gap: var(--size-2);
+
+        .icon {
+            font-size: var(--icon-size-7);
+        }
+
+        .para {
+            font-size: var(--font-size-1);
+        }
     }
 }
 
@@ -66,9 +75,12 @@
     gap: var(--size-2);
 
     .header {
+        padding: var(--size-2);
+        gap: var(--size-2);
+
         .userB {
             flex: 1;
-            gap: var(--size-1);
+            gap: inherit;
 
             .ppf {
                 width: 35px;
@@ -77,9 +89,142 @@
 
             .name {
                 font-size: var(--font-size-2);
+                height: fit-content;
             }
         }
     }
+
+    .noMessages {
+        gap: var(--size-2);
+        height: 400px;
+
+        .icon {
+            font-size: var(--icon-size-7);
+        }
+
+        .para {
+            font-size: var(--font-size-1);
+        }
+    }
+
+    .messages {
+        height: 350px;
+        overflow: scroll;
+        gap: var(--size-1);
+        padding: var(--size-2);
+
+        .buttonWrapper {
+            display: contents;
+
+            .loadMoreMessagesButton {
+                margin-bottom: var(--size-2);
+
+                .text {
+                    font-size: var(--font-size-1);
+                    font-style: italic;
+                }
+
+                .icon {
+                    font-size: var(--icon-size-1);
+                }
+            }
+        }
+
+        .message {
+            --ppf-size: 32px;
+
+            gap: var(--size-2);
+
+            .dayDate {
+                text-align: center;
+            }
+
+            .contentAndTimeWrapper {
+                max-width: 75%;
+                width: fit-content;
+                background-color: var(--color-secondary-dark);
+                border-radius: var(--radius-xl);
+                border-bottom-left-radius: 0;
+                padding: var(--size-2);
+                gap: var(--size-2);
+                position: relative;
+
+                .content {
+                    word-break: break-all;
+                }
+
+                .attachment {
+                    width: 175px;
+                    height: auto;
+                }
+            }
+
+            .contentAndTimeWrapper.marginRight {
+                margin-right: calc(var(--ppf-size) + var(--size-1));
+            }
+
+            .contentAndTimeWrapper.marginLeft {
+                margin-left: calc(var(--ppf-size) + var(--size-1));
+            }
+
+            .ppfAndNameWrapper {
+                text-decoration: none;
+                gap: inherit;
+
+                .ppf {
+                    width: var(--ppf-size);
+                    height: var(--ppf-size);
+                    border: 2px solid var(--color-secondary-dark);
+                    border-top-right-radius: 0;
+                }
+            }
+
+            .dayDate,
+            .contentAndTimeWrapper > .timeDate {
+                color: var(--color-text);
+                font-size: var(--font-size-mini);
+            }
+        }
+
+        .message.loggedUserMessage {
+            .contentAndTimeWrapper {
+                align-self: flex-end;
+                align-items: flex-end;
+                background-color: var(--color-main-dark);
+                border-bottom-left-radius: var(--radius-xl);
+                border-bottom-right-radius: 0;
+            }
+
+            .ppfAndNameWrapper {
+                flex-direction: row-reverse;
+
+                .ppf {
+                    border: 2px solid var(--color-main-dark);
+                    border-top-left-radius: 0;
+                    border-top-right-radius: 50%;
+                }
+            }
+        }
+
+        .message.deleted {
+            .contentAndTimeWrapper {
+                background-color: var(--color-error-dimmed);
+            }
+        }
+
+        .extraMarginAtBottom {
+            margin-bottom: var(--size-4);
+        }
+    }
+
+    .anchor {
+        margin-top: auto;
+        height: 25px;
+    }
+}
+
+.sendMessageFormWrapper {
+    gap: var(--size-1);
 
     .validationErrors {
         background-color: var(--color-error-dimmed);
@@ -100,77 +245,6 @@
         }
     }
 
-    .loadMoreMessagesButton {
-        .text {
-            font-size: var(--font-size-1);
-            font-style: italic;
-        }
-
-        .icon {
-            font-size: var(--icon-size-1);
-        }
-    }
-
-    .messages {
-        flex: 1;
-        max-height: 300px;
-        height: 100%;
-        overflow: scroll;
-        gap: var(--size-2);
-        padding: var(--size-2);
-
-        .message {
-            gap: var(--size-1);
-
-            .dayDate {
-                text-align: center;
-            }
-
-            .contentAndTimeWrapper {
-                max-width: 75%;
-                width: fit-content;
-                background-color: var(--color-secondary-dark);
-                border-radius: var(--radius-xl);
-                border-top-left-radius: 0;
-                padding: var(--size-2);
-                gap: var(--size-2);
-                position: relative;
-            }
-
-            .ppf {
-                width: 30px;
-                height: 30px;
-            }
-
-            .dayDate,
-            .contentAndTimeWrapper > .timeDate {
-                color: var(--color-text);
-                font-size: var(--font-size-mini);
-            }
-        }
-
-        .message.loggedUserMessage {
-            .contentAndTimeWrapper {
-                align-self: flex-end;
-                align-items: flex-end;
-                background-color: var(--color-main-dark);
-                border-top-left-radius: var(--radius-xl);
-                border-top-right-radius: 0;
-            }
-        }
-
-        .message.deleted {
-            .contentAndTimeWrapper {
-                background-color: var(--color-error-dimmed);
-            }
-        }
-    }
-
-    .anchor {
-        margin-top: auto;
-        height: 25px;
-    }
-
     .sendMessageForm {
         border-top: 2px solid var(--color-line);
         padding: var(--size-2);
@@ -181,16 +255,16 @@
             background-color: transparent;
             border: none;
             color: var(--color-text);
+            padding: 0 var(--size-2);
         }
 
         .sendMessageButton {
-            background-color: var(--color-main);
             border-radius: var(--radius-total);
             padding: var(--size-1);
 
             .icon {
                 color: #ffffff;
-                font-size: var(--icon-size-1);
+                font-size: var(--icon-size-2);
             }
         }
     }

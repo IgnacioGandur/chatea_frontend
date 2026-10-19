@@ -31,7 +31,15 @@ export const getUserConversationInclude = {
             },
         },
     },
-    messages: true,
+    messages: {
+        include: {
+            sender: {
+                omit: {
+                    password: true,
+                },
+            },
+        },
+    },
 } satisfies Prisma.ConversationInclude;
 
 export const getConversationByIdMessagesInclude = {

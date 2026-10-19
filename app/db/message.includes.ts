@@ -6,6 +6,7 @@ export const createMessageInclude = {
             password: true,
         },
     },
+    attachments: true,
     conversation: {
         include: {
             participants: {

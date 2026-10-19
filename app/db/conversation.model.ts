@@ -122,6 +122,13 @@ class Conversation {
                         orderBy: {
                             createdAt: "desc",
                         },
+                        include: {
+                            sender: {
+                                omit: {
+                                    password: true,
+                                },
+                            },
+                        },
                     },
                 },
 
@@ -180,7 +187,7 @@ class Conversation {
         userId: number | string,
         conversationId: number | string,
         take: number = 2,
-    ): Promise<GetConversationById | null> {
+    ): Promise<GetConversationById> {
         return await this.prisma.$transaction(async (tx) => {
             const uId = Number(userId);
             const cId = Number(conversationId);

@@ -1,17 +1,23 @@
 import classes from "~/css/classes.module.css";
 import styles from "./FloatingConversations.module.css";
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useRouteLoaderData, useLocation } from "react-router";
 
 import FloatingCurrentConversation from "./floating-current-conversation/FloatingCurrentConversation";
 
 import FloatingConversationsList from "./floating-conversations-list/FloatingConversationsList";
 import FloatingClosedConversations from "./floating-closed-conversations/FloatingClosedConversations";
+import type { RootLoaderData } from "~/types/RootLoaderData";
 
 export type FloatingConversationState =
     "closed" | "conversationsList" | "conversationSelected";
 
 export default function FloatingConversations() {
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    const { user } = useRouteLoaderData("root") as RootLoaderData;
+
     const [state, setState] = useState<FloatingConversationState>("closed");
 
     function handleState(state: FloatingConversationState) {
@@ -19,6 +25,8 @@ export default function FloatingConversations() {
     }
 
     const [conversationId, setConversationId] = useState<number | null>(null);
+
+    if (currentPath.includes("/conversations")) return;
 
     // Mini Buttons
 
@@ -86,6 +94,8 @@ export default function FloatingConversations() {
             </span>
         </button>
     );
+
+    if (!user) return;
 
     // ============
 

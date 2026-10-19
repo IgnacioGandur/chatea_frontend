@@ -20,3 +20,15 @@ export type LoadMoreMessages = {
 export type CreateMessageWithAttachmentAndSender = Prisma.MessageGetPayload<{
     include: typeof createMessageWithAttachmentAndSenderInclude;
 }>;
+
+export type MessageWithAttachmentsAndSenderOmitPassword =
+    Prisma.MessageGetPayload<{
+        include: {
+            attachments: true;
+            sender: {
+                omit: {
+                    password: true;
+                };
+            };
+        };
+    }>;

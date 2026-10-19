@@ -19,4 +19,4 @@ export type GetConversationById = {
     }>;
     nextCursor: number | null;
     hasMoreMessages: boolean;
-};
+} | null;
