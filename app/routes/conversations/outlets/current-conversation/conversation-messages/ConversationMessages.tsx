@@ -167,6 +167,8 @@ function SendMessageForm({
 
             const data: SendMessageFetcherResponse = await response.json();
 
+            console.log("The content of data is: ", data);
+
             const { success, createdMessage, temporaryId } = data;
 
             if (success) {
@@ -189,6 +191,8 @@ function SendMessageForm({
                 const event = new CustomEvent("chat:send-message", {
                     detail: data,
                 });
+
+                onMessageFailed(temporaryId);
 
                 window.dispatchEvent(event);
                 return;

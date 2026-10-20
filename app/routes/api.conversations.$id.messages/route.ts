@@ -117,6 +117,7 @@ export async function action({ request, params }: Route.ActionArgs) {
             return {
                 success: false,
                 message: "We were unable to send your attachment.",
+                temporaryId,
             };
         }
     }
