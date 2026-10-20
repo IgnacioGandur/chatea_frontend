@@ -110,7 +110,7 @@
     .messages {
         height: 350px;
         overflow: scroll;
-        gap: var(--size-1);
+        gap: var(--size-2);
         padding: var(--size-2);
 
         .buttonWrapper {
@@ -154,8 +154,9 @@
                 }
 
                 .attachment {
-                    width: 175px;
+                    width: 100%;
                     height: auto;
+                    border-radius: inherit;
                 }
             }
 

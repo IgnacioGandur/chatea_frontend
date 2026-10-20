@@ -1,6 +1,6 @@
 import classes from "~/css/classes.module.css";
 import styles from "./FloatingConversations.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useRouteLoaderData, useLocation } from "react-router";
 
 import FloatingCurrentConversation from "./floating-current-conversation/FloatingCurrentConversation";
@@ -26,13 +26,22 @@ export default function FloatingConversations() {
 
     const [conversationId, setConversationId] = useState<number | null>(null);
 
+    // When the user logs in/out, close the floating conversation.
+    useEffect(() => {
+        setState("closed");
+    }, [user]);
+    // ===========================================================
+
     if (currentPath.includes("/conversations")) return;
 
     // Mini Buttons
-
     const goToConversationsButton = (
         <NavLink
-            to="/conversations"
+            to={
+                conversationId
+                    ? `/conversations/${conversationId}`
+                    : "/conversations"
+            }
             title="Go to conversations"
             className={`
                 ${styles.miniButton}
@@ -54,7 +63,10 @@ export default function FloatingConversations() {
     const closeFloatingConversationsButton = (
         <button
             title="Close conversations list"
-            onClick={() => handleState("closed")}
+            onClick={() => {
+                handleState("closed");
+                setConversationId(null);
+            }}
             className={`
                 ${styles.miniButton}
                 ${classes.gridCenter}
@@ -76,7 +88,10 @@ export default function FloatingConversations() {
     const conversationsListButton = (
         <button
             title="Open conversations list"
-            onClick={() => handleState("conversationsList")}
+            onClick={() => {
+                handleState("conversationsList");
+                setConversationId(null);
+            }}
             className={`
                 ${styles.miniButton}
                 ${classes.gridCenter}
@@ -95,9 +110,11 @@ export default function FloatingConversations() {
         </button>
     );
 
-    if (!user) return;
-
     // ============
+
+    // Don't render the component if a user is not logged.
+    if (!user) return;
+    // ==================================================
 
     return state === "closed" ? (
         <FloatingClosedConversations

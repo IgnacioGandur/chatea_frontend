@@ -72,8 +72,6 @@ export default function MessagesList({
     }, [lastMessageId]);
     // ==============================================================
 
-    // TODO: Render the message attachments, if they have any.
-
     if (messages.length === 0) {
         return (
             <div
@@ -207,6 +205,7 @@ export default function MessagesList({
                                 <img
                                     className={`
                                         ${styles.attachment}
+                                        ${classes.correctImage}
                                     `}
                                     src={attachment.fileUrl}
                                     alt={attachment.fileName}
