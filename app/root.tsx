@@ -23,7 +23,6 @@ import { Toaster } from "react-hot-toast";
 
 // Components
 import Navbar from "./components/navbar/Navbar";
-import Footer from "./components/footer/Footer";
 import Sidebar from "./components/sidebar/Sidebar";
 
 // Session
@@ -40,6 +39,27 @@ import notFoundImage from "/images/404.svg";
 import generic400Error from "/images/400.svg";
 import friendshipModel from "./db/friendship.model";
 import FloatingConversations from "./components/floating-conversations/FloatingConversations";
+import faviconSvg from "~/../public/images/current_conversation_logo.svg";
+
+export const links: Route.LinksFunction = () => [
+    {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: faviconSvg,
+    },
+    {
+        rel: "icon",
+        type: "image/png",
+        href: "/favicon-32x32.png",
+        sizes: "32x32",
+    },
+    {
+        rel: "icon",
+        type: "image/png",
+        href: "/favicon-16x16.png",
+        sizes: "16x16",
+    },
+];
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
