@@ -3,7 +3,11 @@ import {
     PrismaClient,
     type User as UserType,
 } from "../../generated/prisma/client";
-import type { UserProfileStats } from "./user.types";
+import type {
+    GetUserPublicProfileByUsername,
+    UserProfileStats,
+    UserOmitPassword,
+} from "./user.types";
 
 class User {
     prisma: PrismaClient;
@@ -31,10 +35,13 @@ class User {
         });
     }
 
-    async get(username: string): Promise<UserType | null> {
+    async get(username: string): Promise<UserOmitPassword | null> {
         return await this.prisma.user.findUnique({
             where: {
                 username,
+            },
+            omit: {
+                password: true,
             },
         });
     }
@@ -74,6 +81,9 @@ class User {
             this.prisma.user.findUnique({
                 where: {
                     id,
+                },
+                omit: {
+                    password: true,
                 },
             }),
             this.prisma.message.count({
@@ -147,6 +157,82 @@ class User {
             data: {
                 [field]: value,
             },
+        });
+    }
+
+    async getUserPublicProfileByUsername(
+        username: string,
+        loggedUserId: number | null,
+    ): GetUserPublicProfileByUsername {
+        return await this.prisma.$transaction(async (tx) => {
+            const user = await tx.user.findUnique({
+                where: {
+                    username,
+                },
+                omit: {
+                    password: true,
+                },
+            });
+
+            if (!user) return null;
+
+            const friendshipsCount = await tx.friendship.count({
+                where: {
+                    status: "ACCEPTED",
+                    OR: [{ userAId: user.id }, { userBId: user.id }],
+                },
+            });
+
+            const participantGroupsCount = await tx.participant.count({
+                where: {
+                    conversation: {
+                        isGroup: true,
+                    },
+                    userId: user.id,
+                },
+            });
+
+            const ownedGroupsCount = await tx.participant.count({
+                where: {
+                    role: "OWNER",
+                    conversation: {
+                        isGroup: true,
+                        ownerId: user.id,
+                    },
+                },
+            });
+
+            const sentMessagesCount = await tx.message.count({
+                where: {
+                    senderId: user.id,
+                },
+            });
+
+            const friendshipStatusWithLoggedUser = loggedUserId
+                ? await tx.friendship.findFirst({
+                      where: {
+                          OR: [
+                              {
+                                  userAId: loggedUserId,
+                                  userBId: user.id,
+                              },
+                              {
+                                  userAId: user.id,
+                                  userBId: loggedUserId,
+                              },
+                          ],
+                      },
+                  })
+                : null;
+
+            return {
+                user,
+                friendshipsCount,
+                participantGroupsCount,
+                ownedGroupsCount,
+                sentMessagesCount,
+                friendshipStatusWithLoggedUser,
+            };
         });
     }
 }

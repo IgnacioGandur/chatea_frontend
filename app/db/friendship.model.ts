@@ -1,5 +1,4 @@
 import type {
-    Prisma,
     PrismaClient,
     Friendship as FriendshipType,
 } from "../../generated/prisma/client";

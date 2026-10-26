@@ -22,6 +22,7 @@
     .unloggedLinks {
         .link {
             text-decoration: none;
+            z-index: 100;
 
             .text {
                 transition: var(--transition-1);

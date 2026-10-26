@@ -16,6 +16,8 @@
     --color-special: #06d6a0;
 
     --color-background: #e0e1dd;
+    /* TODO: Search a color for this variable. */
+    --color-background-alt: #ffffff;
     --color-text: #062726;
     --color-text-dimmed: #343a40;
 
@@ -112,6 +114,7 @@
     :root {
         /* Colors */
         --color-background: #0b090a;
+        --color-background-alt: #26262c;
         --color-text: #f6f7f8;
         --color-text-dimmed: #b4bcc7;
 

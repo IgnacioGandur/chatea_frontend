@@ -33,6 +33,26 @@
 
 /* Display Styles */
 
+.flexColumnAlignCenterJustifyCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.flexColumnAlignStartJustifyCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.flexRowAlignCenterJustifyBetween {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .flexRowAlignEnd {
     display: flex;
     align-items: end;
@@ -421,6 +441,22 @@
         var(--color-secondary),
         var(--color-secondary),
         transparent
+    );
+}
+
+.linearGradientToBottomMainColors {
+    background-image: linear-gradient(
+        to bottom,
+        var(--color-main),
+        var(--color-secondary)
+    );
+}
+
+.linearGradientToRightMainColors {
+    background-image: linear-gradient(
+        to right,
+        var(--color-main),
+        var(--color-secondary)
     );
 }
 

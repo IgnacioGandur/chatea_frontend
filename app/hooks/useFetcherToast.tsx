@@ -7,12 +7,6 @@ interface FetcherData {
     message: string;
 }
 
-// interface UseFetcherToastOptions {
-//     failMessage?: string;
-//     loadingMessage?: string;
-//     toastId?: string;
-// }
-
 interface ToastData {
     failMessage: string;
     loadingMessage: string;
@@ -63,29 +57,4 @@ export function useFetcherToast(fetcher: Fetcher<any>) {
     }, [fetcherState]);
 
     return setToastData;
-
-    // Success/Error
-    // useEffect(() => {
-    //     if (
-    //         fetcherData &&
-    //         "success" in fetcherData &&
-    //         "message" in fetcherData
-    //     ) {
-    //         const { success, message } = fetcherData;
-    //         if (success) {
-    //             toast.success(message);
-    //         } else {
-    //             toast.error(failMessage);
-    //         }
-    //     }
-    // }, [fetcherData]);
-
-    // Loading
-    // useEffect(() => {
-    //     if (fetcherState === "submitting") {
-    //         toast.loading(loadingMessage, { id: toastId });
-    //     } else {
-    //         toast.dismiss(toastId);
-    //     }
-    // }, [fetcherState, loadingMessage, toastId]);
 }
