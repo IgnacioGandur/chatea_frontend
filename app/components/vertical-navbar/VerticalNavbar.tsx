@@ -43,6 +43,11 @@ const loggedLinks: Link[] = [
         text: "users",
     },
     {
+        to: "/groups",
+        icon: "group_work",
+        text: "groups",
+    },
+    {
         to: "/friends",
         icon: "diversity_2",
         text: "friends",
@@ -114,6 +119,7 @@ export default function VerticalNavbar() {
             {links.map((l) => {
                 return (
                     <div
+                        key={l.text}
                         className={`
                             ${styles.linkWrapper}
                             ${classes.flexRow}
@@ -121,23 +127,35 @@ export default function VerticalNavbar() {
                     >
                         <NavLink
                             to={l.to}
-                            className={({ isActive }) => {
+                            className={({ isActive, isPending }) => {
                                 return `
                                 ${styles.link}
                                 ${classes.flexRowCenter}
                                 ${isActive ? styles.active : ""}
+                                ${isPending ? styles.pending : ""}
                             `;
                             }}
                         >
-                            <span
-                                className={`
-                                    material-symbols-rounded
-                                    ${styles.icon}
-                                `}
-                            >
-                                {l.icon}
-                            </span>
-                            <span className={styles.text}>{l.text}</span>
+                            {({ isPending }) => {
+                                return (
+                                    <>
+                                        <span
+                                            className={`
+                                                material-symbols-rounded
+                                                ${styles.icon}
+                                                ${isPending ? classes.spinIcon : ""}
+                                            `}
+                                        >
+                                            {isPending
+                                                ? "progress_activity"
+                                                : l.icon}
+                                        </span>
+                                        <span className={styles.text}>
+                                            {l.text}
+                                        </span>
+                                    </>
+                                );
+                            }}
                         </NavLink>
                     </div>
                 );
@@ -269,7 +287,6 @@ export default function VerticalNavbar() {
                     {logoHtml}
                     {separatorHtml}
                     {linksHtml}
-                    {separatorHtml}
                     {user ? (
                         <>
                             <button
@@ -279,9 +296,7 @@ export default function VerticalNavbar() {
                                 {ppfHtml}
                             </button>
                         </>
-                    ) : (
-                        emptyDivHtml
-                    )}
+                    ) : null}
                 </motion.nav>
             )}
         </AnimatePresence>
