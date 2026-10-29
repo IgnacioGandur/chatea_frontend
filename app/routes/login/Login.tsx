@@ -3,13 +3,7 @@ import registerStyles from "../register/register.module.css";
 import classes from "~/css/classes.module.css";
 
 // Packages
-import {
-    data,
-    NavLink,
-    redirect,
-    useFetcher,
-    useSearchParams,
-} from "react-router";
+import { data, NavLink, redirect, useFetcher } from "react-router";
 import { useState, type ChangeEvent } from "react";
 
 // Types
@@ -104,9 +98,6 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Login() {
     const fetcher = useFetcher<LoginActionResponse>();
-    const [searchParams] = useSearchParams();
-    const message = searchParams.get("message");
-    const welcome = searchParams.get("welcome");
 
     const [inputs, setInputs] = useState({
         username: "",

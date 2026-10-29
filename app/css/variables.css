@@ -114,7 +114,8 @@
     :root {
         /* Colors */
         --color-background: #0b090a;
-        --color-background-alt: #26262c;
+        /* --color-background-alt: #26262c; */
+        --color-background-alt: #1b1b1e;
         --color-text: #f6f7f8;
         --color-text-dimmed: #b4bcc7;
 

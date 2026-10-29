@@ -235,6 +235,14 @@ class User {
             };
         });
     }
+
+    async getUserWithPassword(username: string): Promise<UserType | null> {
+        return await this.prisma.user.findUnique({
+            where: {
+                username,
+            },
+        });
+    }
 }
 
 export default new User(prisma);

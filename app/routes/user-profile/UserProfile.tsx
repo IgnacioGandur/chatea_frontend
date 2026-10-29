@@ -292,6 +292,8 @@ export default function UserProfile({ loaderData }: Route.ComponentProps) {
 
                     const pageTitle = `${name}'s profile | Chateá!`;
 
+                    // FIX: Display the friendship button only if there's a logged user.
+
                     return (
                         <main
                             className={`

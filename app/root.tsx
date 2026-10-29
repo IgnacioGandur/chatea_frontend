@@ -40,6 +40,7 @@ import generic400Error from "/images/400.svg";
 import friendshipModel from "./db/friendship.model";
 import FloatingConversations from "./components/floating-conversations/FloatingConversations";
 import faviconSvg from "~/../public/images/current_conversation_logo.svg";
+import VerticalNavbar from "./components/vertical-navbar/VerticalNavbar";
 
 export const links: Route.LinksFunction = () => [
     {
@@ -76,6 +77,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+    // TODO: Remember to add <Sidebar/> and <Navbar /> components in the layout body.
     return (
         <html lang="en">
             <head>
@@ -93,9 +95,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </head>
             <body>
                 <Toaster position="top-center" />
-                <Navbar />
+                <VerticalNavbar />
                 {children}
-                <Sidebar />
                 <ScrollRestoration />
                 <FloatingConversations />
                 <Scripts />

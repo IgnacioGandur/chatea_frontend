@@ -16,7 +16,7 @@ export default async function validateUserLogin(
         .superRefine(async (data, ctx) => {
             const { username, password } = data;
 
-            const user = await userModel.get(username);
+            const user = await userModel.getUserWithPassword(username);
 
             if (!user) {
                 ctx.addIssue({
@@ -29,7 +29,7 @@ export default async function validateUserLogin(
 
             const passwordsMatch = await bcrypt.compare(
                 password,
-                user?.password,
+                user.password,
             );
 
             if (!passwordsMatch) {

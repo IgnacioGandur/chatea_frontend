@@ -12,6 +12,7 @@ export default [
     route("register", "./routes/register/register.tsx"),
     route("login", "./routes/login/Login.tsx"),
     route("groups", "./routes/groups/Groups.tsx"),
+    route("about", "./routes/about/About.tsx"),
 
     // Routes only for logged users.
     layout("./layouts/only-logged-users.tsx", [
@@ -59,5 +60,4 @@ export default [
             "./routes/api.conversations.$id.messages/route.ts",
         ),
     ]),
-    route("about", "./routes/about/About.tsx"),
 ] satisfies RouteConfig;
