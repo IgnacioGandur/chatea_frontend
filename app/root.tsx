@@ -39,7 +39,7 @@ import notFoundImage from "/images/404.svg";
 import generic400Error from "/images/400.svg";
 import friendshipModel from "./db/friendship.model";
 import FloatingConversations from "./components/floating-conversations/FloatingConversations";
-import faviconSvg from "~/../public/images/current_conversation_logo.svg";
+import faviconSvg from "/images/current_conversation_logo.svg";
 import VerticalNavbar from "./components/vertical-navbar/VerticalNavbar";
 
 export const links: Route.LinksFunction = () => [

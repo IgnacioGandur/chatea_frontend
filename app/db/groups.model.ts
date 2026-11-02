@@ -1,10 +1,11 @@
 import {
-    includeParticipants,
     includeParticipantsWithUser,
+    includeParticipantsOmitPassword,
 } from "./groups.includes";
 import type {
-    GroupConversationWithParticipantsAndUser,
-    GroupWithParticipants,
+    GroupByIdIncludeParticipantsOmitPassword,
+    GroupConversation,
+    GroupsPage,
 } from "./groups.types";
 import prisma from "./prisma";
 import type {
@@ -12,6 +13,9 @@ import type {
     Participant,
     PrismaClient,
 } from "~/../generated/prisma/client";
+import type { GroupFilter } from "./groupFilters";
+
+const pageSize = 10;
 
 class Group {
     prisma: PrismaClient;
@@ -20,18 +24,86 @@ class Group {
         this.prisma = prisma;
     }
 
-    async getAll(): Promise<GroupConversationWithParticipantsAndUser[]> {
-        const groups = await this.prisma.conversation.findMany({
+    async getGroupsPage(cursor?: number, search?: string): Promise<GroupsPage>;
+    async getGroupsPage(
+        cursor: number | undefined,
+        search: string | undefined,
+        filter: GroupFilter,
+        loggedUserIs: number,
+    ): Promise<GroupsPage>;
+    async getGroupsPage(
+        cursor?: number,
+        search?: string,
+        filter?: string,
+        loggedUserId?: number,
+    ): Promise<GroupsPage> {
+        if (filter && !loggedUserId) {
+            throw new Error(
+                `"loggedUserId" is required when filter is provided.`,
+            );
+        }
+
+        const term = search?.trim();
+
+        const query = await this.prisma.conversation.findMany({
             where: {
                 isGroup: true,
-                title: { not: null },
                 description: { not: null },
                 profilePicture: { not: null },
+                title: term
+                    ? {
+                          contains: term,
+                          mode: "insensitive",
+                      }
+                    : { not: null },
+                ...(filter === "joined-groups"
+                    ? {
+                          participants: {
+                              some: {
+                                  userId: loggedUserId,
+                                  role: {
+                                      not: "OWNER",
+                                  },
+                              },
+                          },
+                      }
+                    : filter === "owned-groups"
+                      ? {
+                            participants: {
+                                some: {
+                                    userId: loggedUserId,
+                                    role: "OWNER",
+                                },
+                            },
+                        }
+                      : null),
+            },
+            take: pageSize + 1,
+            ...(cursor !== undefined && {
+                cursor: {
+                    id: cursor,
+                },
+                skip: 1,
+            }),
+            orderBy: {
+                ...(filter === "asc" || filter === "desc"
+                    ? {
+                          createdAt: filter,
+                      }
+                    : {
+                          id: "desc",
+                      }),
             },
             include: includeParticipantsWithUser,
         });
 
-        return groups as unknown as GroupConversationWithParticipantsAndUser[];
+        const hasMoreGroups = query.length > pageSize;
+        const page = hasMoreGroups ? query.slice(0, pageSize) : query;
+
+        return {
+            groups: page as GroupConversation[],
+            nextCursor: hasMoreGroups ? page[page.length - 1].id : null,
+        };
     }
 
     async create(
@@ -60,12 +132,12 @@ class Group {
 
     async getGroupByIdWithParticipants(
         groupId: number | string,
-    ): Promise<GroupWithParticipants | null> {
+    ): Promise<GroupByIdIncludeParticipantsOmitPassword | null> {
         return await this.prisma.conversation.findUnique({
             where: {
                 id: Number(groupId),
             },
-            include: includeParticipants,
+            include: includeParticipantsOmitPassword,
         });
     }
 

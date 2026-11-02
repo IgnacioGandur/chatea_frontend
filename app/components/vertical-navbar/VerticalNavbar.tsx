@@ -1,7 +1,7 @@
 import { NavLink, useFetcher } from "react-router";
 import type { MaterialSymbol } from "material-symbols";
-import iconLight from "~/../public/images/icon_light.svg";
-import iconDark from "~/../public/images/icon_dark.svg";
+import iconLight from "/images/icon_light.svg";
+import iconDark from "/images/icon_dark.svg";
 import classes from "~/css/classes.module.css";
 import styles from "./VerticalNavbar.module.css";
 import { useState } from "react";
@@ -55,6 +55,11 @@ const loggedLinks: Link[] = [
 ];
 
 const unloggedLinks: Link[] = [
+    {
+        to: "/",
+        icon: "home",
+        text: "home",
+    },
     {
         to: "/login",
         icon: "login",
@@ -280,7 +285,7 @@ export default function VerticalNavbar() {
                     exit={motionExit}
                     className={`
                         ${styles.navbar}
-                        ${classes.flexColumn}
+                        ${classes.flexColumnStartCenter}
                         ${styles.closed}
                     `}
                 >

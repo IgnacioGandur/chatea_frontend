@@ -9,11 +9,27 @@ export const includeParticipantsWithUser = {
     participants: {
         take: 10,
         include: {
-            user: true,
+            user: {
+                omit: {
+                    password: true,
+                },
+            },
         },
     },
 } satisfies Prisma.ConversationInclude;
 
 export const includeParticipants = {
     participants: true,
+} satisfies Prisma.ConversationInclude;
+
+export const includeParticipantsOmitPassword = {
+    participants: {
+        include: {
+            user: {
+                omit: {
+                    password: true,
+                },
+            },
+        },
+    },
 } satisfies Prisma.ConversationInclude;

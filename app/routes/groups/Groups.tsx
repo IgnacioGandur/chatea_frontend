@@ -4,16 +4,19 @@ import classes from "~/css/classes.module.css";
 
 // Packages
 import * as z from "zod";
-import { Suspense } from "react";
+import { Suspense, useRef, useEffect } from "react";
 import {
     Await,
     data,
     redirect,
     useFetcher,
-    useRouteLoaderData,
+    Form,
+    useSubmit,
+    NavLink,
 } from "react-router";
 
 // Types
+import type { MaterialSymbol } from "material-symbols";
 import type { Route } from "./+types/Groups";
 import type { $ZodIssue } from "zod/v4/core";
 
@@ -23,8 +26,8 @@ import CustomPageLoader from "~/components/custom-page-loader/CustomPageLoader";
 import LoaderErrorElement from "~/components/loader-error-element/LoaderErrorElement";
 import EmptySection from "~/components/empty-section/EmptySection";
 import Popover from "~/components/popover/Popover";
-import CustomInput from "~/components/custom-input/CustomInput";
-import PillButton from "~/components/pill-button/PillButton";
+// import CustomInput from "~/components/custom-input/CustomInput";
+// import PillButton from "~/components/pill-button/PillButton";
 import ValidationErrors from "~/components/validation-errors/ValidationErrors";
 
 // DB
@@ -40,10 +43,11 @@ import { validateGroupCreation } from "~/validators/validateGroupCreation";
 import { checkForValidationErrors } from "~/utils/checkForValidationErrors";
 
 // Hooks
-import { useFetcherToast } from "~/hooks/useFetcherToast";
-import type { RootLoaderData } from "~/types/RootLoaderData";
-import RoundInfoTooltip from "~/components/round-info-tooltip/RoundInfoTooltip";
+// import { useFetcherToast } from "~/hooks/useFetcherToast";
 import validateLeavingOrJoiningGroup from "~/validators/validateLeavingOrJoiningGroup";
+import GroupsGrid from "./GroupsGrid";
+import { getLoggedUserId } from "~/utils/getLoggedUserId";
+import { groupFilters, type GroupFilter } from "~/db/groupFilters";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -56,10 +60,26 @@ export function meta({}: Route.MetaArgs) {
     ];
 }
 
-export async function loader({}: Route.LoaderArgs) {
-    const groupsPromise = groupsModel.getAll();
+export async function loader({ request }: Route.LoaderArgs) {
+    const { loggedUserId } = await getLoggedUserId(request);
+    const params = new URL(request.url).searchParams;
+    const title = params.get("title") ?? "";
+    const rawFilter = params.get("filter");
+    const uId = Number(loggedUserId);
 
-    return { groupsPromise };
+    let filter: GroupFilter | undefined = undefined;
+
+    if (rawFilter && groupFilters.includes(rawFilter)) {
+        filter = rawFilter;
+    }
+
+    return {
+        title,
+        filter,
+        groupsPagePromise: filter
+            ? groupsModel.getGroupsPage(undefined, title, filter, uId)
+            : groupsModel.getGroupsPage(undefined, title),
+    };
 }
 
 const validIntents = ["create-group", "join-group", "leave-group"] as const;
@@ -193,19 +213,81 @@ interface ActionResponse {
     errors?: $ZodIssue[];
 }
 
-export default function Groups({ loaderData }: Route.ComponentProps) {
-    const fetcher = useFetcher<ActionResponse>();
-    const { groupsPromise } = loaderData;
+interface FilterOption {
+    icon: MaterialSymbol;
+    text: string;
+    value: string;
+}
 
-    const { user } = useRouteLoaderData("root") as RootLoaderData;
+export default function Groups({ loaderData }: Route.ComponentProps) {
+    const { groupsPagePromise, title, filter } = loaderData;
+
+    const fetcher = useFetcher<ActionResponse>({ key: "groups" });
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const submit = useSubmit();
+    const timeout = useRef<ReturnType<typeof setTimeout>>(null);
 
     // Validation errors
     const hasValidationErrors = checkForValidationErrors(fetcher);
 
-    const setToastData = useFetcherToast(fetcher);
+    // const setToastData = useFetcherToast(fetcher);
+
+    const filterOptions: FilterOption[] = [
+        {
+            icon: "person_raised_hand",
+            text: "joined groups",
+            value: "joined-groups",
+        },
+        {
+            icon: "hub",
+            text: "owned groups",
+            value: "owned-groups",
+        },
+        {
+            icon: "clock_arrow_up",
+            text: "older groups",
+            value: "asc",
+        },
+        {
+            icon: "clock_arrow_down",
+            text: "newer groups",
+            value: "desc",
+        },
+    ];
+
+    const showFilteringByText =
+        title || (filter && groupFilters.includes(filter));
+
+    let filteringByText: string | undefined = undefined;
+
+    if (filter || title) {
+        if (title) {
+            filteringByText = `Filtering groups by title: "${title}".`;
+        }
+
+        if (filter === "asc" || filter === "desc") {
+            filteringByText = `Filtering groups by creation date: ${filter === "asc" ? "older first" : "newest first"}.`;
+        }
+
+        if (filter === "owned-groups" || filter === "joined-groups") {
+            filteringByText = `Filtering groups by ${filter === "owned-groups" ? "groups you own" : "groups you joined"}.`;
+        }
+    }
+
+    useEffect(() => {
+        if (title === "" && inputRef.current) {
+            inputRef.current.value = "";
+        }
+    }, [title]);
 
     return (
-        <main className={styles.groups}>
+        <main
+            className={`
+                ${styles.groups}
+                ${classes.flexColumn}
+            `}
+        >
             <PageHeader
                 icon="groups_3"
                 title="Groups"
@@ -216,92 +298,142 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                     errors={fetcher.data!.errors || []}
                 />
             ) : null}
-            <div className={`${styles.groupButtons} ${classes.flexRowCenter}`}>
-                <Popover
-                    anchorName="--create-group"
-                    popoverTarget="create-group"
-                    anchorButtonClass={classes.roundDefaultButton}
-                    anchorButtonTitle="Create a new group"
-                    buttonContent={
+            <section
+                className={`
+                    ${styles.filteringSection}
+                    ${classes.flexRowAlignCenterJustifyBetween}
+                `}
+            >
+                <Form
+                    className={`
+                        ${styles.searchForm}
+                        ${classes.flexColumn}
+                    `}
+                    method="get"
+                >
+                    <div
+                        className={`
+                            ${styles.inputWrapper}
+                            ${classes.flexRowCenter}
+                        `}
+                    >
                         <span
-                            className={`material-symbols-rounded ${classes.defaultIcon}`}
+                            className={`
+                                material-symbols-rounded
+                                ${styles.icon}
+                            `}
                         >
-                            group_add
+                            search
+                        </span>
+                        <input
+                            ref={inputRef}
+                            className={styles.input}
+                            id="title"
+                            type="search"
+                            name="title"
+                            defaultValue={title}
+                            placeholder="Search groups by title..."
+                            onChange={(e) => {
+                                const form = e.currentTarget.form;
+
+                                if (timeout.current)
+                                    clearTimeout(timeout.current);
+
+                                timeout.current = setTimeout(
+                                    () => submit(form, { replace: true }),
+                                    300,
+                                );
+                            }}
+                        />
+                    </div>
+                </Form>
+                <Popover
+                    anchorName="--filter-groups"
+                    popoverTarget="filter-options"
+                    buttonContent={
+                        <span className="material-symbols-rounded">
+                            filter_alt
                         </span>
                     }
-                    anchorButtonAriaLabel="Create a new group"
+                    anchorButtonAriaLabel="Open filter options"
+                    anchorButtonClass={`
+                        ${classes.roundDefaultButton}
+                        ${classes.gridCenter}
+                    `}
+                    altPopoverClass={styles.filterPopover}
                 >
-                    <fetcher.Form
-                        className={`${classes.floatingForm} ${classes.flexColumnCenter}`}
-                        onSubmit={() =>
-                            setToastData({
-                                failMessage: "Group creation failed.",
-                                loadingMessage: "Creating group...",
-                                toastId: "group-creation",
-                            })
-                        }
-                        method="post"
+                    <Form
+                        method="get"
+                        className={`
+                            ${styles.dropdown}
+                            ${classes.flexColumn}
+                            `}
                     >
-                        <input
-                            type="hidden"
-                            name="intent"
-                            value="create-group"
-                        />
-                        <CustomInput
-                            type="text"
-                            labelText="Group title"
-                            id="group-title"
-                            icon="group_add"
-                            placeholder="Programming"
-                            required
-                            name="title"
-                            clarification="Use only letters and numbers."
-                        />
-                        <CustomInput
-                            type="text"
-                            labelText="Group description"
-                            id="group-description"
-                            icon="description"
-                            placeholder="In this group we talk about programming."
-                            required
-                            name="description"
-                            clarification="Tell the people what is your group about!"
-                        />
-                        <PillButton
-                            buttonAriaLabel="Create your group"
-                            buttonText="Create your group"
-                            includeEmptySpace
-                            includeIcon
-                            icon="add"
-                            type="submit"
-                            buttonTitle="Create"
-                        />
-                    </fetcher.Form>
+                        <label
+                            className={classes.textSmallSecondary}
+                            htmlFor="filter"
+                        >
+                            Filter conversations by:
+                        </label>
+                        <div className={styles.options}>
+                            {filterOptions.map((o) => {
+                                return (
+                                    <button
+                                        className={`
+                                        ${styles.option}
+                                        ${classes.flexRowStartCenter}
+                                        ${filter && filter === o.value ? styles.selected : ""}
+                                    `}
+                                        key={o.value}
+                                        type="submit"
+                                        name="filter"
+                                        value={o.value}
+                                    >
+                                        <span
+                                            className={`
+                                        material-symbols-rounded
+                                        ${styles.icon}
+                                    `}
+                                        >
+                                            {o.icon}
+                                        </span>
+                                        <div className={styles.separator}></div>
+                                        <span className={styles.text}>
+                                            {o.text}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </Form>
                 </Popover>
-                <div className="button">
-                    <button className={classes.roundDefaultButton}>
-                        <span
-                            className={`material-symbols-rounded ${classes.defaultIcon}`}
-                        >
-                            diversity_2
-                        </span>
-                    </button>
+            </section>
+            {showFilteringByText ? (
+                <div
+                    className={`
+                        ${styles.filteringText}
+                        ${classes.flexRowAlignCenterJustifyBetween}
+                    `}
+                >
+                    <p className={classes.textSmallSecondary}>
+                        {filteringByText}
+                    </p>
+                    <NavLink
+                        to="/groups"
+                        className={`
+                            ${styles.clearFiltersButton}
+                            ${classes.gridCenter}
+                        `}
+                    >
+                        Clear filter
+                    </NavLink>
                 </div>
-                <div className="button">
-                    <button className={classes.roundDefaultButton}>
-                        <span
-                            className={`material-symbols-rounded ${classes.defaultIcon}`}
-                        >
-                            hub
-                        </span>
-                    </button>
-                </div>
-            </div>
+            ) : null}
             <Suspense
                 fallback={<CustomPageLoader message="Getting groups..." />}
             >
                 <Await
-                    resolve={groupsPromise}
+                    resolve={groupsPagePromise}
                     errorElement={
                         <LoaderErrorElement
                             icon="bomb"
@@ -309,305 +441,26 @@ export default function Groups({ loaderData }: Route.ComponentProps) {
                         />
                     }
                 >
-                    {(groups) => {
-                        console.log("The content of groups is: ", groups);
+                    {({ groups, nextCursor }) => {
                         return groups.length === 0 ? (
                             <EmptySection
-                                icon="group_off"
-                                message="Nobody has created a group yet."
+                                icon={title ? "search_off" : "group_off"}
+                                message={
+                                    title
+                                        ? `No groups match: ${title}.`
+                                        : "Nobody has created a group yet."
+                                }
                             />
                         ) : (
-                            <div className={styles.groupsContainer}>
-                                {groups.map((group, i) => {
-                                    const isYourGroup =
-                                        user?.id === group.ownerId;
-
-                                    // If logged user is participant and not owner of the group.
-                                    const isParticipant =
-                                        group.participants.find(
-                                            (participant) => {
-                                                return (
-                                                    participant.userId ===
-                                                        user?.id &&
-                                                    participant.role !== "OWNER"
-                                                );
-                                            },
-                                        );
-
-                                    const currentIntent = fetcher.formData?.get(
-                                        "intent",
-                                    ) as "join-group" | "leave-group";
-
-                                    const isIdle = fetcher.state === "idle";
-                                    const currentGroupId = Number(
-                                        fetcher.formData?.get("conversationId"),
-                                    );
-
-                                    // If the user is current joining or leaving this group.
-                                    const isInteractingWithThisGroup =
-                                        !isIdle &&
-                                        (currentIntent === "join-group" ||
-                                            (currentIntent === "leave-group" &&
-                                                currentGroupId === group.id));
-
-                                    return (
-                                        <article
-                                            key={group.id}
-                                            className={`${styles.group} ${classes.flexColumn}`}
-                                        >
-                                            {isYourGroup ? (
-                                                <RoundInfoTooltip
-                                                    className={styles.yourGroup}
-                                                    icon="crown"
-                                                    tooltipMessage="Your group"
-                                                />
-                                            ) : null}
-                                            {isYourGroup ? null : isInteractingWithThisGroup ? (
-                                                <div
-                                                    className={`${classes.roundDefaultButton} ${styles.loadingButton}`}
-                                                >
-                                                    <span
-                                                        className={`${classes.spinIcon} material-symbols-rounded`}
-                                                    >
-                                                        progress_activity
-                                                    </span>
-                                                </div>
-                                            ) : isParticipant ? (
-                                                <Popover
-                                                    anchorName={`--leave-group-${i}`}
-                                                    popoverTarget={`leave-group-${i}`}
-                                                    buttonContent={
-                                                        <span
-                                                            className={`${classes.defaultIcon} material-symbols-rounded`}
-                                                        >
-                                                            waving_hand
-                                                        </span>
-                                                    }
-                                                    popoverContainerClass={
-                                                        styles.leaveGroupButton
-                                                    }
-                                                    anchorButtonClass={
-                                                        classes.roundDefaultButton
-                                                    }
-                                                    anchorButtonAriaLabel={`Leave group: "${group.title}".`}
-                                                    anchorButtonTitle="Leave group"
-                                                    altPopoverClass={
-                                                        styles.leaveGroupPopover
-                                                    }
-                                                >
-                                                    <fetcher.Form
-                                                        onSubmit={() =>
-                                                            setToastData({
-                                                                loadingMessage:
-                                                                    "Leaving group...",
-                                                                failMessage:
-                                                                    "Error while leaving group.",
-                                                                toastId:
-                                                                    "leave-group",
-                                                            })
-                                                        }
-                                                        className={`
-                                                            ${styles.leaveGroupForm}
-                                                            ${classes.flexColumn}
-                                                            ${classes.floatingForm}
-                                                        `}
-                                                        method="post"
-                                                    >
-                                                        <input
-                                                            type="hidden"
-                                                            name="intent"
-                                                            value="leave-group"
-                                                        />
-                                                        <h2
-                                                            className={`${classes.titleSmall}`}
-                                                        >
-                                                            Are you sure you
-                                                            want to leave this
-                                                            group?
-                                                        </h2>
-                                                        <div
-                                                            className={
-                                                                classes.separator
-                                                            }
-                                                        ></div>
-                                                        <PillButton
-                                                            buttonAriaLabel={`Confirm leaving ${group.title}.`}
-                                                            buttonText="Confirm"
-                                                            buttonTitle="Confirm leaving group"
-                                                            includeEmptySpace
-                                                            includeIcon
-                                                            type="submit"
-                                                            name="conversationId"
-                                                            icon="check"
-                                                            value={group.id}
-                                                        />
-                                                    </fetcher.Form>
-                                                </Popover>
-                                            ) : (
-                                                <Popover
-                                                    anchorName={`--join-group-${i}`}
-                                                    popoverTarget={`join-group-${i}`}
-                                                    buttonContent={
-                                                        <span
-                                                            className={`${classes.defaultIcon} material-symbols-rounded`}
-                                                        >
-                                                            meeting_room
-                                                        </span>
-                                                    }
-                                                    popoverContainerClass={
-                                                        styles.joinGroupButton
-                                                    }
-                                                    anchorButtonClass={
-                                                        classes.roundDefaultButton
-                                                    }
-                                                    anchorButtonAriaLabel={`Join group: "${group.title}".`}
-                                                    anchorButtonTitle="Join group"
-                                                    altPopoverClass={
-                                                        styles.joinGroupPopover
-                                                    }
-                                                >
-                                                    <fetcher.Form
-                                                        onSubmit={() =>
-                                                            setToastData({
-                                                                loadingMessage:
-                                                                    "Joining group...",
-                                                                failMessage:
-                                                                    "Error while joining group.",
-                                                                toastId:
-                                                                    "join-group",
-                                                            })
-                                                        }
-                                                        className={`
-                                                            ${styles.joinGroupForm}
-                                                            ${classes.flexColumn}
-                                                            ${classes.floatingForm}
-                                                        `}
-                                                        method="post"
-                                                    >
-                                                        <input
-                                                            type="hidden"
-                                                            name="intent"
-                                                            value="join-group"
-                                                        />
-                                                        <h2
-                                                            className={`${classes.titleSmall}`}
-                                                        >
-                                                            Confirm joining
-                                                            group
-                                                        </h2>
-                                                        <div
-                                                            className={
-                                                                classes.separator
-                                                            }
-                                                        ></div>
-                                                        <PillButton
-                                                            buttonAriaLabel={`Confirm joining ${group.title}.`}
-                                                            buttonText="Confirm"
-                                                            buttonTitle="Confirm joining group"
-                                                            includeEmptySpace
-                                                            includeIcon
-                                                            type="submit"
-                                                            name="conversationId"
-                                                            icon="check"
-                                                            value={group.id}
-                                                        />
-                                                    </fetcher.Form>
-                                                </Popover>
-                                            )}
-                                            <img
-                                                src={
-                                                    group.profilePicture ??
-                                                    undefined
-                                                }
-                                                alt={
-                                                    group.title ??
-                                                    "Group profile"
-                                                }
-                                                className={`${styles.ppf} ${classes.profilePictureRound} ${classes.pictureBig}`}
-                                            />
-                                            <h2 className={styles.groupTitle}>
-                                                {group.title}
-                                            </h2>
-                                            <p
-                                                className={`${classes.smallText} ${styles.description}`}
-                                            >
-                                                {group.description}
-                                            </p>
-                                            <div
-                                                className={styles.participants}
-                                            >
-                                                <h4
-                                                    className={
-                                                        classes.textSmallSecondary
-                                                    }
-                                                >
-                                                    Participants (
-                                                    {group._count.participants})
-                                                </h4>
-                                                <ul
-                                                    className={
-                                                        styles.participantsContainer
-                                                    }
-                                                >
-                                                    {group.participants.map(
-                                                        (participant, i) => {
-                                                            const name =
-                                                                participant.user
-                                                                    .firstName +
-                                                                " " +
-                                                                participant.user
-                                                                    .lastName;
-
-                                                            return i === 9 &&
-                                                                group._count
-                                                                    .participants >
-                                                                    10 ? (
-                                                                <div
-                                                                    className={`${classes.pictureSmall} ${classes.profilePictureRound} ${styles.moreParticipants}`}
-                                                                >
-                                                                    <span
-                                                                        className={`${styles.icon} material-symbols-rounded`}
-                                                                    >
-                                                                        add
-                                                                    </span>
-                                                                </div>
-                                                            ) : (
-                                                                <li
-                                                                    style={{
-                                                                        transform: `translateX(-${16 * i}px)`,
-                                                                    }}
-                                                                    key={
-                                                                        participant.userId
-                                                                    }
-                                                                    className={
-                                                                        styles.participant
-                                                                    }
-                                                                >
-                                                                    <img
-                                                                        className={`
-                                                                            ${styles.participantPpf}
-                                                                            ${classes.profilePictureRound}
-                                                                            ${classes.pictureSmall}
-                                                                            `}
-                                                                        src={
-                                                                            participant
-                                                                                .user
-                                                                                .profilePictureUrl
-                                                                        }
-                                                                        alt={
-                                                                            name
-                                                                        }
-                                                                    />
-                                                                </li>
-                                                            );
-                                                        },
-                                                    )}
-                                                </ul>
-                                            </div>
-                                        </article>
-                                    );
-                                })}
-                            </div>
+                            <GroupsGrid
+                                key={`${title}-${groups[0]?.id}`}
+                                initialPage={{
+                                    groups,
+                                    nextCursor,
+                                }}
+                                searchTitle={title}
+                                filter={filter}
+                            />
                         );
                     }}
                 </Await>

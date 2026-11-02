@@ -458,7 +458,7 @@
             var(--color-background),
             var(--color-background)
         ),
-        url("../../public/patterns/wiggle_colored.png");
+        url("/patterns/wiggle_colored.png");
 }
 
 .radialGradientWithMainColors {

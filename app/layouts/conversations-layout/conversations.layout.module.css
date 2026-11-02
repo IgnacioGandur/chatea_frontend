@@ -5,7 +5,7 @@
     /* max-width: initial; */
     /* margin-left: 150px; */
     max-width: initial;
-    margin-left: calc(75px + var(--size-2));
+    /* margin-left: calc(75px + var(--size-2)); */
     width: initial;
     align-self: initial;
 }

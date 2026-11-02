@@ -1,13 +1,15 @@
 import type { Prisma } from "../../generated/prisma/client";
 import type {
-    includeParticipants,
     includeParticipantsWithUser,
+    includeParticipantsOmitPassword,
 } from "./groups.includes";
 
-export type GroupConversationWithParticipantsAndUser = Omit<
-    Prisma.ConversationGetPayload<{
-        include: typeof includeParticipantsWithUser;
-    }>,
+export type GroupWithParticipants = Prisma.ConversationGetPayload<{
+    include: typeof includeParticipantsWithUser;
+}>;
+
+export type GroupConversation = Omit<
+    GroupWithParticipants,
     "title" | "profilePicture" | "description"
 > & {
     title: string;
@@ -15,6 +17,12 @@ export type GroupConversationWithParticipantsAndUser = Omit<
     description: string;
 };
 
-export type GroupWithParticipants = Prisma.ConversationGetPayload<{
-    include: typeof includeParticipants;
-}>;
+export type GroupsPage = {
+    groups: GroupConversation[];
+    nextCursor: number | null;
+};
+
+export type GroupByIdIncludeParticipantsOmitPassword =
+    Prisma.ConversationGetPayload<{
+        include: typeof includeParticipantsOmitPassword;
+    }>;

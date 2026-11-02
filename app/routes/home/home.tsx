@@ -61,7 +61,7 @@ export default function Home({}: Route.ComponentProps) {
             </div>
             <p className={styles.paragraph}>
                 Stay close to your friends, send images, and keep the
-                conversation going—wherever you are. Fast, fun, and easy to use.
+                conversation going. Fast, fun, and easy to use.
             </p>
         </main>
     );

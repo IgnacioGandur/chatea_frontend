@@ -35,7 +35,7 @@
                     var(--color-background),
                     var(--color-background)
                 ),
-                url("../../../public/patterns/wiggle_colored.png");
+                url("/patterns/wiggle_colored.png");
         }
 
         .blobWrapper {
@@ -49,7 +49,7 @@
                     width: 47%;
                     height: auto;
                     aspect-ratio: 1/1;
-                    background-image: url("../../../public/images/icon_light.svg");
+                    background-image: url("/images/icon_light.svg");
                     background-position: center;
                     background-size: 100%;
                     background-repeat: no-repeat;

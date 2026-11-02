@@ -91,7 +91,10 @@ export default function ConversationPreview({
                             )}
                             {conversation.lastMessageAt ? (
                                 <span
-                                    className={`${styles.lastMessageAt} ${classes.ellipsisOnOverflowingText}`}
+                                    className={`
+                                        ${styles.lastMessageAt}
+                                        ${classes.ellipsisOnOverflowingText}
+                                    `}
                                 >
                                     {formatDistanceToNow(
                                         conversation.lastMessageAt,

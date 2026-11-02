@@ -11,11 +11,11 @@ export default [
     route("users/:username", "./routes/user-profile/UserProfile.tsx"),
     route("register", "./routes/register/register.tsx"),
     route("login", "./routes/login/Login.tsx"),
-    route("groups", "./routes/groups/Groups.tsx"),
     route("about", "./routes/about/About.tsx"),
 
     // Routes only for logged users.
     layout("./layouts/only-logged-users.tsx", [
+        route("groups", "./routes/groups/Groups.tsx"),
         route("logout", "./routes/logout.tsx"),
 
         // Dashboard
@@ -47,6 +47,7 @@ export default [
         // API
 
         // Load conversations for the 'FloatingConversations' component.
+        route("api/groups", "./routes/api.groups/route.ts"),
         route("api/conversations", "./routes/api.conversations/route.ts"),
 
         route(
