@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "prisma generate && react-router build && cp generated/prisma/libquery_engine-rhel-openssl-3.0.x.so.node build/server/nodejs_*/",
+        "build": "prisma generate && prisma migrate deploy && react-router build && cp generated/prisma/libquery_engine-rhel-openssl-3.0.x.so.node build/server/nodejs_*/",
         "dev": "react-router dev",
         "start": "react-router-serve ./build/server/index.js",
         "typecheck": "react-router typegen && tsc",
